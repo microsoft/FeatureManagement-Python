@@ -5,7 +5,8 @@
 # --------------------------------------------------------------------------
 from microsoft.feature.management import FeatureManager
 
-class TestDefaultFeatureFlags():
+
+class TestDefaultFeatureFlags:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_targeting(self):
         feature_flags = {

@@ -5,7 +5,8 @@
 # --------------------------------------------------------------------------
 from microsoft.feature.management import FeatureManager, FeatureFilter
 
-class TestFeatureManagemer():
+
+class TestFeatureManagemer:
     # method: feature_manager_creation
     def test_empty_feature_manager_creation(self):
         feature_manager = FeatureManager({})

@@ -23,7 +23,7 @@ class TimeWindowFilter(FeatureFilter):
         current_time = datetime.now(timezone.utc)
 
         if not start and not end:
-            logging.warn("%s: At least one of Start or End is required.", TimeWindowFilter.__name__ )
+            logging.warn("%s: At least one of Start or End is required.", TimeWindowFilter.__name__)
             return False
 
         start_time = parsedate_to_datetime(start) if start else None
