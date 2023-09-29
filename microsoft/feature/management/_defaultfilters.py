@@ -3,27 +3,42 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from ._featurefilters import FeatureFilter
-from datetime import datetime, timezone
-from email.utils import parsedate_to_datetime
 import logging
 import hashlib
 
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
+
+from ._featurefilters import FeatureFilter
+
 
 class TargetingException(Exception):
-    pass
+    """
+    Exception raised when the targeting filter is not configured correctly
+    """
 
 
 class TimeWindowFilter(FeatureFilter):
+    """
+    Feature Filter that determines if the current time is within the time window
+    """
+
     def evaluate(self, context, **kwargs):
-        """Determine if the feature flag is enabled for the given context"""
+        """
+        Determine if the feature flag is enabled for the given context
+
+        :keyword Mapping context: Mapping with the Start and End time for the feature flag
+        :paramtype context: Mapping
+        :return: True if the current time is within the time window
+        :rtype: bool
+        """
         start = context.get("parameters", {}).get("Start")
         end = context.get("parameters", {}).get("End")
 
         current_time = datetime.now(timezone.utc)
 
         if not start and not end:
-            logging.warn("%s: At least one of Start or End is required.", TimeWindowFilter.__name__)
+            logging.warning("%s: At least one of Start or End is required.", TimeWindowFilter.__name__)
             return False
 
         start_time = parsedate_to_datetime(start) if start else None
@@ -33,74 +48,76 @@ class TimeWindowFilter(FeatureFilter):
 
 
 class TargetingFilter(FeatureFilter):
+    """
+    Feature Filter that determines if the user is targeted for the feature flag
+    """
+
     @staticmethod
-    def _is_targeted(contextId, rollout_percentage):
+    def _is_targeted(context_id, rollout_percentage):
         """Determine if the user is targeted for the given context"""
         # Alway return true if rollout percentage is 100
         if rollout_percentage == 100:
             return True
 
-        hashed_contextId = hashlib.sha256(contextId.encode()).hexdigest()
-        contextMarker = abs(int(hashed_contextId, 16))
-        percentage = (contextMarker / (2**256 - 1)) * 100
+        hashed_context_id = hashlib.sha256(context_id.encode()).hexdigest()
+        context_marker = abs(int(hashed_context_id, 16))
+        percentage = (context_marker / (2**256 - 1)) * 100
 
         return percentage < rollout_percentage
 
     def _target_group(self, target_user, target_group, group, feature_flag_name):
         group_rollout_percentage = group.get("RolloutPercentage", 0)
-        audienceContextId = target_user + "\n" + feature_flag_name + "\n" + group.get("Name", "")
+        audience_context_id = (
+            target_user + "\n" + target_group + "\n" + feature_flag_name + "\n" + group.get("Name", "")
+        )
 
-        return self._is_targeted(audienceContextId, group_rollout_percentage)
+        return self._is_targeted(audience_context_id, group_rollout_percentage)
 
     def evaluate(self, context, **kwargs):
-        """Determine if the feature flag is enabled for the given context"""
+        """
+        Determine if the feature flag is enabled for the given context
+
+        :keyword Mapping context: Context for evaluating the user/group
+        :paramtype context: Mapping
+        :return: True if the user is targeted for the feature flag
+        :rtype: bool
+        """
         target_user = kwargs.pop("user", None)
         target_groups = kwargs.pop("groups", [])
-        ignore_case = kwargs.pop("ignore_case", False)
 
         if not target_user and not (target_groups and len(target_groups) > 0):
-            logging.warn("%s: Name or Groups are required parameters", TargetingFilter.__name__)
+            logging.warning("%s: Name or Groups are required parameters", TargetingFilter.__name__)
             return False
 
         audience = context.get("parameters", {}).get("Audience", None)
         feature_flag_name = context.get("name", None)
+
         if not audience:
             raise TargetingException("Audience is required for " + TargetingFilter.__name__)
 
-        users = audience.get("Users", [])
         groups = audience.get("Groups", [])
         default_rollout_percentage = audience.get("DefaultRolloutPercentage", 0)
 
-        # Validate the audience settings
-        if default_rollout_percentage < 0 or default_rollout_percentage > 100:
-            raise TargetingException("DefaultRolloutPercentage must be between 0 and 100")
-
-        for group in groups:
-            if group.get("RolloutPercentage") < 0 or group.get("RolloutPercentage") > 100:
-                raise TargetingException("RolloutPercentage must be between 0 and 100")
-
-        exclusions = context.get("Exclusion", {})
-        excluded_users = exclusions.get("Users", [])
-        excluded_groups = exclusions.get("Groups", [])
+        self._validate(groups, default_rollout_percentage)
 
         # Check if the user is excluded
-        if target_user in excluded_users:
+        if target_user in context.get("Exclusion", {}).get("Users", []):
             return False
 
         # Check if the user is in an excluded group
-        for group in excluded_groups:
+        for group in context.get("Exclusion", {}).get("Groups", []):
             if group.get("Name") in target_groups:
                 return False
 
         # Check if the user is targeted
-        if target_user in users:
+        if target_user in audience.get("Users", []):
             return True
 
         # Check if the user is in a targeted group
         for group in groups:
             for target_group in target_groups:
                 group_name = group.get("Name", "")
-                if ignore_case:
+                if kwargs.get("ignore_case", False):
                     target_group = target_group.lower()
                     group_name = group_name.lower()
                 if group_name == target_group:
@@ -108,5 +125,15 @@ class TargetingFilter(FeatureFilter):
                         return True
 
         # Check if the user is in the default rollout
-        contextId = target_user + "\n" + feature_flag_name
-        return self._is_targeted(contextId, default_rollout_percentage)
+        context_id = target_user + "\n" + feature_flag_name
+        return self._is_targeted(context_id, default_rollout_percentage)
+
+    @staticmethod
+    def _validate(groups, default_rollout_percentage):
+        # Validate the audience settings
+        if default_rollout_percentage < 0 or default_rollout_percentage > 100:
+            raise TargetingException("DefaultRolloutPercentage must be between 0 and 100")
+
+        for group in groups:
+            if group.get("RolloutPercentage") < 0 or group.get("RolloutPercentage") > 100:
+                raise TargetingException("RolloutPercentage must be between 0 and 100")

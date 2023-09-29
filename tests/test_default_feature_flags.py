@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+import pytest
 from microsoft.feature.management import FeatureManager
 
 
@@ -143,3 +144,33 @@ class TestDefaultFeatureFlags:
         assert not feature_manager.is_enabled("Delta")
         assert feature_manager.is_enabled("Epsilon")
         assert not feature_manager.is_enabled("Foxtrot")
+
+    def test_feature_manager_invalid_feature_flag(self):
+        feature_flags = {
+            "FeatureFlags": [
+                {},
+            ]
+        }
+        with pytest.raises(ValueError, match="Feature flag id field is required"):
+            FeatureManager(feature_flags)
+
+        feature_flags["FeatureFlags"][0]["id"] = "featureFlagId"
+
+        with pytest.raises(ValueError, match="Feature flag enabled field is required"):
+            FeatureManager(feature_flags)
+
+        feature_flags["FeatureFlags"][0]["enabled"] = "true"
+
+        feature_manager = FeatureManager(feature_flags)
+        assert feature_manager is not None
+
+        feature_flags["FeatureFlags"][0]["conditions"] = {}
+        feature_flags["FeatureFlags"][0]["conditions"]["client_filters"] = []
+
+        feature_manager = FeatureManager(feature_flags)
+        assert feature_manager is not None
+
+        feature_flags["FeatureFlags"][0]["conditions"]["client_filters"].append({})
+
+        with pytest.raises(ValueError, match="Feature flag filter name field is required"):
+            FeatureManager(feature_flags)

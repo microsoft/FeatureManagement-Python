@@ -9,11 +9,16 @@ from ._defaultfilters import TimeWindowFilter, TargetingFilter
 
 
 class FeatureManager:
+    """
+    Feature Manager that determines if a feature flag is enabled for the given context
+    """
+
     def __init__(self, feature_flags, **kwargs):
         feature_flags = feature_flags.get(FEATURE_MANAGEMENT_KEY, feature_flags)
         feature_flags_lst = feature_flags.get("FeatureFlags", feature_flags)
         self._feature_flags = {}
         for feature_flag in feature_flags_lst:
+            self._validate_feature_flag(feature_flag)
             self._feature_flags[feature_flag["id"]] = feature_flag
 
         feature_filters = {}
@@ -22,7 +27,27 @@ class FeatureManager:
         feature_filters.update(kwargs.pop("feature_filters", {}))
         self._filters = feature_filters
 
+    @staticmethod
+    def _validate_feature_flag(feature_flag):
+        if feature_flag.get("id", None) is None:
+            raise ValueError("Feature flag id field is required")
+        if feature_flag.get("enabled", None) is None:
+            raise ValueError("Feature flag enabled field is required")
+        if feature_flag.get("conditions", None) is not None:
+            if feature_flag["conditions"].get("client_filters", None) is not None:
+                for feature_filter in feature_flag["conditions"]["client_filters"]:
+                    if feature_filter.get("name", None) is None:
+                        raise ValueError("Feature flag filter name field is required")
+
     def is_enabled(self, feature_flag_name, **kwargs):
+        """
+        Determine if the feature flag is enabled for the given context
+
+        :param str feature_flag_name: Name of the feature flag
+        :paramtype feature_flag_name: str
+        :return: True if the feature flag is enabled for the given context
+        :rtype: bool
+        """
         feature_flag = self._feature_flags.get(feature_flag_name, None)
 
         if not feature_flag:
@@ -38,20 +63,21 @@ class FeatureManager:
             # Feature flags without any filters return evaluate
             return True
 
-        if feature_flag.get("requirement_type", "Any") == "All":
-            for feature_filter in feature_flag["conditions"]["client_filters"]:
-                if feature_filter["name"] in self._filters:
+        for feature_filter in feature_flag["conditions"]["client_filters"]:
+            if feature_filter["name"] in self._filters:
+                if feature_flag.get("requirement_type", "Any") == "All":
                     if not self._filters[feature_filter["name"]].evaluate(feature_filter["parameters"], **kwargs):
                         return False
-            return True
-        else:
-            for feature_filter in feature_flag["conditions"]["client_filters"]:
-                if feature_filter["name"] in self._filters:
+                else:
                     if self._filters[feature_filter["name"]].evaluate(feature_filter, **kwargs):
                         return True
-            return False
+        # If this is reached, and true, default return value is true, else false
+        return feature_flag.get("requirement_type", "Any") == "All"
 
     def list_feature_flag_names(self):
+        """
+        List of all feature flag names
+        """
         return self._feature_flags.keys()
 
 
