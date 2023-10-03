@@ -9,7 +9,7 @@ Feature Management is a library for enabling/disabling features at runtime. Deve
 Install the Azure Feature Management client library for Python with [pip][pip]:
 
 ```bash
-pip install feature-management
+pip install microsoft-feature-management
 ```
 
 ### Prerequisites
@@ -23,6 +23,7 @@ You can use feature flags from the Azure App Configuration service, a json file,
 #### Use feature flags from Azure App Configuration
 
 ```python
+from microsoft.feature.management import FeatureManager
 from azure.appconfiguration.provider import load
 from azure.identity import DefaultAzureCredential
 import os
@@ -44,7 +45,7 @@ NOTE: If no setting selector is set then feature flags with no label are loaded.
 ### Use feature flags from a json file
 
 ```python
-from feature.management import FeatureManager
+from microsoft.feature.management import FeatureManager
 import json
 import os
 import sys
@@ -64,7 +65,7 @@ print("Alpha is ", feature_manager.is_enabled("Alpha"))
 ### Use feature flags from a dictionary
 
 ```python
-from feature.management import FeatureManager
+from microsoft.feature.management import FeatureManager
 
 feature_flags = {
     "FeatureFlags": [
