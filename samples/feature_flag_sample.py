@@ -1,5 +1,5 @@
 from microsoft.feature.management import FeatureManager
-from randomfilter import RandomFilter
+from random_filter import RandomFilter
 import json
 import os
 import sys
