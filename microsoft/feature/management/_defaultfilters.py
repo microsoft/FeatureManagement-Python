@@ -55,7 +55,7 @@ class TargetingFilter(FeatureFilter):
     @staticmethod
     def _is_targeted(context_id, rollout_percentage):
         """Determine if the user is targeted for the given context"""
-        # Alway return true if rollout percentage is 100
+        # Always return true if rollout percentage is 100
         if rollout_percentage == 100:
             return True
 
