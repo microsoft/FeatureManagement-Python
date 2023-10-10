@@ -129,7 +129,7 @@ class TargetingFilter(FeatureFilter):
         # Check if the user is in a targeted group
         for group in groups:
             for target_group in target_groups:
-                group_name = group.get(FEATURE_FLAG_NAME_KEY, "")
+                group_name = group.get("Name", "")
                 if kwargs.get(IGNORE_CASE_KEY, False):
                     target_group = target_group.lower()
                     group_name = group_name.lower()

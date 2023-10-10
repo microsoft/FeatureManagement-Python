@@ -45,7 +45,7 @@ class TestDefaultFeatureFlags:
         assert not feature_manager.is_enabled("Target", user="Brian", groups=["Stage2"])
 
     # method: feature_manager_creation
-    def test_feature_manager_creation_with_timewindow(self):
+    def test_feature_manager_creation_with_time_window(self):
         feature_flags = {
             "FeatureFlags": [
                 {
