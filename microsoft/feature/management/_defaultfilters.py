@@ -10,6 +10,19 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
 from ._featurefilters import FeatureFilter
+from ._constants import (
+    START_KEY,
+    END_KEY,
+    ROLLOUT_PERCENTAGE_KEY,
+    DEFAULT_ROLLOUT_PERCENTAGE_KEY,
+    PARAMETERS_KEY,
+    AUDIENCE_KEY,
+    USERS_KEY,
+    GROUPS_KEY,
+    EXCLUSION_KEY,
+    FEATURE_FLAG_NAME_KEY,
+    IGNORE_CASE_KEY,
+)
 
 
 class TargetingException(Exception):
@@ -32,8 +45,8 @@ class TimeWindowFilter(FeatureFilter):
         :return: True if the current time is within the time window
         :rtype: bool
         """
-        start = context.get("parameters", {}).get("Start")
-        end = context.get("parameters", {}).get("End")
+        start = context.get(PARAMETERS_KEY, {}).get(START_KEY)
+        end = context.get(PARAMETERS_KEY, {}).get(END_KEY)
 
         current_time = datetime.now(timezone.utc)
 
@@ -66,9 +79,9 @@ class TargetingFilter(FeatureFilter):
         return percentage < rollout_percentage
 
     def _target_group(self, target_user, target_group, group, feature_flag_name):
-        group_rollout_percentage = group.get("RolloutPercentage", 0)
+        group_rollout_percentage = group.get(ROLLOUT_PERCENTAGE_KEY, 0)
         audience_context_id = (
-            target_user + "\n" + target_group + "\n" + feature_flag_name + "\n" + group.get("Name", "")
+            target_user + "\n" + target_group + "\n" + feature_flag_name + "\n" + group.get(FEATURE_FLAG_NAME_KEY, "")
         )
 
         return self._is_targeted(audience_context_id, group_rollout_percentage)
@@ -89,35 +102,35 @@ class TargetingFilter(FeatureFilter):
             logging.warning("%s: Name or Groups are required parameters", TargetingFilter.__name__)
             return False
 
-        audience = context.get("parameters", {}).get("Audience", None)
+        audience = context.get(PARAMETERS_KEY, {}).get(AUDIENCE_KEY, None)
         feature_flag_name = context.get("name", None)
 
         if not audience:
             raise TargetingException("Audience is required for " + TargetingFilter.__name__)
 
-        groups = audience.get("Groups", [])
-        default_rollout_percentage = audience.get("DefaultRolloutPercentage", 0)
+        groups = audience.get(GROUPS_KEY, [])
+        default_rollout_percentage = audience.get(DEFAULT_ROLLOUT_PERCENTAGE_KEY, 0)
 
         self._validate(groups, default_rollout_percentage)
 
         # Check if the user is excluded
-        if target_user in context.get("Exclusion", {}).get("Users", []):
+        if target_user in audience.get(EXCLUSION_KEY, {}).get(USERS_KEY, []):
             return False
 
         # Check if the user is in an excluded group
-        for group in context.get("Exclusion", {}).get("Groups", []):
-            if group.get("Name") in target_groups:
+        for group in audience.get(EXCLUSION_KEY, {}).get(GROUPS_KEY, []):
+            if group.get(FEATURE_FLAG_NAME_KEY) in target_groups:
                 return False
 
         # Check if the user is targeted
-        if target_user in audience.get("Users", []):
+        if target_user in audience.get(USERS_KEY, []):
             return True
 
         # Check if the user is in a targeted group
         for group in groups:
             for target_group in target_groups:
-                group_name = group.get("Name", "")
-                if kwargs.get("ignore_case", False):
+                group_name = group.get(FEATURE_FLAG_NAME_KEY, "")
+                if kwargs.get(IGNORE_CASE_KEY, False):
                     target_group = target_group.lower()
                     group_name = group_name.lower()
                 if group_name == target_group:
@@ -135,5 +148,5 @@ class TargetingFilter(FeatureFilter):
             raise TargetingException("DefaultRolloutPercentage must be between 0 and 100")
 
         for group in groups:
-            if group.get("RolloutPercentage") < 0 or group.get("RolloutPercentage") > 100:
+            if group.get(ROLLOUT_PERCENTAGE_KEY) < 0 or group.get(ROLLOUT_PERCENTAGE_KEY) > 100:
                 raise TargetingException("RolloutPercentage must be between 0 and 100")
