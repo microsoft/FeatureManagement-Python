@@ -6,7 +6,7 @@ Feature Management is a library for enabling/disabling features at runtime. Deve
 
 ### Install the package
 
-Install the Azure Feature Management client library for Python with [pip][pip]:
+Install the Python feature management client library for Python with [pip][pip]:
 
 ```bash
 pip install microsoft-feature-management
@@ -16,7 +16,7 @@ pip install microsoft-feature-management
 
 * Python 3.7 or later is required to use this package.
 
-## Examples
+## Usage
 
 You can use feature flags from the Azure App Configuration service, a json file, or a dictionary.
 
@@ -30,19 +30,45 @@ import os
 
 endpoint = os.environ.get("APPCONFIGURATION_ENDPOINT_STRING")
 
+# If no setting selector is set then feature flags with no label are loaded.
 selects = {SettingSelector(key_filter=".appconfig.featureflag*")}
 
 config = load(endpoint=endpoint, credential=DefaultAzureCredential(), selects=selects)
 
 feature_manager = FeatureManager(config)
 
-# Is always true
+# Prints the value of the feature flag Alpha
 print("Alpha is ", feature_manager.is_enabled("Alpha"))
 ```
 
-NOTE: If no setting selector is set then feature flags with no label are loaded.
-
 ### Use feature flags from a json file
+
+A Json file with the following format can be used to load feature flags.
+
+```json
+{
+     "FeatureManagement": {
+         "FeatureFlags": [
+            {
+                 "id": "FeatureFlagName",
+                 "enabled": "true",
+                 "conditions": {
+                     "client_filters": [
+                         {
+                             "name": "FeatureFilterName",
+                             "parameters": {
+                                 ...
+                             }
+                         }
+                     ]
+                 }
+             }
+         ]
+     }
+ }
+```
+
+Load feature flags from a json file.
 
 ```python
 from microsoft.feature.management import FeatureManager
@@ -58,7 +84,7 @@ feature_flags = json.load(f)
 
 feature_manager = FeatureManager(feature_flags)
 
-# Is always true
+# Returns the value of Alpha, based on the result of the feature filter
 print("Alpha is ", feature_manager.is_enabled("Alpha"))
 ```
 
@@ -88,6 +114,8 @@ The `FeatureManager` is the main entry point for using feature flags. It is init
 ### Feature Flags
 
 Feature Flags are objects that define how Feature Management enables/disables a feature. It contains an `id` and `enabled` property. The `id` is a string that uniquely identifies the feature flag. The `enabled` property is a boolean that indicates if the feature flag is enabled or disabled. The `conditions` object contains a property `client_filters` which is a list of `FeatureFilter` objects that are used to determine if the feature flag is enabled or disabled.
+
+The full schema for a feature Flag can be found [here](https://github.com/Azure/AppConfiguration/blob/main/docs/FeatureManagement/FeatureFlag.v1.1.0.schema.json).
 
 ```json
 {
