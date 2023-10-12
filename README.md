@@ -1,8 +1,12 @@
-# Feature Management client library for Python
+# Microsoft Feature Management for Python
 
 Feature Management is a library for enabling/disabling features at runtime. Developers can use feature flags in simple use cases like conditional statement to more advanced scenarios like conditionally adding routes.
 
 ## Getting started
+
+### Prerequisites
+
+* Python 3.7 or later is required to use this package.
 
 ### Install the package
 
@@ -12,15 +16,11 @@ Install the Python feature management client library for Python with [pip][pip]:
 pip install microsoft-feature-management
 ```
 
-### Prerequisites
-
-* Python 3.7 or later is required to use this package.
-
 ## Usage
 
 You can use feature flags from the Azure App Configuration service, a json file, or a dictionary.
 
-#### Use feature flags from Azure App Configuration
+### Use feature flags from Azure App Configuration
 
 ```python
 from microsoft.feature.management import FeatureManager
@@ -52,16 +52,6 @@ A Json file with the following format can be used to load feature flags.
             {
                  "id": "FeatureFlagName",
                  "enabled": "true",
-                 "conditions": {
-                     "client_filters": [
-                         {
-                             "name": "FeatureFilterName",
-                             "parameters": {
-                                 ...
-                             }
-                         }
-                     ]
-                 }
              }
          ]
      }
