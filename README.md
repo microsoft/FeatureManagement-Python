@@ -128,7 +128,7 @@ This object is passed into the `FeatureManager` when it is initialized.
 
 ### Feature Filters
 
-A `FeatureFilter` is a class that can be used to enable/disable feature flags. Two built-in feature filters are provided:
+Feature filters enable dynamic evaluation of feature flags. The Python feature management library includes two built-in filters:
 
 - `Microsoft.TimeWindowFilter` - Enables a feature flag based on a time window.
 - `Microsoft.TargetingFilter` - Enables a feature flag based on a list of users, groups, or rollout percentages.
@@ -173,8 +173,12 @@ The Targeting Filter provides the capability to enable a feature for a target au
 
 - `Users` - A list of users that the feature flag is enabled for.
 - `Groups` - A list of groups that the feature flag is enabled for and a rollout percentage for each group.
+  - `Name` - The name of the group.
+  - `RolloutPercentage` - A percentage value that the feature flag is enabled for in the given group.
 - `DefaultRolloutPercentage` - A percentage value that the feature flag is enabled for.
 - `Exclusion` - An object that contains a list of users and groups that the feature flag is disabled for.
+  - `Users` - A list of users that the feature flag is disabled for.
+  - `Groups` - A list of groups that the feature flag is disabled for.
 
 ```json
 {
@@ -198,8 +202,6 @@ The Targeting Filter provides the capability to enable a feature for a target au
 }
 ```
 
-The `Users` field is a list of strings that represent the users that the feature flag is enabled for. The `Groups` field is a list of objects that represent the groups that the feature flag is enabled for. The `Name` field is a string that represents the name of the group. The `RolloutPercentage` field is a number between 0 and 100 that represents the percentage of users in the group that the feature flag is enabled for. The `DefaultRolloutPercentage` field is a number between 0 and 100 that represents the percentage of users that the feature flag is enabled for if they are not in any of the groups. The `Exclusions` field is an object that contains a list of users and groups that the feature flag is disabled for. The `Users` field is a list of strings that represent the users that the feature flag is disabled for. The `Groups` field is a list of strings that represent the groups that the feature flag is disabled for.
-
 #### Custom Filters
 
 You can also create your own feature filters by implementing the `FeatureFilter` interface.
@@ -209,6 +211,13 @@ class CustomFilter(FeatureFilter):
     def evaluate(self, context, **kwargs):
         ...
         return True
+```
+
+They can then be passed into the `FeatureManager` when it is initialized.
+
+```python
+
+feature_manager = FeatureManager(feature_flags, feature_filters={"CustomFilter":CustomFilter()})
 ```
 
 The `evaluate` method is called when checking if a feature flag is enabled. The `context` parameter contains information about the feature filter from the `parameters` field of the feature filter. Any additional parameters can be passed in as keyword arguments when calling `is_enabled`.
@@ -225,10 +234,6 @@ You can then pass your custom filter into the `FeatureManager` when it is initia
 ```
 
 `parameters` takes any additional parameters that are needed for the feature filter as a dictionary. These parameters are passed into the `evaluate` method.
-
-## Troubleshooting
-
-## Next steps
 
 ## Contributing
 
