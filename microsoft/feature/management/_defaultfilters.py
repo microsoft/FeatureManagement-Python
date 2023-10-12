@@ -10,19 +10,23 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
 from ._featurefilters import FeatureFilter
-from ._constants import (
-    START_KEY,
-    END_KEY,
-    ROLLOUT_PERCENTAGE_KEY,
-    DEFAULT_ROLLOUT_PERCENTAGE_KEY,
-    PARAMETERS_KEY,
-    AUDIENCE_KEY,
-    USERS_KEY,
-    GROUPS_KEY,
-    EXCLUSION_KEY,
-    FEATURE_FLAG_NAME_KEY,
-    IGNORE_CASE_KEY,
-)
+
+ROLLOUT_PERCENTAGE_KEY = "RolloutPercentage"
+DEFAULT_ROLLOUT_PERCENTAGE_KEY = "DefaultRolloutPercentage"
+PARAMETERS_KEY = "parameters"
+
+# Time Window Constants
+START_KEY = "Start"
+END_KEY = "End"
+
+# Targeting Constants
+AUDIENCE_KEY = "Audience"
+USERS_KEY = "Users"
+GROUPS_KEY = "Groups"
+EXCLUSION_KEY = "Exclusion"
+FEATURE_FLAG_NAME_KEY = "Name"
+IGNORE_CASE_KEY = "ignore_case"
+
 
 
 class TargetingException(Exception):
