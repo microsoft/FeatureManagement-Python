@@ -24,7 +24,6 @@ print("Delta is ", feature_manager.is_enabled("Delta"))
 print("Sigma is ", feature_manager.is_enabled("Sigma"))
 # Is true Before 06-28-2023
 print("Epsilon is ", feature_manager.is_enabled("Epsilon"))
-print("Zeta is ", feature_manager.is_enabled("Zeta"))
 # Target is true for Adam, group Stage 1, and 50% of users
 print("Target is ", feature_manager.is_enabled("Target", user="Adam"))
 print("Target is ", feature_manager.is_enabled("Target", user="Brian"))

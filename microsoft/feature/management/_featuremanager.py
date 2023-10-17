@@ -7,6 +7,8 @@
 from ._constants import FEATURE_MANAGEMENT_KEY
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 
+FEATURE_FLAGS_SECTION = "FeatureFlags"
+
 TIME_WINDOW_FILTER_NAME = "Microsoft.TimeWindowFilter"
 TARGETING_FILTER_NAME = "Microsoft.Targeting"
 
@@ -30,9 +32,9 @@ class FeatureManager:
 
     def __init__(self, feature_flags, **kwargs):
         feature_flags = feature_flags.get(FEATURE_MANAGEMENT_KEY, feature_flags)
-        feature_flags_lst = feature_flags.get("FeatureFlags", feature_flags)
+        feature_flags_list = feature_flags.get(FEATURE_FLAGS_SECTION, feature_flags)
         self._feature_flags = {}
-        for feature_flag in feature_flags_lst:
+        for feature_flag in feature_flags_list:
             self._validate_feature_flag(feature_flag)
             self._feature_flags[feature_flag[FEATURE_FLAG_ID]] = feature_flag
 
