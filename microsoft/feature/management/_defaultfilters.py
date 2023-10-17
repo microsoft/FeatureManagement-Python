@@ -11,6 +11,7 @@ from email.utils import parsedate_to_datetime
 
 from ._featurefilters import FeatureFilter
 
+FEATURE_FLAG_NAME_KEY = "name"
 ROLLOUT_PERCENTAGE_KEY = "RolloutPercentage"
 DEFAULT_ROLLOUT_PERCENTAGE_KEY = "DefaultRolloutPercentage"
 PARAMETERS_KEY = "parameters"
@@ -22,11 +23,12 @@ END_KEY = "End"
 # Targeting Constants
 AUDIENCE_KEY = "Audience"
 USERS_KEY = "Users"
+TARGETED_USER_KEY = "user"
 GROUPS_KEY = "Groups"
+TARGETED_GROUPS_KEY = "groups"
 EXCLUSION_KEY = "Exclusion"
-FEATURE_FLAG_NAME_KEY = "Name"
+FEATURE_FILTER_NAME_KEY = "Name"
 IGNORE_CASE_KEY = "ignore_case"
-
 
 
 class TargetingException(Exception):
@@ -85,7 +87,7 @@ class TargetingFilter(FeatureFilter):
     def _target_group(self, target_user, target_group, group, feature_flag_name):
         group_rollout_percentage = group.get(ROLLOUT_PERCENTAGE_KEY, 0)
         audience_context_id = (
-            target_user + "\n" + target_group + "\n" + feature_flag_name + "\n" + group.get(FEATURE_FLAG_NAME_KEY, "")
+            target_user + "\n" + target_group + "\n" + feature_flag_name + "\n" + group.get(FEATURE_FILTER_NAME_KEY, "")
         )
 
         return self._is_targeted(audience_context_id, group_rollout_percentage)
@@ -99,15 +101,15 @@ class TargetingFilter(FeatureFilter):
         :return: True if the user is targeted for the feature flag
         :rtype: bool
         """
-        target_user = kwargs.pop("user", None)
-        target_groups = kwargs.pop("groups", [])
+        target_user = kwargs.pop(TARGETED_USER_KEY, None)
+        target_groups = kwargs.pop(TARGETED_GROUPS_KEY, [])
 
         if not target_user and not (target_groups and len(target_groups) > 0):
             logging.warning("%s: Name or Groups are required parameters", TargetingFilter.__name__)
             return False
 
         audience = context.get(PARAMETERS_KEY, {}).get(AUDIENCE_KEY, None)
-        feature_flag_name = context.get("name", None)
+        feature_flag_name = context.get(FEATURE_FLAG_NAME_KEY, None)
 
         if not audience:
             raise TargetingException("Audience is required for " + TargetingFilter.__name__)
@@ -123,7 +125,7 @@ class TargetingFilter(FeatureFilter):
 
         # Check if the user is in an excluded group
         for group in audience.get(EXCLUSION_KEY, {}).get(GROUPS_KEY, []):
-            if group.get(FEATURE_FLAG_NAME_KEY) in target_groups:
+            if group.get(FEATURE_FILTER_NAME_KEY) in target_groups:
                 return False
 
         # Check if the user is targeted
@@ -133,7 +135,7 @@ class TargetingFilter(FeatureFilter):
         # Check if the user is in a targeted group
         for group in groups:
             for target_group in target_groups:
-                group_name = group.get(FEATURE_FLAG_NAME_KEY, "")
+                group_name = group.get(FEATURE_FILTER_NAME_KEY, "")
                 if kwargs.get(IGNORE_CASE_KEY, False):
                     target_group = target_group.lower()
                     group_name = group_name.lower()
