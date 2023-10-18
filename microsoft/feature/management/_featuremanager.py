@@ -4,9 +4,9 @@
 # license information.
 # -------------------------------------------------------------------------
 
-from ._constants import FEATURE_MANAGEMENT_KEY
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 
+FEATURE_MANAGEMENT_KEY = "FeatureManagement"
 FEATURE_FLAGS_SECTION = "FeatureFlags"
 
 TIME_WINDOW_FILTER_NAME = "Microsoft.TimeWindowFilter"

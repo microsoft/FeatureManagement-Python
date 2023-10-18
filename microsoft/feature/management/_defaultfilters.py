@@ -20,12 +20,14 @@ PARAMETERS_KEY = "parameters"
 START_KEY = "Start"
 END_KEY = "End"
 
+# Targeting kwargs
+TARGETED_USER_KEY = "user"
+TARGETED_GROUPS_KEY = "groups"
+
 # Targeting Constants
 AUDIENCE_KEY = "Audience"
 USERS_KEY = "Users"
-TARGETED_USER_KEY = "user"
 GROUPS_KEY = "Groups"
-TARGETED_GROUPS_KEY = "groups"
 EXCLUSION_KEY = "Exclusion"
 FEATURE_FILTER_NAME_KEY = "Name"
 IGNORE_CASE_KEY = "ignore_case"
