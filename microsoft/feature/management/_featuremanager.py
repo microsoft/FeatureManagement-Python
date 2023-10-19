@@ -5,9 +5,9 @@
 # -------------------------------------------------------------------------
 
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
+import logging
 
 FEATURE_MANAGEMENT_KEY = "FeatureManagement"
-FEATURE_FLAGS_SECTION = "FeatureFlags"
 
 TIME_WINDOW_FILTER_NAME = "Microsoft.TimeWindowFilter"
 TARGETING_FILTER_NAME = "Microsoft.Targeting"
@@ -31,30 +31,26 @@ class FeatureManager:
     """
 
     def __init__(self, feature_flags, **kwargs):
-        feature_flags = feature_flags.get(FEATURE_MANAGEMENT_KEY, feature_flags)
-        feature_flags_list = feature_flags.get(FEATURE_FLAGS_SECTION, feature_flags)
         self._feature_flags = {}
-        for feature_flag in feature_flags_list:
+        for feature_flag in feature_flags.get(FEATURE_MANAGEMENT_KEY, feature_flags):
             self._validate_feature_flag(feature_flag)
             self._feature_flags[feature_flag[FEATURE_FLAG_ID]] = feature_flag
 
-        feature_filters = {}
-        feature_filters[TIME_WINDOW_FILTER_NAME] = TimeWindowFilter()
-        feature_filters[TARGETING_FILTER_NAME] = TargetingFilter()
-        feature_filters.update(kwargs.pop(PROVIDED_FEATURE_FILTERS, {}))
-        self._filters = feature_filters
+        self._filters = {TIME_WINDOW_FILTER_NAME: TimeWindowFilter(), TARGETING_FILTER_NAME: TargetingFilter()}
+        self._filters.update(kwargs.pop(PROVIDED_FEATURE_FILTERS, {}))
 
     @staticmethod
     def _validate_feature_flag(feature_flag):
-        if feature_flag.get(FEATURE_FLAG_ID, None) is None:
-            raise ValueError("Feature flag id field is required")
+        name = feature_flag.get(FEATURE_FLAG_ID, None)
+        if name is None:
+            raise ValueError("Feature flag id field is required.")
         if feature_flag.get(FEATURE_FLAG_ENABLED, None) is None:
-            raise ValueError("Feature flag enabled field is required")
+            raise ValueError("Feature flag {} is missing enabled field.".format(name))
         if feature_flag.get(FEATURE_FLAG_CONDITIONS, None) is not None:
             if feature_flag[FEATURE_FLAG_CONDITIONS].get(FEATURE_FLAG_CLIENT_FILTERS, None) is not None:
                 for feature_filter in feature_flag[FEATURE_FLAG_CONDITIONS][FEATURE_FLAG_CLIENT_FILTERS]:
                     if feature_filter.get(FEATURE_FILTER_NAME, None) is None:
-                        raise ValueError("Feature flag filter name field is required")
+                        raise ValueError("Feature flag {} is missing filter name.".format(name))
 
     def is_enabled(self, feature_flag_name, **kwargs):
         """
@@ -68,7 +64,7 @@ class FeatureManager:
         feature_flag = self._feature_flags.get(feature_flag_name, None)
 
         if not feature_flag:
-            print("Feature flag not found")
+            logging.warning("Feature flag {} not found".format(feature_flag_name))
             # Unknown feature flags are disabled by default
             return False
 
@@ -76,21 +72,18 @@ class FeatureManager:
             # Feature flags that are disabled are always disabled
             return False
 
-        if (
-            len(
-                feature_flag.get(FEATURE_FLAG_CONDITIONS, {FEATURE_FLAG_CLIENT_FILTERS: []})[
-                    FEATURE_FLAG_CLIENT_FILTERS
-                ]
-            )
-            == 0
-        ):
+        feature_filters = feature_flag.get(FEATURE_FLAG_CONDITIONS, {FEATURE_FLAG_CLIENT_FILTERS: []})[
+            FEATURE_FLAG_CLIENT_FILTERS
+        ]
+
+        if len(feature_filters) == 0:
             # Feature flags without any filters return evaluate
             return True
 
-        for feature_filter in feature_flag[FEATURE_FLAG_CONDITIONS][FEATURE_FLAG_CLIENT_FILTERS]:
+        for feature_filter in feature_filters:
             filter_name = feature_filter[FEATURE_FILTER_NAME]
             if filter_name in self._filters:
-                if feature_flag.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY) == REQUIREMENT_TYPE_ALL:
+                if feature_flag.get(FEATURE_FILTER_REQUIREMENT_TYPE) == REQUIREMENT_TYPE_ALL:
                     if not self._filters[filter_name].evaluate(feature_filter[FEATURE_FILTER_PARAMETERS], **kwargs):
                         return False
                 else:
