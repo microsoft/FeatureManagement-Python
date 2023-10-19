@@ -4,7 +4,7 @@
 # license information.
 # --------------------------------------------------------------------------
 import pytest
-from microsoft.feature.management import FeatureManager
+from microsoft.featuremanagement import FeatureManager
 
 
 class TestDefaultFeatureFlags:

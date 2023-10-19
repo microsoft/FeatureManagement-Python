@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from microsoft.feature.management import FeatureFilter
+from microsoft.featuremanagement import FeatureFilter
 
 import random
 

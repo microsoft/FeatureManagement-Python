@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from microsoft.feature.management import FeatureManager, FeatureFilter
+from microsoft.featuremanagement import FeatureManager, FeatureFilter
 
 
 class TestFeatureManagemer:
