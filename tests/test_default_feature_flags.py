@@ -4,14 +4,14 @@
 # license information.
 # --------------------------------------------------------------------------
 import pytest
-from microsoft.feature.management import FeatureManager
+from microsoft.featuremanagement import FeatureManager
 
 
 class TestDefaultFeatureFlags:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_targeting(self):
         feature_flags = {
-            "FeatureFlags": [
+            "FeatureManagement": [
                 {
                     "id": "Target",
                     "enabled": "true",
@@ -47,7 +47,7 @@ class TestDefaultFeatureFlags:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_time_window(self):
         feature_flags = {
-            "FeatureFlags": [
+            "FeatureManagement": [
                 {
                     "id": "Alpha",
                     "enabled": "true",
@@ -147,30 +147,30 @@ class TestDefaultFeatureFlags:
 
     def test_feature_manager_invalid_feature_flag(self):
         feature_flags = {
-            "FeatureFlags": [
+            "FeatureManagement": [
                 {},
             ]
         }
         with pytest.raises(ValueError, match="Feature flag id field is required"):
             FeatureManager(feature_flags)
 
-        feature_flags["FeatureFlags"][0]["id"] = "featureFlagId"
+        feature_flags["FeatureManagement"][0]["id"] = "featureFlagId"
 
-        with pytest.raises(ValueError, match="Feature flag enabled field is required"):
+        with pytest.raises(ValueError, match="Feature flag featureFlagId is missing enabled field."):
             FeatureManager(feature_flags)
 
-        feature_flags["FeatureFlags"][0]["enabled"] = "true"
+        feature_flags["FeatureManagement"][0]["enabled"] = "true"
 
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
-        feature_flags["FeatureFlags"][0]["conditions"] = {}
-        feature_flags["FeatureFlags"][0]["conditions"]["client_filters"] = []
+        feature_flags["FeatureManagement"][0]["conditions"] = {}
+        feature_flags["FeatureManagement"][0]["conditions"]["client_filters"] = []
 
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
-        feature_flags["FeatureFlags"][0]["conditions"]["client_filters"].append({})
+        feature_flags["FeatureManagement"][0]["conditions"]["client_filters"].append({})
 
-        with pytest.raises(ValueError, match="Feature flag filter name field is required"):
+        with pytest.raises(ValueError, match="Feature flag featureFlagId is missing filter name."):
             FeatureManager(feature_flags)

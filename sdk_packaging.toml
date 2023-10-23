@@ -1,5 +1,5 @@
 [packaging]
-package_name = "microsoft-feature-management"
+package_name = "microsoft-featuremanagement"
 package_nspkg = "azure-data-nspkg"
 package_pprint_name = "Microsoft Feature Management"
 package_doc_id = ""

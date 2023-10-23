@@ -1,4 +1,4 @@
-from microsoft.feature.management import FeatureManager
+from microsoft.featuremanagement import FeatureManager
 from random_filter import RandomFilter
 import json
 import os

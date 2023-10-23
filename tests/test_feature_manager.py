@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from microsoft.feature.management import FeatureManager, FeatureFilter
+from microsoft.featuremanagement import FeatureManager, FeatureFilter
 
 
 class TestFeatureManagemer:
@@ -16,7 +16,7 @@ class TestFeatureManagemer:
     # method: feature_manager_creation
     def test_basic_feature_manager_creation(self):
         feature_flags = {
-            "FeatureFlags": [
+            "FeatureManagement": [
                 {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": []}},
                 {"id": "Beta", "description": "", "enabled": "false", "conditions": {"client_filters": []}},
             ]
@@ -30,7 +30,7 @@ class TestFeatureManagemer:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_filters(self):
         feature_flags = {
-            "FeatureFlags": [
+            "FeatureManagement": [
                 {
                     "id": "Alpha",
                     "description": "",
