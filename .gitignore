@@ -396,3 +396,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+env/
+build/
+.DS_Store
+*.egg-info/
+.vscode/**

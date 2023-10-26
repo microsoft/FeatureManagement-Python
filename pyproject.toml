@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+
+[tool.black]
+line-length = 120
+
+[tool.pylint]
+max-line-length = 120
+min-public-methods = 1
+disable = ["missing-module-docstring"]
