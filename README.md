@@ -49,7 +49,7 @@ A Json file with the following format can be used to load feature flags.
 {
     "FeatureManagement": [
         {
-            "id": "FeatureFlagName",
+            "id": "Alpha",
             "enabled": "true",
         }
     ]
@@ -200,6 +200,21 @@ The Targeting Filter provides the capability to enable a feature for a target au
 }
 ```
 
+#### Targeting Filter Example
+
+You can provide the current user info through `kwargs` when calling `isEnabled`.
+
+```python
+# Returns true, because user1 is in the Users list
+feature_manager.is_enabled("Beta", user="user1", groups=["group1"])
+
+# Returns false, because group2 is in the Exclusion.Groups list
+feature_manager.is_enabled("Beta", user="user1", groups=["group2"])
+
+# Has a 50% chance of returning true, but will be conisistent for the same user
+feature_manager.is_enabled("Beta", user="user4")
+```
+
 #### Custom Filters
 
 You can also create your own feature filters by implementing the `FeatureFilter` interface.
@@ -215,12 +230,10 @@ They can then be passed into the `FeatureManager` when it is initialized.
 
 ```python
 
-feature_manager = FeatureManager(feature_flags, feature_filters={"CustomFilter":CustomFilter()})
+feature_manager = FeatureManager(feature_flags, feature_filters={"MyCustomFilter":CustomFilter()})
 ```
 
 The `evaluate` method is called when checking if a feature flag is enabled. The `context` parameter contains information about the feature filter from the `parameters` field of the feature filter. Any additional parameters can be passed in as keyword arguments when calling `is_enabled`.
-
-You can then pass your custom filter into the `FeatureManager` when it is initialized.
 
 ```json
 {
@@ -230,8 +243,6 @@ You can then pass your custom filter into the `FeatureManager` when it is initia
     }
 }
 ```
-
-`parameters` takes any additional parameters that are needed for the feature filter as a dictionary. These parameters are passed into the `evaluate` method.
 
 ## Contributing
 
