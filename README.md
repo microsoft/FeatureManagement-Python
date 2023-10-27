@@ -50,7 +50,7 @@ A Json file with the following format can be used to load feature flags.
     "FeatureManagement": [
         {
             "id": "Alpha",
-            "enabled": "true",
+            "enabled": "true"
         }
     ]
  }
