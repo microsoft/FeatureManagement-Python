@@ -9,7 +9,7 @@ import random
 
 
 class RandomFilter(FeatureFilter):
-    alias = "Microsoft.Random"
+    alias = "Sample.Random"
 
     def evaluate(self, context, **kwargs):
         """Determine if the feature flag is enabled for the given context"""

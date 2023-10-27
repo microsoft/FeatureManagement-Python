@@ -23,7 +23,7 @@
             "conditions": {
                 "client_filters": [
                     {
-                        "name": "Microsoft.Random",
+                        "name": "Sample.Random",
                         "parameters": {
                             "Value": 50
                         }
