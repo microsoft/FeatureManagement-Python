@@ -31,7 +31,7 @@ class FeatureManager:
     def __init__(self, feature_flags, **kwargs):
         self._feature_flags = {}
         for feature_flag in feature_flags.get(FEATURE_MANAGEMENT_KEY, feature_flags):
-            self._validate_feature_flag(feature_flag)
+            _validate_feature_flag(feature_flag)
             self._feature_flags[feature_flag[FEATURE_FLAG_ID]] = feature_flag
 
         self._filters = {}
@@ -45,19 +45,6 @@ class FeatureManager:
                 self._filters[filter.alias] = filter
             else:
                 self._filters[filter.__class__.__name__] = filter
-
-    @staticmethod
-    def _validate_feature_flag(feature_flag):
-        name = feature_flag.get(FEATURE_FLAG_ID, None)
-        if name is None:
-            raise ValueError("Feature flag id field is required.")
-        if feature_flag.get(FEATURE_FLAG_ENABLED, None) is None:
-            raise ValueError("Feature flag {} is missing enabled field.".format(name))
-        if feature_flag.get(FEATURE_FLAG_CONDITIONS, None) is not None:
-            if feature_flag[FEATURE_FLAG_CONDITIONS].get(FEATURE_FLAG_CLIENT_FILTERS, None) is not None:
-                for feature_filter in feature_flag[FEATURE_FLAG_CONDITIONS][FEATURE_FLAG_CLIENT_FILTERS]:
-                    if feature_filter.get(FEATURE_FILTER_NAME, None) is None:
-                        raise ValueError("Feature flag {} is missing filter name.".format(name))
 
     def is_enabled(self, feature_flag_name, **kwargs):
         """
@@ -105,6 +92,17 @@ class FeatureManager:
         """
         return self._feature_flags.keys()
 
+def _validate_feature_flag(feature_flag):
+    name = feature_flag.get(FEATURE_FLAG_ID, None)
+    if name is None:
+        raise ValueError("Feature flag id field is required.")
+    if feature_flag.get(FEATURE_FLAG_ENABLED, None) is None:
+        raise ValueError("Feature flag {} is missing enabled field.".format(name))
+    if feature_flag.get(FEATURE_FLAG_CONDITIONS, None) is not None:
+        if feature_flag[FEATURE_FLAG_CONDITIONS].get(FEATURE_FLAG_CLIENT_FILTERS, None) is not None:
+            for feature_filter in feature_flag[FEATURE_FLAG_CONDITIONS][FEATURE_FLAG_CLIENT_FILTERS]:
+                if feature_filter.get(FEATURE_FILTER_NAME, None) is None:
+                    raise ValueError("Feature flag {} is missing filter name.".format(name))
 
 def _check_is_true(enabled):
     if enabled.lower() == "true":
