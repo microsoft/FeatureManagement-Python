@@ -101,7 +101,7 @@ The `FeatureManager` is the main entry point for using feature flags. It is init
 
 ### Feature Flags
 
-Feature Flags are objects that define how Feature Management enables/disables a feature. It contains an `id` and `enabled` property. The `id` is a string that uniquely identifies the feature flag. The `enabled` property is a boolean that indicates if the feature flag is enabled or disabled. The `conditions` object contains a property `client_filters` which is a list of `FeatureFilter` objects that are used to determine if the feature flag is enabled or disabled.
+Feature Flags are objects that define how Feature Management enables/disables a feature. It contains an `id` and `enabled` property. The `id` is a string that uniquely identifies the feature flag. The `enabled` property is a boolean that indicates if the feature flag is enabled or disabled. The `conditions` object contains a property `client_filters` which is a list of `FeatureFilter` objects that are used to determine if the feature flag is enabled or disabled. The Feature Filters only run if the feature flag is enabled.
 
 The full schema for a feature Flag can be found [here](https://github.com/Azure/AppConfiguration/blob/main/docs/FeatureManagement/FeatureFlag.v1.1.0.schema.json).
 
@@ -115,10 +115,10 @@ The full schema for a feature Flag can be found [here](https://github.com/Azure/
                 "name": "MyFilter",
                 "parameters": {
                     ...
-                },
+                }
             }
         ]
-    },
+    }
 }
 ```
 
@@ -200,7 +200,7 @@ The Targeting Filter provides the capability to enable a feature for a target au
 }
 ```
 
-#### Targeting Filter Example
+#### Using Targeting Feature Filter
 
 You can provide the current user info through `kwargs` when calling `isEnabled`.
 
@@ -230,7 +230,7 @@ They can then be passed into the `FeatureManager` when it is initialized.
 
 ```python
 
-feature_manager = FeatureManager(feature_flags, feature_filters={"MyCustomFilter":CustomFilter()})
+feature_manager = FeatureManager(feature_flags, feature_filters={"MyCustomFilter":CustomFilter(), "MyOtherFilter":MyOtherFilter()})
 ```
 
 The `evaluate` method is called when checking if a feature flag is enabled. The `context` parameter contains information about the feature filter from the `parameters` field of the feature filter. Any additional parameters can be passed in as keyword arguments when calling `is_enabled`.
