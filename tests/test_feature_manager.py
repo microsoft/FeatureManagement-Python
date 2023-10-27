@@ -62,6 +62,7 @@ class TestFeatureManagemer:
             feature_flags, feature_filters=[AllwaysOn(), AllwaysOff()]
         )
         assert feature_manager is not None
+        assert len(feature_manager._filters) == 4
         assert feature_manager.is_enabled("Alpha")
         assert not feature_manager.is_enabled("Beta")
         assert not feature_manager.is_enabled("Gamma")

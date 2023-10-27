@@ -9,7 +9,6 @@ import random
 
 
 class RandomFilter(FeatureFilter):
-
     alias = "Microsoft.Random"
 
     def evaluate(self, context, **kwargs):
