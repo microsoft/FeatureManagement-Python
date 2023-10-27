@@ -44,6 +44,8 @@ class TimeWindowFilter(FeatureFilter):
     Feature Filter that determines if the current time is within the time window
     """
 
+    alias = "Microsoft.TimeWindow"
+
     def evaluate(self, context, **kwargs):
         """
         Determine if the feature flag is enabled for the given context
@@ -72,6 +74,8 @@ class TargetingFilter(FeatureFilter):
     """
     Feature Filter that determines if the user is targeted for the feature flag
     """
+
+    alias = "Microsoft.Targeting"
 
     @staticmethod
     def _is_targeted(context_id, rollout_percentage):

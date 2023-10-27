@@ -5,11 +5,12 @@
 # -------------------------------------------------------------------------
 
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
+from ._featurefilters import FeatureFilter
 import logging
 
 FEATURE_MANAGEMENT_KEY = "FeatureManagement"
 
-TIME_WINDOW_FILTER_NAME = "Microsoft.TimeWindowFilter"
+TIME_WINDOW_FILTER_NAME = "Microsoft.TimeWindow"
 TARGETING_FILTER_NAME = "Microsoft.Targeting"
 
 PROVIDED_FEATURE_FILTERS = "feature_filters"
@@ -36,8 +37,17 @@ class FeatureManager:
             self._validate_feature_flag(feature_flag)
             self._feature_flags[feature_flag[FEATURE_FLAG_ID]] = feature_flag
 
-        self._filters = {TIME_WINDOW_FILTER_NAME: TimeWindowFilter(), TARGETING_FILTER_NAME: TargetingFilter()}
-        self._filters.update(kwargs.pop(PROVIDED_FEATURE_FILTERS, {}))
+        self._filters = {TimeWindowFilter.alias: TimeWindowFilter(), TargetingFilter.alias: TargetingFilter()} 
+
+        custom_filters = kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
+
+        for custom_filter in custom_filters:
+            if not isinstance(custom_filter, FeatureFilter):
+                raise ValueError("Custom filter must be a subclass of FeatureFilter")
+            if hasattr(custom_filter, "alias"):
+                self._filters[custom_filter.alias] = custom_filter
+            else:
+                self._filters[custom_filter.__class__.__name__] = custom_filter
 
     @staticmethod
     def _validate_feature_flag(feature_flag):

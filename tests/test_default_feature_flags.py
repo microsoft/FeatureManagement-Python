@@ -54,7 +54,7 @@ class TestDefaultFeatureFlags:
                     "conditions": {
                         "client_filters": [
                             {
-                                "name": "Microsoft.TimeWindowFilter",
+                                "name": "Microsoft.TimeWindow",
                                 "parameters": {
                                     "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
                                 },
@@ -68,7 +68,7 @@ class TestDefaultFeatureFlags:
                     "conditions": {
                         "client_filters": [
                             {
-                                "name": "Microsoft.TimeWindowFilter",
+                                "name": "Microsoft.TimeWindow",
                                 "parameters": {
                                     "End": "Sat, 01 Jan 3020 00:00:00 GMT",
                                 },
@@ -82,7 +82,7 @@ class TestDefaultFeatureFlags:
                     "conditions": {
                         "client_filters": [
                             {
-                                "name": "Microsoft.TimeWindowFilter",
+                                "name": "Microsoft.TimeWindow",
                                 "parameters": {
                                     "End": "Wed, 01 Jan 2020 00:00:00 GMT",
                                 },
@@ -96,7 +96,7 @@ class TestDefaultFeatureFlags:
                     "conditions": {
                         "client_filters": [
                             {
-                                "name": "Microsoft.TimeWindowFilter",
+                                "name": "Microsoft.TimeWindow",
                                 "parameters": {
                                     "Start": "Sat, 01 Jan 3020 00:00:00 GMT",
                                 },
@@ -110,7 +110,7 @@ class TestDefaultFeatureFlags:
                     "conditions": {
                         "client_filters": [
                             {
-                                "name": "Microsoft.TimeWindowFilter",
+                                "name": "Microsoft.TimeWindow",
                                 "parameters": {
                                     "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
                                     "End": "Sat, 01 Jan 3020 00:00:00 GMT",
@@ -125,7 +125,7 @@ class TestDefaultFeatureFlags:
                     "conditions": {
                         "client_filters": [
                             {
-                                "name": "Microsoft.TimeWindowFilter",
+                                "name": "Microsoft.TimeWindow",
                                 "parameters": {
                                     "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
                                     "End": "Fri, 01 Jan 2021 00:00:00 GMT",
