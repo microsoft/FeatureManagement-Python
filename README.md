@@ -200,7 +200,7 @@ The Targeting Filter provides the capability to enable a feature for a target au
 }
 ```
 
-#### Using Targeting Feature Filter
+##### Using Targeting Feature Filter
 
 You can provide the current user info through `kwargs` when calling `isEnabled`.
 
@@ -221,6 +221,9 @@ You can also create your own feature filters by implementing the `FeatureFilter`
 
 ```python
 class MyCustomFilter(FeatureFilter):
+
+    alias = "CustomFilter"
+
     def evaluate(self, context, **kwargs):
         ...
         return True
@@ -237,7 +240,7 @@ The `evaluate` method is called when checking if a feature flag is enabled. The 
 
 ```json
 {
-    "name": "MyCustomFilter",
+    "name": "CustomFilter",
     "parameters": {
         ...
     }
