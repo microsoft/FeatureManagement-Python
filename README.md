@@ -128,8 +128,8 @@ This object is passed into the `FeatureManager` when it is initialized.
 
 Feature filters enable dynamic evaluation of feature flags. The Python feature management library includes two built-in filters:
 
-- `Microsoft.TimeWindowFilter` - Enables a feature flag based on a time window.
-- `Microsoft.TargetingFilter` - Enables a feature flag based on a list of users, groups, or rollout percentages.
+- `Microsoft.TimeWindow` - Enables a feature flag based on a time window.
+- `Microsoft.Targeting` - Enables a feature flag based on a list of users, groups, or rollout percentages.
 
 #### Time Window Filter
 
@@ -140,7 +140,7 @@ The Time Window Filter enables a feature flag based on a time window. It has two
 
 ```json
 {
-    "name": "Microsoft.TimeWindowFilter",
+    "name": "Microsoft.TimeWindow",
     "parameters": {
         "Start": "2020-01-01T00:00:00Z",
         "End": "2020-12-31T00:00:00Z"
@@ -180,7 +180,7 @@ The Targeting Filter provides the capability to enable a feature for a target au
 
 ```json
 {
-    "name": "Microsoft.TargetingFilter",
+    "name": "Microsoft.Targeting",
     "parameters": {
         "Audience": {
             "Users": ["user1", "user2"],
@@ -220,17 +220,17 @@ feature_manager.is_enabled("Beta", user="user4")
 You can also create your own feature filters by implementing the `FeatureFilter` interface.
 
 ```python
-class CustomFilter(FeatureFilter):
+class MyCustomFilter(FeatureFilter):
     def evaluate(self, context, **kwargs):
         ...
         return True
 ```
 
-They can then be passed into the `FeatureManager` when it is initialized.
+They can then be passed into the `FeatureManager` when it is initialized. By default, the name of a feature filter is the name of the class. You can override this by setting a class attribute `alias` to the modified class name.
 
 ```python
 
-feature_manager = FeatureManager(feature_flags, feature_filters={"MyCustomFilter":CustomFilter(), "MyOtherFilter":MyOtherFilter()})
+feature_manager = FeatureManager(feature_flags, feature_filters={MyCustomFilter(), MyOtherFilter()})
 ```
 
 The `evaluate` method is called when checking if a feature flag is enabled. The `context` parameter contains information about the feature filter from the `parameters` field of the feature filter. Any additional parameters can be passed in as keyword arguments when calling `is_enabled`.
