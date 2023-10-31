@@ -19,10 +19,13 @@ class FeatureFilter(ABC):
         :paramtype context: Mapping
         """
 
-    def get_name(self):
+    @property
+    def name(self):
         """
         Get the name of the filter
-        :return: Name of the filter
+        :return: Name of the filter, or alias if it exists
         :rtype: str
         """
+        if hasattr(self, "_alias"):
+            return self._alias
         return self.__class__.__name__

@@ -37,10 +37,7 @@ class FeatureManager:
         for filter in filters:
             if not isinstance(filter, FeatureFilter):
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
-            if hasattr(filter, "alias"):
-                self._filters[filter.alias] = filter
-            else:
-                self._filters[filter.__class__.__name__] = filter
+            self._filters[filter.name] = filter
 
     def is_enabled(self, feature_flag_id, **kwargs):
         """
