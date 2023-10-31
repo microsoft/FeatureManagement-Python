@@ -18,3 +18,11 @@ class FeatureFilter(ABC):
         :param Mapping context: Context for the feature flag
         :paramtype context: Mapping
         """
+
+    def get_name(self):
+        """
+        Get the name of the filter
+        :return: Name of the filter
+        :rtype: str
+        """
+        return self.__class__.__name__

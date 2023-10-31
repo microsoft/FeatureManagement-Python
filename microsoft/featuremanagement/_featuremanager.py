@@ -62,13 +62,13 @@ class FeatureManager:
             # Unknown feature flags are disabled by default
             return False
 
-        if not _check_is_true(feature_flag[FEATURE_FLAG_ENABLED]):
+        if not _check_boolean_value(feature_flag[FEATURE_FLAG_ENABLED]):
             # Feature flags that are disabled are always disabled
             return False
 
-        feature_filters = feature_flag.get(FEATURE_FLAG_CONDITIONS, {FEATURE_FLAG_CLIENT_FILTERS: []})[
-            FEATURE_FLAG_CLIENT_FILTERS
-        ]
+        feature_filters = feature_flag.get(FEATURE_FLAG_CONDITIONS, {FEATURE_FLAG_CLIENT_FILTERS: []}).get(
+            FEATURE_FLAG_CLIENT_FILTERS, []
+        )
 
         if len(feature_filters) == 0:
             # Feature flags without any filters return evaluate
@@ -92,10 +92,14 @@ class FeatureManager:
         """
         return self._feature_flags.keys()
 
+
 def _validate_feature_flag(feature_flag):
     name = feature_flag.get(FEATURE_FLAG_ID, None)
-    if name is None:
-        raise ValueError("Feature flag id field is required.")
+    if not isinstance(name, str):
+        raise ValueError("Feature flag id field must be a string.")
+    is_enabled = feature_flag.get(FEATURE_FLAG_ENABLED, None)
+    if _check_boolean_value(is_enabled) is None :
+        raise ValueError("Feature flag enabled field must be a boolean.")
     if feature_flag.get(FEATURE_FLAG_ENABLED, None) is None:
         raise ValueError("Feature flag {} is missing enabled field.".format(name))
     if feature_flag.get(FEATURE_FLAG_CONDITIONS, None) is not None:
@@ -104,7 +108,8 @@ def _validate_feature_flag(feature_flag):
                 if feature_filter.get(FEATURE_FILTER_NAME, None) is None:
                     raise ValueError("Feature flag {} is missing filter name.".format(name))
 
-def _check_is_true(enabled):
+
+def _check_boolean_value(enabled):
     if enabled.lower() == "true":
         return True
     if enabled.lower() == "false":
