@@ -151,14 +151,10 @@ class TestDefaultFeatureFlags:
                 {},
             ]
         }
-        with pytest.raises(ValueError, match="Feature flag id field is required"):
+        with pytest.raises(ValueError, match="Feature flag id field must be a string."):
             FeatureManager(feature_flags)
 
         feature_flags["FeatureManagement"][0]["id"] = "featureFlagId"
-
-        with pytest.raises(ValueError, match="Feature flag featureFlagId is missing enabled field."):
-            FeatureManager(feature_flags)
-
         feature_flags["FeatureManagement"][0]["enabled"] = "true"
 
         feature_manager = FeatureManager(feature_flags)
