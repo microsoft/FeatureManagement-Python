@@ -6,7 +6,7 @@
 
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from ._feature_flag import FeatureFlag
+from ._models._feature_flag import FeatureFlag
 import logging
 
 FEATURE_MANAGEMENT_KEY = "FeatureManagement"
