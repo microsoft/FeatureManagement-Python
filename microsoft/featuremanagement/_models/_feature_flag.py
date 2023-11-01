@@ -15,9 +15,9 @@ REQUIREMENT_TYPE_ANY = "Any"
 
 
 class FeatureConditions:
-    @staticmethod
-    def convert_from_json(json):
-        conditions = FeatureConditions()
+    @classmethod
+    def convert_from_json(cls, json):
+        conditions = cls()
         conditions._requirement_type = json.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY)
         conditions._client_filters = json.get(FEATURE_FLAG_CLIENT_FILTERS, [])
         return conditions
@@ -44,9 +44,9 @@ class FeatureConditions:
 
 
 class FeatureFlag:
-    @staticmethod
-    def convert_from_json(json):
-        feature_flag = FeatureFlag()
+    @classmethod
+    def convert_from_json(cls, json):
+        feature_flag = cls()
         feature_flag._id = json.get(FEATURE_FLAG_ID)
         feature_flag._enabled = _convert_boolean_value(json.get(FEATURE_FLAG_ENABLED, True))
         feature_flag._conditions = FeatureConditions.convert_from_json(json.get(FEATURE_FLAG_CONDITIONS, {}))
