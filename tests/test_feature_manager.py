@@ -86,8 +86,7 @@ class AllwaysOff(FeatureFilter):
         return False
 
 
+@FeatureFilter.alias("Microsoft.TimeWindow")
 class FakeTimeWindowFilter(FeatureFilter):
-    _alias = "Microsoft.TimeWindow"
-
     def evaluate(self, context, **kwargs):
         return True

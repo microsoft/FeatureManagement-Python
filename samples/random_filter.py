@@ -8,9 +8,8 @@ from microsoft.featuremanagement import FeatureFilter
 import random
 
 
+@FeatureFilter.alias("Sample.Random")
 class RandomFilter(FeatureFilter):
-    alias = "Sample.Random"
-
     def evaluate(self, context, **kwargs):
         """Determine if the feature flag is enabled for the given context"""
         value = context.get("parameters", {}).get("Value", 0)

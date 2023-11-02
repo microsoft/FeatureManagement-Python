@@ -39,12 +39,11 @@ class TargetingException(Exception):
     """
 
 
+@FeatureFilter.alias("Microsoft.TimeWindow")
 class TimeWindowFilter(FeatureFilter):
     """
     Feature Filter that determines if the current time is within the time window
     """
-
-    _alias = "Microsoft.TimeWindow"
 
     def evaluate(self, context, **kwargs):
         """
@@ -70,12 +69,11 @@ class TimeWindowFilter(FeatureFilter):
         return (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time)
 
 
+@FeatureFilter.alias("Microsoft.Targeting")
 class TargetingFilter(FeatureFilter):
     """
     Feature Filter that determines if the user is targeted for the feature flag
     """
-
-    _alias = "Microsoft.Targeting"
 
     @staticmethod
     def _is_targeted(context_id, rollout_percentage):

@@ -29,3 +29,10 @@ class FeatureFilter(ABC):
         if hasattr(self, "_alias"):
             return self._alias
         return self.__class__.__name__
+
+    def alias(alias):
+        def wrapper(self):
+            self._alias = alias
+            return self
+
+        return wrapper
