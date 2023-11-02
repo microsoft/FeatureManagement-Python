@@ -247,6 +247,14 @@ The `evaluate` method is called when checking if a feature flag is enabled. The 
 }
 ```
 
+You can modify the name of a feature flag by using the `@FeatureFilter.alias` decorator. The alias overrides the name of the feature filter and needs to match the name of the feature filter in the feature flag json.
+
+```python
+@FeatureFilter.alias("AliasFilter")
+class MyCustomFilter(FeatureFilter):
+    ...
+```
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
