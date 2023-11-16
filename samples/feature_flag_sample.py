@@ -10,7 +10,7 @@ f = open(script_directory + "/formatted_feature_flags.json", "r")
 
 feature_flags = json.load(f)
 
-feature_manager = FeatureManager(feature_flags, feature_filters={"Microsoft.Random": RandomFilter()})
+feature_manager = FeatureManager(feature_flags, feature_filters=[RandomFilter()])
 
 # Is always true
 print("Alpha is ", feature_manager.is_enabled("Alpha"))

@@ -23,7 +23,7 @@
             "conditions": {
                 "client_filters": [
                     {
-                        "name": "Microsoft.Random",
+                        "name": "Sample.Random",
                         "parameters": {
                             "Value": 50
                         }
@@ -38,7 +38,7 @@
             "conditions": {
                 "client_filters": [
                     {
-                        "name": "Microsoft.TimeWindowFilter",
+                        "name": "Microsoft.TimeWindow",
                         "parameters": {
                             "Start": "Thu, 29 Jun 2023 07:00:00 GMT",
                             "End": "Wed, 30 Aug 2023 07:00:00 GMT"
@@ -54,7 +54,7 @@
             "conditions": {
                 "client_filters": [
                     {
-                        "name": "Microsoft.TimeWindowFilter",
+                        "name": "Microsoft.TimeWindow",
                         "parameters": {
                             "Start": "Tue, 27 Jun 2023 06:00:00 GMT",
                             "End": "Wen, 28 Jun 2023 06:05:00 GMT"
@@ -70,7 +70,7 @@
             "conditions": {
                 "client_filters": [
                     {
-                        "name": "Microsoft.TimeWindowFilter",
+                        "name": "Microsoft.TimeWindow",
                         "parameters": {
                             "Start": "Tue, 27 Jun 2023 06:00:00 GMT"
                         }
@@ -85,7 +85,7 @@
             "conditions": {
                 "client_filters": [
                     {
-                        "name": "Microsoft.TimeWindowFilter",
+                        "name": "Microsoft.TimeWindow",
                         "parameters": {
                             "End": "Tue, 28 Jun 2024 06:00:00 GMT"
                         }

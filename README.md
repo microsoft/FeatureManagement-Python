@@ -222,8 +222,6 @@ You can also create your own feature filters by implementing the `FeatureFilter`
 ```python
 class MyCustomFilter(FeatureFilter):
 
-    alias = "CustomFilter"
-
     def evaluate(self, context, **kwargs):
         ...
         return True
@@ -245,6 +243,14 @@ The `evaluate` method is called when checking if a feature flag is enabled. The 
         ...
     }
 }
+```
+
+You can modify the name of a feature flag by using the `@FeatureFilter.alias` decorator. The alias overrides the name of the feature filter and needs to match the name of the feature filter in the feature flag json.
+
+```python
+@FeatureFilter.alias("AliasFilter")
+class MyCustomFilter(FeatureFilter):
+    ...
 ```
 
 ## Contributing

@@ -58,15 +58,22 @@ class TestFeatureManagemer:
             ]
         }
 
-        feature_manager = FeatureManager(
-            feature_flags, feature_filters={"AllwaysOn": AllwaysOn(), "AllwaysOff": AllwaysOff()}
-        )
+        feature_manager = FeatureManager(feature_flags, feature_filters=[AllwaysOn(), AllwaysOff()])
         assert feature_manager is not None
+        assert len(feature_manager._filters) == 4
         assert feature_manager.is_enabled("Alpha")
         assert not feature_manager.is_enabled("Beta")
         assert not feature_manager.is_enabled("Gamma")
         assert not feature_manager.is_enabled("Delta")
         assert not feature_manager.is_enabled("Epsilon")
+
+    # method: feature_manager_creation
+    def test_feature_manager_creation_with_filters(self):
+        feature_manager = FeatureManager({}, feature_filters=[AllwaysOn(), AllwaysOff(), FakeTimeWindowFilter()])
+        assert feature_manager is not None
+
+        # The fake time window should override the default one
+        assert len(feature_manager._filters) == 4
 
 
 class AllwaysOn(FeatureFilter):
@@ -77,3 +84,9 @@ class AllwaysOn(FeatureFilter):
 class AllwaysOff(FeatureFilter):
     def evaluate(self, context, **kwargs):
         return False
+
+
+@FeatureFilter.alias("Microsoft.TimeWindow")
+class FakeTimeWindowFilter(FeatureFilter):
+    def evaluate(self, context, **kwargs):
+        return True

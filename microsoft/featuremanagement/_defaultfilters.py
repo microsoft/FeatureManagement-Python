@@ -39,6 +39,7 @@ class TargetingException(Exception):
     """
 
 
+@FeatureFilter.alias("Microsoft.TimeWindow")
 class TimeWindowFilter(FeatureFilter):
     """
     Feature Filter that determines if the current time is within the time window
@@ -68,6 +69,7 @@ class TimeWindowFilter(FeatureFilter):
         return (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time)
 
 
+@FeatureFilter.alias("Microsoft.Targeting")
 class TargetingFilter(FeatureFilter):
     """
     Feature Filter that determines if the user is targeted for the feature flag
@@ -103,8 +105,8 @@ class TargetingFilter(FeatureFilter):
         :return: True if the user is targeted for the feature flag
         :rtype: bool
         """
-        target_user = kwargs.pop(TARGETED_USER_KEY, None)
-        target_groups = kwargs.pop(TARGETED_GROUPS_KEY, [])
+        target_user = kwargs.get(TARGETED_USER_KEY, None)
+        target_groups = kwargs.get(TARGETED_GROUPS_KEY, [])
 
         if not target_user and not (target_groups and len(target_groups) > 0):
             logging.warning("%s: Name or Groups are required parameters", TargetingFilter.__name__)
