@@ -222,8 +222,6 @@ You can also create your own feature filters by implementing the `FeatureFilter`
 ```python
 class MyCustomFilter(FeatureFilter):
 
-    alias = "CustomFilter"
-
     def evaluate(self, context, **kwargs):
         ...
         return True

@@ -30,9 +30,10 @@ class FeatureFilter(ABC):
             return self._alias
         return self.__class__.__name__
 
+    @staticmethod
     def alias(alias):
-        def wrapper(self):
-            self._alias = alias
-            return self
+        def wrapper(cls):
+            cls._alias = alias
+            return cls
 
         return wrapper
