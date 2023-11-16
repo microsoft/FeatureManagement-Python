@@ -4,11 +4,12 @@
 # license information.
 # -------------------------------------------------------------------------
 from abc import ABC, abstractmethod
+from .._featurefilters import FeatureFilter as FF
 
 
-class FeatureFilter(ABC):
+class FeatureFilter(FF):
     """
-    Parent class for all feature filters
+    Parent class for all Async feature filters
     """
 
     @abstractmethod
@@ -18,21 +19,3 @@ class FeatureFilter(ABC):
         :param Mapping context: Context for the feature flag
         :paramtype context: Mapping
         """
-
-    @property
-    def name(self):
-        """
-        Get the name of the filter
-        :return: Name of the filter, or alias if it exists
-        :rtype: str
-        """
-        if hasattr(self, "_alias"):
-            return self._alias
-        return self.__class__.__name__
-
-    def alias(alias):
-        def wrapper(self):
-            self._alias = alias
-            return self
-
-        return wrapper

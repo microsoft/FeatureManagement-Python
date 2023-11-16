@@ -7,7 +7,7 @@ import pytest
 from microsoft.featuremanagement.aio import FeatureManager, FeatureFilter
 
 
-class TestFeatureManagemer:
+class TestFeatureManager:
     # method: feature_manager_creation
     @pytest.mark.asyncio
     async def test_empty_feature_manager_creation(self):

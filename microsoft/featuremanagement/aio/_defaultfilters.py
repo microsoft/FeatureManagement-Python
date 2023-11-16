@@ -105,8 +105,8 @@ class TargetingFilter(FeatureFilter):
         :return: True if the user is targeted for the feature flag
         :rtype: bool
         """
-        target_user = kwargs.pop(TARGETED_USER_KEY, None)
-        target_groups = kwargs.pop(TARGETED_GROUPS_KEY, [])
+        target_user = kwargs.get(TARGETED_USER_KEY, None)
+        target_groups = kwargs.get(TARGETED_GROUPS_KEY, [])
 
         if not target_user and not (target_groups and len(target_groups) > 0):
             logging.warning("%s: Name or Groups are required parameters", TargetingFilter.__name__)
