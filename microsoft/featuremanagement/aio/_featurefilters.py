@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from .._featurefilters import FeatureFilter as FF
 
 

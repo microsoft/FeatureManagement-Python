@@ -7,19 +7,18 @@
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from .._models._feature_flag import FeatureFlag
+from .._featuremanager import (
+    FeatureManager as SyncFeatureManager,
+    FEATURE_MANAGEMENT_KEY,
+    PROVIDED_FEATURE_FILTERS,
+    FEATURE_FILTER_NAME,
+    REQUIREMENT_TYPE_ALL,
+    FEATURE_FILTER_PARAMETERS,
+)
 import logging
 
-FEATURE_MANAGEMENT_KEY = "FeatureManagement"
 
-PROVIDED_FEATURE_FILTERS = "feature_filters"
-FEATURE_FILTER_NAME = "name"
-REQUIREMENT_TYPE_ALL = "All"
-REQUIREMENT_TYPE_ANY = "Any"
-
-FEATURE_FILTER_PARAMETERS = "parameters"
-
-
-class FeatureManager:
+class FeatureManager(SyncFeatureManager):
     """
     Feature Manager that determines if a feature flag is enabled for the given context
     """
@@ -70,16 +69,12 @@ class FeatureManager:
             filter_name = feature_filter[FEATURE_FILTER_NAME]
             if filter_name in self._filters:
                 if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
-                    if not await self._filters[filter_name].evaluate(feature_filter[FEATURE_FILTER_PARAMETERS], **kwargs):
+                    if not await self._filters[filter_name].evaluate(
+                        feature_filter[FEATURE_FILTER_PARAMETERS], **kwargs
+                    ):
                         return False
                 else:
                     if await self._filters[filter_name].evaluate(feature_filter, **kwargs):
                         return True
         # If this is reached, and true, default return value is true, else false
         return feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL
-
-    def list_feature_flag_names(self):
-        """
-        List of all feature flag names
-        """
-        return self._feature_flags.keys()

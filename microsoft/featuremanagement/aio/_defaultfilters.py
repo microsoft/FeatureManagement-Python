@@ -4,39 +4,28 @@
 # license information.
 # -------------------------------------------------------------------------
 import logging
-import hashlib
 
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
 from ._featurefilters import FeatureFilter
-
-FEATURE_FLAG_NAME_KEY = "name"
-ROLLOUT_PERCENTAGE_KEY = "RolloutPercentage"
-DEFAULT_ROLLOUT_PERCENTAGE_KEY = "DefaultRolloutPercentage"
-PARAMETERS_KEY = "parameters"
-
-# Time Window Constants
-START_KEY = "Start"
-END_KEY = "End"
-
-# Targeting kwargs
-TARGETED_USER_KEY = "user"
-TARGETED_GROUPS_KEY = "groups"
-
-# Targeting Constants
-AUDIENCE_KEY = "Audience"
-USERS_KEY = "Users"
-GROUPS_KEY = "Groups"
-EXCLUSION_KEY = "Exclusion"
-FEATURE_FILTER_NAME_KEY = "Name"
-IGNORE_CASE_KEY = "ignore_case"
-
-
-class TargetingException(Exception):
-    """
-    Exception raised when the targeting filter is not configured correctly
-    """
+from .._defaultfilters import (
+    TargetingFilter as SyncTargetingFilter,
+    TargetingException,
+    FEATURE_FLAG_NAME_KEY,
+    DEFAULT_ROLLOUT_PERCENTAGE_KEY,
+    PARAMETERS_KEY,
+    START_KEY,
+    END_KEY,
+    TARGETED_USER_KEY,
+    TARGETED_GROUPS_KEY,
+    AUDIENCE_KEY,
+    USERS_KEY,
+    GROUPS_KEY,
+    EXCLUSION_KEY,
+    FEATURE_FILTER_NAME_KEY,
+    IGNORE_CASE_KEY,
+)
 
 
 @FeatureFilter.alias("Microsoft.TimeWindow")
@@ -70,31 +59,10 @@ class TimeWindowFilter(FeatureFilter):
 
 
 @FeatureFilter.alias("Microsoft.Targeting")
-class TargetingFilter(FeatureFilter):
+class TargetingFilter(SyncTargetingFilter, FeatureFilter):
     """
     Feature Filter that determines if the user is targeted for the feature flag
     """
-
-    @staticmethod
-    def _is_targeted(context_id, rollout_percentage):
-        """Determine if the user is targeted for the given context"""
-        # Always return true if rollout percentage is 100
-        if rollout_percentage == 100:
-            return True
-
-        hashed_context_id = hashlib.sha256(context_id.encode()).hexdigest()
-        context_marker = abs(int(hashed_context_id, 16))
-        percentage = (context_marker / (2**256 - 1)) * 100
-
-        return percentage < rollout_percentage
-
-    def _target_group(self, target_user, target_group, group, feature_flag_name):
-        group_rollout_percentage = group.get(ROLLOUT_PERCENTAGE_KEY, 0)
-        audience_context_id = (
-            target_user + "\n" + target_group + "\n" + feature_flag_name + "\n" + group.get(FEATURE_FILTER_NAME_KEY, "")
-        )
-
-        return self._is_targeted(audience_context_id, group_rollout_percentage)
 
     async def evaluate(self, context, **kwargs):
         """
@@ -150,13 +118,3 @@ class TargetingFilter(FeatureFilter):
         # Check if the user is in the default rollout
         context_id = target_user + "\n" + feature_flag_name
         return self._is_targeted(context_id, default_rollout_percentage)
-
-    @staticmethod
-    def _validate(groups, default_rollout_percentage):
-        # Validate the audience settings
-        if default_rollout_percentage < 0 or default_rollout_percentage > 100:
-            raise TargetingException("DefaultRolloutPercentage must be between 0 and 100")
-
-        for group in groups:
-            if group.get(ROLLOUT_PERCENTAGE_KEY) < 0 or group.get(ROLLOUT_PERCENTAGE_KEY) > 100:
-                raise TargetingException("RolloutPercentage must be between 0 and 100")
