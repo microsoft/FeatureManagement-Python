@@ -34,6 +34,7 @@ class FeatureManager(SyncFeatureManager):
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
         for filter in filters:
+            # This is a type check to make sure the filters are async filters.
             if not isinstance(filter, FeatureFilter):
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
             self._filters[filter.name] = filter
