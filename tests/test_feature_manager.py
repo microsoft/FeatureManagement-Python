@@ -16,12 +16,13 @@ class TestFeatureManagemer:
     # method: feature_manager_creation
     def test_basic_feature_manager_creation(self):
         feature_flags = {
-            "FeatureManagement": [
-                {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": []}},
-                {"id": "Beta", "description": "", "enabled": "false", "conditions": {"client_filters": []}},
-            ]
+            "FeatureManagement": { 
+                "FeatureFlags": [
+                    {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": []}},
+                    {"id": "Beta", "description": "", "enabled": "false", "conditions": {"client_filters": []}},
+                ]
+            }
         }
-
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
         assert feature_manager.is_enabled("Alpha")
@@ -30,34 +31,35 @@ class TestFeatureManagemer:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_filters(self):
         feature_flags = {
-            "FeatureManagement": [
-                {
-                    "id": "Alpha",
-                    "description": "",
-                    "enabled": "true",
-                    "conditions": {"client_filters": [{"name": "AllwaysOn", "parameters": {}}]},
-                },
-                {
-                    "id": "Beta",
-                    "description": "",
-                    "enabled": "false",
-                    "conditions": {"client_filters": [{"name": "AllwaysOn", "parameters": {}}]},
-                },
-                {
-                    "id": "Gamma",
-                    "description": "",
-                    "enabled": "True",
-                    "conditions": {"client_filters": [{"name": "AllwaysOff", "parameters": {}}]},
-                },
-                {
-                    "id": "Delta",
-                    "description": "",
-                    "enabled": "False",
-                    "conditions": {"client_filters": [{"name": "AllwaysOff", "parameters": {}}]},
-                },
-            ]
+            "FeatureManagement": { 
+                "FeatureFlags": [
+                    {
+                        "id": "Alpha",
+                        "description": "",
+                        "enabled": "true",
+                        "conditions": {"client_filters": [{"name": "AllwaysOn", "parameters": {}}]},
+                    },
+                    {
+                        "id": "Beta",
+                        "description": "",
+                        "enabled": "false",
+                        "conditions": {"client_filters": [{"name": "AllwaysOn", "parameters": {}}]},
+                    },
+                    {
+                        "id": "Gamma",
+                        "description": "",
+                        "enabled": "True",
+                        "conditions": {"client_filters": [{"name": "AllwaysOff", "parameters": {}}]},
+                    },
+                    {
+                        "id": "Delta",
+                        "description": "",
+                        "enabled": "False",
+                        "conditions": {"client_filters": [{"name": "AllwaysOff", "parameters": {}}]},
+                    },
+                ]
+            }
         }
-
         feature_manager = FeatureManager(feature_flags, feature_filters=[AllwaysOn(), AllwaysOff()])
         assert feature_manager is not None
         assert len(feature_manager._filters) == 4

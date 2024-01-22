@@ -10,6 +10,7 @@ from ._models._feature_flag import FeatureFlag
 import logging
 
 FEATURE_MANAGEMENT_KEY = "FeatureManagement"
+FEATURE_FLAG_KEY = "FeatureFlags"
 
 PROVIDED_FEATURE_FILTERS = "feature_filters"
 FEATURE_FILTER_NAME = "name"
@@ -26,7 +27,8 @@ class FeatureManager:
 
     def __init__(self, feature_flags, **kwargs):
         self._feature_flags = {}
-        for feature_flag_json in feature_flags.get(FEATURE_MANAGEMENT_KEY, feature_flags):
+        feature_management = feature_flags.get(FEATURE_MANAGEMENT_KEY, feature_flags)
+        for feature_flag_json in feature_management.get(FEATURE_FLAG_KEY, feature_management):
             feature_flag = FeatureFlag.convert_from_json(feature_flag_json)
             self._feature_flags[feature_flag.name] = feature_flag
 

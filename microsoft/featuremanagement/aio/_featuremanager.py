@@ -10,6 +10,7 @@ from .._models._feature_flag import FeatureFlag
 from .._featuremanager import (
     FeatureManager as SyncFeatureManager,
     FEATURE_MANAGEMENT_KEY,
+    FEATURE_FLAG_KEY,
     PROVIDED_FEATURE_FILTERS,
     FEATURE_FILTER_NAME,
     REQUIREMENT_TYPE_ALL,
@@ -25,7 +26,8 @@ class FeatureManager(SyncFeatureManager):
 
     def __init__(self, feature_flags, **kwargs):
         self._feature_flags = {}
-        for feature_flag_json in feature_flags.get(FEATURE_MANAGEMENT_KEY, feature_flags):
+        feature_management = feature_flags.get(FEATURE_MANAGEMENT_KEY, feature_flags)
+        for feature_flag_json in feature_management.get(FEATURE_FLAG_KEY, feature_management):
             feature_flag = FeatureFlag.convert_from_json(feature_flag_json)
             self._feature_flags[feature_flag.name] = feature_flag
 
