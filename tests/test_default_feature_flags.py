@@ -11,7 +11,7 @@ class TestDefaultFeatureFlags:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_targeting(self):
         feature_flags = {
-            "FeatureManagement": { 
+            "FeatureManagement": {
                 "FeatureFlags": [
                     {
                         "id": "Target",
@@ -49,7 +49,7 @@ class TestDefaultFeatureFlags:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_time_window(self):
         feature_flags = {
-            "FeatureManagement": { 
+            "FeatureManagement": {
                 "FeatureFlags": [
                     {
                         "id": "Alpha",
@@ -151,7 +151,7 @@ class TestDefaultFeatureFlags:
 
     def test_feature_manager_invalid_feature_flag(self):
         feature_flags = {
-            "FeatureManagement": { 
+            "FeatureManagement": {
                 "FeatureFlags": [
                     {},
                 ]

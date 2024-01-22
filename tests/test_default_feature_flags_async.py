@@ -12,7 +12,7 @@ class TestDefaultFeatureFlags:
     @pytest.mark.asyncio
     async def test_feature_manager_creation_with_targeting(self):
         feature_flags = {
-            "FeatureManagement": { 
+            "FeatureManagement": {
                 "FeatureFlags": [
                     {
                         "id": "Target",
@@ -51,7 +51,7 @@ class TestDefaultFeatureFlags:
     @pytest.mark.asyncio
     async def test_feature_manager_creation_with_time_window(self):
         feature_flags = {
-            "FeatureManagement": { 
+            "FeatureManagement": {
                 "FeatureFlags": [
                     {
                         "id": "Alpha",
@@ -154,7 +154,7 @@ class TestDefaultFeatureFlags:
     @pytest.mark.asyncio
     async def test_feature_manager_invalid_feature_flag(self):
         feature_flags = {
-            "FeatureManagement": { 
+            "FeatureManagement": {
                 "FeatureFlags": [
                     {},
                 ]
