@@ -11,27 +11,29 @@ class TestDefaultFeatureFlags:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_targeting(self):
         feature_flags = {
-            "FeatureManagement": [
-                {
-                    "id": "Target",
-                    "enabled": "true",
-                    "conditions": {
-                        "client_filters": [
-                            {
-                                "name": "Microsoft.Targeting",
-                                "parameters": {
-                                    "Audience": {
-                                        "Users": ["Adam"],
-                                        "Groups": [{"Name": "Stage1", "RolloutPercentage": 100}],
-                                        "DefaultRolloutPercentage": 50,
-                                        "Exclusion": {"Users": [], "Groups": []},
-                                    }
-                                },
-                            }
-                        ]
+            "FeatureManagement": {
+                "FeatureFlags": [
+                    {
+                        "id": "Target",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.Targeting",
+                                    "parameters": {
+                                        "Audience": {
+                                            "Users": ["Adam"],
+                                            "Groups": [{"Name": "Stage1", "RolloutPercentage": 100}],
+                                            "DefaultRolloutPercentage": 50,
+                                            "Exclusion": {"Users": [], "Groups": []},
+                                        }
+                                    },
+                                }
+                            ]
+                        },
                     },
-                },
-            ]
+                ]
+            }
         }
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
@@ -47,94 +49,96 @@ class TestDefaultFeatureFlags:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_time_window(self):
         feature_flags = {
-            "FeatureManagement": [
-                {
-                    "id": "Alpha",
-                    "enabled": "true",
-                    "conditions": {
-                        "client_filters": [
-                            {
-                                "name": "Microsoft.TimeWindow",
-                                "parameters": {
-                                    "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
-                                },
-                            }
-                        ]
+            "FeatureManagement": {
+                "FeatureFlags": [
+                    {
+                        "id": "Alpha",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                }
+                            ]
+                        },
                     },
-                },
-                {
-                    "id": "Beta",
-                    "enabled": "true",
-                    "conditions": {
-                        "client_filters": [
-                            {
-                                "name": "Microsoft.TimeWindow",
-                                "parameters": {
-                                    "End": "Sat, 01 Jan 3020 00:00:00 GMT",
-                                },
-                            }
-                        ]
+                    {
+                        "id": "Beta",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "End": "Sat, 01 Jan 3020 00:00:00 GMT",
+                                    },
+                                }
+                            ]
+                        },
                     },
-                },
-                {
-                    "id": "Gamma",
-                    "enabled": "true",
-                    "conditions": {
-                        "client_filters": [
-                            {
-                                "name": "Microsoft.TimeWindow",
-                                "parameters": {
-                                    "End": "Wed, 01 Jan 2020 00:00:00 GMT",
-                                },
-                            }
-                        ]
+                    {
+                        "id": "Gamma",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "End": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                }
+                            ]
+                        },
                     },
-                },
-                {
-                    "id": "Delta",
-                    "enabled": "true",
-                    "conditions": {
-                        "client_filters": [
-                            {
-                                "name": "Microsoft.TimeWindow",
-                                "parameters": {
-                                    "Start": "Sat, 01 Jan 3020 00:00:00 GMT",
-                                },
-                            }
-                        ]
+                    {
+                        "id": "Delta",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Sat, 01 Jan 3020 00:00:00 GMT",
+                                    },
+                                }
+                            ]
+                        },
                     },
-                },
-                {
-                    "id": "Epsilon",
-                    "enabled": "true",
-                    "conditions": {
-                        "client_filters": [
-                            {
-                                "name": "Microsoft.TimeWindow",
-                                "parameters": {
-                                    "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
-                                    "End": "Sat, 01 Jan 3020 00:00:00 GMT",
-                                },
-                            }
-                        ]
+                    {
+                        "id": "Epsilon",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                        "End": "Sat, 01 Jan 3020 00:00:00 GMT",
+                                    },
+                                }
+                            ]
+                        },
                     },
-                },
-                {
-                    "id": "Foxtrot",
-                    "enabled": "true",
-                    "conditions": {
-                        "client_filters": [
-                            {
-                                "name": "Microsoft.TimeWindow",
-                                "parameters": {
-                                    "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
-                                    "End": "Fri, 01 Jan 2021 00:00:00 GMT",
-                                },
-                            }
-                        ]
+                    {
+                        "id": "Foxtrot",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                        "End": "Fri, 01 Jan 2021 00:00:00 GMT",
+                                    },
+                                }
+                            ]
+                        },
                     },
-                },
-            ]
+                ]
+            }
         }
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
@@ -147,26 +151,28 @@ class TestDefaultFeatureFlags:
 
     def test_feature_manager_invalid_feature_flag(self):
         feature_flags = {
-            "FeatureManagement": [
-                {},
-            ]
+            "FeatureManagement": {
+                "FeatureFlags": [
+                    {},
+                ]
+            }
         }
         with pytest.raises(ValueError, match="Feature flag id field must be a string."):
             FeatureManager(feature_flags)
 
-        feature_flags["FeatureManagement"][0]["id"] = "featureFlagId"
-        feature_flags["FeatureManagement"][0]["enabled"] = "true"
+        feature_flags["FeatureManagement"]["FeatureFlags"][0]["id"] = "featureFlagId"
+        feature_flags["FeatureManagement"]["FeatureFlags"][0]["enabled"] = "true"
 
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
-        feature_flags["FeatureManagement"][0]["conditions"] = {}
-        feature_flags["FeatureManagement"][0]["conditions"]["client_filters"] = []
+        feature_flags["FeatureManagement"]["FeatureFlags"][0]["conditions"] = {}
+        feature_flags["FeatureManagement"]["FeatureFlags"][0]["conditions"]["client_filters"] = []
 
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
-        feature_flags["FeatureManagement"][0]["conditions"]["client_filters"].append({})
+        feature_flags["FeatureManagement"]["FeatureFlags"][0]["conditions"]["client_filters"].append({})
 
         with pytest.raises(ValueError, match="Feature flag featureFlagId is missing filter name."):
             FeatureManager(feature_flags)
