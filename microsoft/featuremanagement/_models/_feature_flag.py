@@ -47,7 +47,7 @@ class FeatureFlag:
     @classmethod
     def convert_from_json(cls, jsonValue):
         feature_flag = cls()
-        if (not type(jsonValue) is dict):
+        if not type(jsonValue) is dict:
             raise ValueError("Feature flag must be a dictionary.")
         feature_flag._id = jsonValue.get(FEATURE_FLAG_ID)
         feature_flag._enabled = _convert_boolean_value(jsonValue.get(FEATURE_FLAG_ENABLED, True))
