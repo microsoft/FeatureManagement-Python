@@ -157,8 +157,15 @@ class TestDefaultFeatureFlags:
                 ]
             }
         }
+
+        feature_manager = FeatureManager(feature_flags)
+        assert not feature_manager.is_enabled("Alpha")
+
+        feature_flags["FeatureManagement"]["FeatureFlags"][0]["id"] = 1
+
         with pytest.raises(ValueError, match="Feature flag id field must be a string."):
-            FeatureManager(feature_flags)
+            feature_manager = FeatureManager(feature_flags)
+            feature_manager.is_enabled(1)
 
         feature_flags["FeatureManagement"]["FeatureFlags"][0]["id"] = "featureFlagId"
         feature_flags["FeatureManagement"]["FeatureFlags"][0]["enabled"] = "true"
@@ -176,3 +183,4 @@ class TestDefaultFeatureFlags:
 
         with pytest.raises(ValueError, match="Feature flag featureFlagId is missing filter name."):
             FeatureManager(feature_flags)
+            feature_manager.is_enabled("featureFlagId")

@@ -44,11 +44,11 @@ class FeatureManager:
         if not feature_flags:
             feature_flags = feature_management
 
-        feature_flag_dict = feature_flags.get(feature_flag_name)
-        if not feature_flag_dict:
-            return None
+        for feature_flag in feature_flags:
+            if feature_flag.get("id") == feature_flag_name:
+                return  FeatureFlag.convert_from_json(feature_flag) 
         
-        return FeatureFlag.convert_from_json(feature_flag_dict)
+        return None
 
     def is_enabled(self, feature_flag_id, **kwargs):
         """
