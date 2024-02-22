@@ -19,15 +19,6 @@ extensions = ["myst_parser", "sphinx.ext.autodoc", "sphinx.ext.coverage", "sphin
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-autodoc_default_options = {
-    "members": True,
-    "undoc-members": True,
-}
-
-autosummary_mock_imports = [
-    "microsoft.featuremanagement._models",
-]
-
 # -- Options for HTML output -------------------------------------------------\
 
 html_theme = "sphinx_rtd_theme"
