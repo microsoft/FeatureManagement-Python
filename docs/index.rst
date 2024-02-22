@@ -14,15 +14,4 @@ Module contents
 
 .. automodule:: microsoft.featuremanagement
    :members:
-     automethod:: __init__
    :undoc-members:
-   :show-inheritance:
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
