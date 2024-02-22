@@ -47,8 +47,8 @@ A Json file with the following format can be used to load feature flags.
 
 ```json
 {
-    "FeatureManagement": {
-        "FeatureFlags": [
+    "feature_management": {
+        "feature_flags": [
             {
                 "id": "Alpha",
                 "description": "",
@@ -88,8 +88,8 @@ print("Alpha is ", feature_manager.is_enabled("Alpha"))
 from microsoft.featuremanagement import FeatureManager
 
 feature_flags = {
-    "FeatureManagement": {
-        "FeatureFlags": [
+    "feature_management": {
+        "feature_flags": [
             {
                 "id": "Alpha",
                 "description": "",

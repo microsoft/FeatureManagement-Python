@@ -11,7 +11,6 @@ from email.utils import parsedate_to_datetime
 from ._featurefilters import FeatureFilter
 from .._defaultfilters import (
     TargetingFilter as SyncTargetingFilter,
-    TargetingException,
     TimeWindowFilter as SyncTimeWindowFilter,
     FEATURE_FLAG_NAME_KEY,
     DEFAULT_ROLLOUT_PERCENTAGE_KEY,

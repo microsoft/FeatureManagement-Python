@@ -13,8 +13,8 @@ class TestFeatureManagemerRefresh:
     # method: feature_manager_creation
     def test_refresh(self):
         feature_flags = {
-            "FeatureManagement": {
-                "FeatureFlags": [
+            "feature_management": {
+                "feature_flags": [
                     {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": []}},
                 ]
             }
@@ -23,7 +23,7 @@ class TestFeatureManagemerRefresh:
         assert feature_manager is not None
         assert feature_manager.is_enabled("Alpha")
 
-        feature_flags.get("FeatureManagement").get("FeatureFlags")[0]["enabled"] = "false"
+        feature_flags.get("feature_management").get("feature_flags")[0]["enabled"] = "false"
 
         assert not feature_manager.is_enabled("Alpha")
 
@@ -31,8 +31,8 @@ class TestFeatureManagemerRefresh:
     @pytest.mark.asyncio
     async def test_refresh_async(self):
         feature_flags = {
-            "FeatureManagement": {
-                "FeatureFlags": [
+            "feature_management": {
+                "feature_flags": [
                     {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": []}},
                 ]
             }
@@ -41,6 +41,6 @@ class TestFeatureManagemerRefresh:
         assert feature_manager is not None
         assert await feature_manager.is_enabled("Alpha")
 
-        feature_flags.get("FeatureManagement").get("FeatureFlags")[0]["enabled"] = "false"
+        feature_flags.get("feature_management").get("feature_flags")[0]["enabled"] = "false"
 
         assert not await feature_manager.is_enabled("Alpha")

@@ -7,12 +7,12 @@ import pytest
 from microsoft.featuremanagement import FeatureManager
 
 
-class TestDefaultFeatureFlags:
+class TestDefaultfeature_flags:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_targeting(self):
         feature_flags = {
-            "FeatureManagement": {
-                "FeatureFlags": [
+            "feature_management": {
+                "feature_flags": [
                     {
                         "id": "Target",
                         "enabled": "true",
@@ -49,8 +49,8 @@ class TestDefaultFeatureFlags:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_time_window(self):
         feature_flags = {
-            "FeatureManagement": {
-                "FeatureFlags": [
+            "feature_management": {
+                "feature_flags": [
                     {
                         "id": "Alpha",
                         "enabled": "true",
@@ -151,8 +151,8 @@ class TestDefaultFeatureFlags:
 
     def test_feature_manager_invalid_feature_flag(self):
         feature_flags = {
-            "FeatureManagement": {
-                "FeatureFlags": [
+            "feature_management": {
+                "feature_flags": [
                     {},
                 ]
             }
@@ -161,25 +161,25 @@ class TestDefaultFeatureFlags:
         feature_manager = FeatureManager(feature_flags)
         assert not feature_manager.is_enabled("Alpha")
 
-        feature_flags["FeatureManagement"]["FeatureFlags"][0]["id"] = 1
+        feature_flags["feature_management"]["feature_flags"][0]["id"] = 1
 
         with pytest.raises(ValueError, match="Feature flag id field must be a string."):
             feature_manager = FeatureManager(feature_flags)
             feature_manager.is_enabled(1)
 
-        feature_flags["FeatureManagement"]["FeatureFlags"][0]["id"] = "featureFlagId"
-        feature_flags["FeatureManagement"]["FeatureFlags"][0]["enabled"] = "true"
+        feature_flags["feature_management"]["feature_flags"][0]["id"] = "featureFlagId"
+        feature_flags["feature_management"]["feature_flags"][0]["enabled"] = "true"
 
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
-        feature_flags["FeatureManagement"]["FeatureFlags"][0]["conditions"] = {}
-        feature_flags["FeatureManagement"]["FeatureFlags"][0]["conditions"]["client_filters"] = []
+        feature_flags["feature_management"]["feature_flags"][0]["conditions"] = {}
+        feature_flags["feature_management"]["feature_flags"][0]["conditions"]["client_filters"] = []
 
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
-        feature_flags["FeatureManagement"]["FeatureFlags"][0]["conditions"]["client_filters"].append({})
+        feature_flags["feature_management"]["feature_flags"][0]["conditions"]["client_filters"].append({})
 
         with pytest.raises(ValueError, match="Feature flag featureFlagId is missing filter name."):
             FeatureManager(feature_flags)

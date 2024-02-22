@@ -9,8 +9,8 @@ from ._featurefilters import FeatureFilter
 from ._models._feature_flag import FeatureFlag
 import logging
 
-FEATURE_MANAGEMENT_KEY = "FeatureManagement"
-FEATURE_FLAG_KEY = "FeatureFlags"
+FEATURE_MANAGEMENT_KEY = "feature_management"
+FEATURE_FLAG_KEY = "feature_flags"
 
 PROVIDED_FEATURE_FILTERS = "feature_filters"
 FEATURE_FILTER_NAME = "name"
