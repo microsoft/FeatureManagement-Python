@@ -21,7 +21,7 @@ class FeatureManager(SyncFeatureManager):
     Feature Manager that determines if a feature flag is enabled for the given context
     """
 
-    def __init__(self, configuraiton, **kwargs):
+    def __init__(self, configuration, **kwargs):
         self._filters = {}
         self._configuration = configuraiton
 
