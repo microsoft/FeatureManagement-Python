@@ -39,10 +39,10 @@ class FeatureManager:
     def _get_feature_flag(self, feature_flag_name):
         feature_management = self._configuration.get(FEATURE_MANAGEMENT_KEY)
         if not feature_management:
-            feature_management = self._configuration
+            return None
         feature_flags = feature_management.get(FEATURE_FLAG_KEY)
         if not feature_flags:
-            feature_flags = feature_management
+            return None
 
         for feature_flag in feature_flags:
             if feature_flag.get("id") == feature_flag_name:
