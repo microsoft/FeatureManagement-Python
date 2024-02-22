@@ -1,11 +1,22 @@
-Welcome to FeatureManagement Python's documentation!
-====================================================
+.. include:: ../README.md
+   :parser: myst_parser.sphinx_
+
+Subpackages
+-----------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 4
 
-   microsoft.featuremanagement
+   microsoft.featuremanagement.aio
+
+Module contents
+---------------
+
+.. automodule:: microsoft.featuremanagement
+   :members:
+     automethod:: __init__
+   :undoc-members:
+   :show-inheritance:
 
 
 
