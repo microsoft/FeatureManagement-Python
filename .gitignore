@@ -402,3 +402,10 @@ build/
 .DS_Store
 *.egg-info/
 .vscode/**
+
+# Sphinx
+docs/_build/
+docs/_static
+docs/_templates
+docs/doctrees
+docs/html
