@@ -402,3 +402,5 @@ build/
 .DS_Store
 *.egg-info/
 .vscode/**
+
+dist/*
