@@ -16,8 +16,8 @@ class TestFeatureManagemer:
     # method: feature_manager_creation
     def test_basic_feature_manager_creation(self):
         feature_flags = {
-            "FeatureManagement": {
-                "FeatureFlags": [
+            "feature_management": {
+                "feature_flags": [
                     {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": []}},
                     {"id": "Beta", "description": "", "enabled": "false", "conditions": {"client_filters": []}},
                 ]
@@ -31,8 +31,8 @@ class TestFeatureManagemer:
     # method: feature_manager_creation
     def test_feature_manager_creation_with_filters(self):
         feature_flags = {
-            "FeatureManagement": {
-                "FeatureFlags": [
+            "feature_management": {
+                "feature_flags": [
                     {
                         "id": "Alpha",
                         "description": "",
