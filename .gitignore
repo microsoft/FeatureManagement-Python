@@ -403,6 +403,8 @@ build/
 *.egg-info/
 .vscode/**
 
+dist/*
+
 # Sphinx
 docs/_build/
 docs/_static

@@ -1,0 +1,7 @@
+recursive-include tests *.py
+include *.md
+include LICENSE
+include microsoft/__init__.py
+include microsoft/featuremanagement/*.py
+include microsoft/featuremanagement/aio/*.py
+recursive-include samples *.py *.json
