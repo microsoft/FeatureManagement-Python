@@ -404,3 +404,10 @@ build/
 .vscode/**
 
 dist/*
+
+# Sphinx
+docs/_build/
+docs/_static
+docs/_templates
+docs/doctrees
+docs/html
