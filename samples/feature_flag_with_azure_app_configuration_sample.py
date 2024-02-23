@@ -1,6 +1,6 @@
 from microsoft.featuremanagement import FeatureManager
 from random_filter import RandomFilter
-from azure.appconfiguration.provider import load, SettingSelector
+from azure.appconfiguration.provider import load
 import os
 from sample_utilities import get_authority, get_audience, get_credential, get_client_modifications
 import json
@@ -8,15 +8,12 @@ import os
 import sys
 from time import sleep
 
-endpoint = os.environ.get("APPCONFIGURATION_ENDPOINT_STRING")
-authority = get_authority(endpoint)
-audience = get_audience(authority)
-credential = get_credential(authority)
 kwargs = get_client_modifications()
+connection_string = os.environ["APPCONFIGURATION_CONNECTION_STRING"]
 
 # Connecting to Azure App Configuration using AAD
 config = load(
-    endpoint=endpoint, credential=credential, feature_flag_enabled=True, feature_flag_refresh_enabled=True, **kwargs
+    connection_string=connection_string, feature_flag_enabled=True, feature_flag_refresh_enabled=True, **kwargs
 )
 
 feature_manager = FeatureManager(config, feature_filters=[RandomFilter()])
