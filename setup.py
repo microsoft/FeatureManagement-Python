@@ -6,7 +6,6 @@
 # license information.
 # --------------------------------------------------------------------------
 
-import sys
 import re
 import os.path
 from io import open
@@ -33,14 +32,6 @@ with open("README.md", encoding="utf-8") as f:
 with open("CHANGELOG.md", encoding="utf-8") as f:
     changelog = f.read()
 
-exclude_packages = [
-    "tests",
-    "tests.*",
-    "samples",
-]
-if sys.version_info < (3, 5, 3):
-    exclude_packages.extend(["*.aio", "*.aio.*"])
-
 setup(
     name=PACKAGE_NAME,
     version=version,
@@ -65,7 +56,7 @@ setup(
         "License :: OSI Approved :: MIT License",
     ],
     zip_safe=False,
-    packages=find_packages(exclude=exclude_packages),
+    packages=find_packages(),
     python_requires=">=3.6",
     install_requires=[],
 )
