@@ -9,7 +9,6 @@ from microsoft.featuremanagement.aio import FeatureManager as AsyncFeatureManage
 
 
 class TestFeatureManagemerRefresh:
-
     # method: feature_manager_creation
     def test_refresh(self):
         feature_flags = {

@@ -5,9 +5,14 @@
 # --------------------------------------------------------------------------
 import pytest
 from microsoft.featuremanagement.aio import FeatureManager
+from unittest import IsolatedAsyncioTestCase
 
 
-class TestDefaultfeature_flags:
+class TestDefaultfeature_flags(IsolatedAsyncioTestCase):
+    def test_invalid_feature_flags(self):
+        with self.assertRaises(AttributeError):
+            FeatureManager("")
+
     # method: feature_manager_creation
     @pytest.mark.asyncio
     async def test_feature_manager_creation_with_targeting(self):

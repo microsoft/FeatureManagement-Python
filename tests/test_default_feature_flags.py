@@ -5,9 +5,14 @@
 # --------------------------------------------------------------------------
 import pytest
 from microsoft.featuremanagement import FeatureManager
+import unittest
 
 
-class TestDefaultfeature_flags:
+class TestDefaultfeature_flags(unittest.TestCase):
+    def test_invalid_feature_flags(self):
+        with self.assertRaises(AttributeError):
+            FeatureManager("")
+
     # method: feature_manager_creation
     def test_feature_manager_creation_with_targeting(self):
         feature_flags = {

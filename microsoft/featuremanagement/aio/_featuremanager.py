@@ -19,11 +19,18 @@ import logging
 class FeatureManager(SyncFeatureManager):
     """
     Feature Manager that determines if a feature flag is enabled for the given context
+
+    :param configuration: Configuration object
+    :type configuration: dict
+    :keyword feature_filters: Custom filters to be used for evaluating feature flags
+    :paramtype feature_filters: list[FeatureFilter]
     """
 
     def __init__(self, configuration, **kwargs):
         self._filters = {}
-        self._configuration = configuraiton
+        if configuration is None or not isinstance(configuration, dict):
+            raise AttributeError("Configuration must be a non-empty dictionary")
+        self._configuration = configuration
 
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 

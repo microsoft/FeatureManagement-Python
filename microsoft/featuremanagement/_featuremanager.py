@@ -23,11 +23,18 @@ FEATURE_FILTER_PARAMETERS = "parameters"
 class FeatureManager:
     """
     Feature Manager that determines if a feature flag is enabled for the given context
+
+    :param configuration: Configuration object
+    :type configuration: dict
+    :keyword feature_filters: Custom filters to be used for evaluating feature flags
+    :paramtype feature_filters: list[FeatureFilter]
     """
 
-    def __init__(self, configuraiton, **kwargs):
+    def __init__(self, configuration, **kwargs):
         self._filters = {}
-        self._configuration = configuraiton
+        if configuration is None or not isinstance(configuration, dict):
+            raise AttributeError("Configuration must be a non-empty dictionary")
+        self._configuration = configuration
 
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
@@ -38,10 +45,10 @@ class FeatureManager:
 
     def _get_feature_flag(self, feature_flag_name):
         feature_management = self._configuration.get(FEATURE_MANAGEMENT_KEY)
-        if not feature_management:
+        if not feature_management or not isinstance(feature_management, dict):
             return None
         feature_flags = feature_management.get(FEATURE_FLAG_KEY)
-        if not feature_flags:
+        if not feature_flags or not isinstance(feature_flags, list):
             return None
 
         for feature_flag in feature_flags:

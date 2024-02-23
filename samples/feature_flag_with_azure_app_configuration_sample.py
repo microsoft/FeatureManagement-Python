@@ -15,7 +15,9 @@ credential = get_credential(authority)
 kwargs = get_client_modifications()
 
 # Connecting to Azure App Configuration using AAD
-config = load(endpoint=endpoint, credential=credential, feature_flag_enabled=True, feature_flag_refresh_enabled=True, **kwargs)
+config = load(
+    endpoint=endpoint, credential=credential, feature_flag_enabled=True, feature_flag_refresh_enabled=True, **kwargs
+)
 
 feature_manager = FeatureManager(config, feature_filters=[RandomFilter()])
 
