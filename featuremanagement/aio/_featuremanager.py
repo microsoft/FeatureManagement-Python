@@ -13,6 +13,7 @@ from .._featuremanager import (
     REQUIREMENT_TYPE_ALL,
     FEATURE_FILTER_PARAMETERS,
 )
+from collections.abc import Mapping
 import logging
 
 
@@ -21,14 +22,14 @@ class FeatureManager(SyncFeatureManager):
     Feature Manager that determines if a feature flag is enabled for the given context
 
     :param configuration: Configuration object
-    :type configuration: dict
+    :type configuration: Mapping
     :keyword feature_filters: Custom filters to be used for evaluating feature flags
     :paramtype feature_filters: list[FeatureFilter]
     """
 
     def __init__(self, configuration, **kwargs):
         self._filters = {}
-        if configuration is None or not isinstance(configuration, dict):
+        if configuration is None or not isinstance(configuration, Mapping):
             raise AttributeError("Configuration must be a non-empty dictionary")
         self._configuration = configuration
 
