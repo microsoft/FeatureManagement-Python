@@ -7,6 +7,7 @@
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from ._models._feature_flag import FeatureFlag
+from collections.abc import Mapping
 import logging
 
 FEATURE_MANAGEMENT_KEY = "feature_management"
@@ -25,14 +26,14 @@ class FeatureManager:
     Feature Manager that determines if a feature flag is enabled for the given context
 
     :param configuration: Configuration object
-    :type configuration: dict
+    :type configuration: Mapping
     :keyword feature_filters: Custom filters to be used for evaluating feature flags
     :paramtype feature_filters: list[FeatureFilter]
     """
 
     def __init__(self, configuration, **kwargs):
         self._filters = {}
-        if configuration is None or not isinstance(configuration, dict):
+        if configuration is None or not isinstance(configuration, Mapping):
             raise AttributeError("Configuration must be a non-empty dictionary")
         self._configuration = configuration
 
@@ -45,7 +46,7 @@ class FeatureManager:
 
     def _get_feature_flag(self, feature_flag_name):
         feature_management = self._configuration.get(FEATURE_MANAGEMENT_KEY)
-        if not feature_management or not isinstance(feature_management, dict):
+        if not feature_management or not isinstance(feature_management, Mapping):
             return None
         feature_flags = feature_management.get(FEATURE_FLAG_KEY)
         if not feature_flags or not isinstance(feature_flags, list):
