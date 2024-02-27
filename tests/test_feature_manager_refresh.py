@@ -4,8 +4,8 @@
 # license information.
 # --------------------------------------------------------------------------
 import pytest
-from microsoft.featuremanagement import FeatureManager
-from microsoft.featuremanagement.aio import FeatureManager as AsyncFeatureManager
+from featuremanagement import FeatureManager
+from featuremanagement.aio import FeatureManager as AsyncFeatureManager
 
 
 class TestFeatureManagemerRefresh:

@@ -1,10 +1,10 @@
-microsoft.featuremanagement.aio package
+featuremanagement.aio package
 =======================================
 
 Module contents
 ---------------
 
-.. automodule:: microsoft.featuremanagement.aio
+.. automodule:: featuremanagement.aio
    :members:
    :undoc-members:
    :show-inheritance:

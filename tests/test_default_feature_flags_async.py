@@ -4,7 +4,7 @@
 # license information.
 # --------------------------------------------------------------------------
 import pytest
-from microsoft.featuremanagement.aio import FeatureManager
+from featuremanagement.aio import FeatureManager
 from unittest import IsolatedAsyncioTestCase
 
 

@@ -1,4 +1,4 @@
-from microsoft.featuremanagement import FeatureManager
+from featuremanagement import FeatureManager
 from random_filter import RandomFilter
 from azure.appconfiguration.provider import load
 import os

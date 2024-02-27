@@ -23,7 +23,7 @@ You can use feature flags from the Azure App Configuration service, a json file,
 ### Use feature flags from Azure App Configuration
 
 ```python
-from microsoft.featuremanagement import FeatureManager
+from featuremanagement import FeatureManager
 from azure.appconfiguration.provider import load
 from azure.identity import DefaultAzureCredential
 import os
@@ -65,7 +65,7 @@ A Json file with the following format can be used to load feature flags.
 Load feature flags from a json file.
 
 ```python
-from microsoft.featuremanagement import FeatureManager
+from featuremanagement import FeatureManager
 import json
 import os
 import sys
@@ -85,7 +85,7 @@ print("Alpha is ", feature_manager.is_enabled("Alpha"))
 ### Use feature flags from a dictionary
 
 ```python
-from microsoft.featuremanagement import FeatureManager
+from featuremanagement import FeatureManager
 
 feature_flags = {
     "feature_management": {
