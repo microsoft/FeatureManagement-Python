@@ -39,7 +39,6 @@ setup(
     description="Microsoft {} Library for Python".format(PACKAGE_PPRINT_NAME),
     long_description=readme + "\n\n" + changelog,
     long_description_content_type="text/markdown",
-    license="MIT License",
     author="Microsoft Corporation",
     author_email="appconfig@microsoft.com",
     url="https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/appconfiguration/feature-management",

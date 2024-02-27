@@ -10,3 +10,33 @@ line-length = 120
 max-line-length = 120
 min-public-methods = 1
 disable = ["missing-module-docstring"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Microsoft-FeatureManagement"
+version = "1.0.0b1"
+authors = [
+  { name="Microsoft Corporation", email="appconfig@microsoft.com" },
+]
+description = "A library for enabling/disabling features at runtime."
+readme = "README.md"
+license.file = "LICENSE"
+requires-python = ">=3.8"
+classifiers = [
+        "Development Status :: 5 - Production/Stable",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "License :: OSI Approved :: MIT License",
+    ]
+
+[project.urls]
+Homepage = "https://github.com/microsoft/FeatureManagement-Python"
+Issues = "https://github.com/microsoft/FeatureManagement-Python/issues"
