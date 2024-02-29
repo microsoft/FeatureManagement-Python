@@ -129,7 +129,7 @@ The full schema for a feature Flag can be found [here](https://github.com/Azure/
             {
                 "name": "MyFilter",
                 "parameters": {
-                    ...
+                    
                 }
             }
         ]
@@ -255,7 +255,7 @@ The `evaluate` method is called when checking if a feature flag is enabled. The 
 {
     "name": "CustomFilter",
     "parameters": {
-        ...
+        
     }
 }
 ```
