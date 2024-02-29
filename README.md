@@ -120,7 +120,7 @@ Feature Flags are objects that define how Feature Management enables/disables a 
 
 The full schema for a feature Flag can be found [here](https://github.com/Azure/AppConfiguration/blob/main/docs/FeatureManagement/FeatureFlag.v1.1.0.schema.json).
 
-```json
+```javascript
 {
     "id": "Alpha",
     "enabled": "true",
@@ -129,7 +129,7 @@ The full schema for a feature Flag can be found [here](https://github.com/Azure/
             {
                 "name": "MyFilter",
                 "parameters": {
-                    
+                    ...
                 }
             }
         ]
@@ -251,11 +251,11 @@ feature_manager = FeatureManager(feature_flags, feature_filters={MyCustomFilter(
 
 The `evaluate` method is called when checking if a feature flag is enabled. The `context` parameter contains information about the feature filter from the `parameters` field of the feature filter. Any additional parameters can be passed in as keyword arguments when calling `is_enabled`.
 
-```json
+```javascript
 {
     "name": "CustomFilter",
     "parameters": {
-        
+        ...
     }
 }
 ```
