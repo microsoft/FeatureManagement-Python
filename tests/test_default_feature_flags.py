@@ -4,7 +4,7 @@
 # license information.
 # --------------------------------------------------------------------------
 import pytest
-from microsoft.featuremanagement import FeatureManager
+from featuremanagement import FeatureManager
 import unittest
 
 

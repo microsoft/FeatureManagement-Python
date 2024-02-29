@@ -23,7 +23,7 @@ You can use feature flags from the Azure App Configuration service, a json file,
 ### Use feature flags from Azure App Configuration
 
 ```python
-from microsoft.featuremanagement import FeatureManager
+from featuremanagement import FeatureManager
 from azure.appconfiguration.provider import load
 from azure.identity import DefaultAzureCredential
 import os
@@ -65,7 +65,7 @@ A Json file with the following format can be used to load feature flags.
 Load feature flags from a json file.
 
 ```python
-from microsoft.featuremanagement import FeatureManager
+from featuremanagement import FeatureManager
 import json
 import os
 import sys
@@ -85,7 +85,7 @@ print("Alpha is ", feature_manager.is_enabled("Alpha"))
 ### Use feature flags from a dictionary
 
 ```python
-from microsoft.featuremanagement import FeatureManager
+from featuremanagement import FeatureManager
 
 feature_flags = {
     "feature_management": {
@@ -120,7 +120,7 @@ Feature Flags are objects that define how Feature Management enables/disables a 
 
 The full schema for a feature Flag can be found [here](https://github.com/Azure/AppConfiguration/blob/main/docs/FeatureManagement/FeatureFlag.v1.1.0.schema.json).
 
-```json
+```javascript
 {
     "id": "Alpha",
     "enabled": "true",
@@ -251,7 +251,7 @@ feature_manager = FeatureManager(feature_flags, feature_filters={MyCustomFilter(
 
 The `evaluate` method is called when checking if a feature flag is enabled. The `context` parameter contains information about the feature filter from the `parameters` field of the feature filter. Any additional parameters can be passed in as keyword arguments when calling `is_enabled`.
 
-```json
+```javascript
 {
     "name": "CustomFilter",
     "parameters": {

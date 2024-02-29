@@ -7,11 +7,11 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   microsoft.featuremanagement.aio
+   featuremanagement.aio
 
 Module contents
 ---------------
 
-.. automodule:: microsoft.featuremanagement
+.. automodule:: featuremanagement
    :members:
    :undoc-members:

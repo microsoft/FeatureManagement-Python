@@ -5,9 +5,9 @@ import os
 import sys
 import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.abspath("../microsoft"))
+sys.path.insert(0, os.path.abspath("../featuremanagement"))
 
-project = "Microsoft FeatureManagement"
+project = "FeatureManagement"
 copyright = "2024, Microsoft"
 author = "Microsoft"
 release = "1.0.0b1"

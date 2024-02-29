@@ -1,4 +1,4 @@
-from microsoft.featuremanagement import FeatureManager
+from featuremanagement import FeatureManager
 from random_filter import RandomFilter
 from azure.appconfiguration.provider import load
 import os
@@ -7,9 +7,7 @@ from time import sleep
 connection_string = os.environ["APPCONFIGURATION_CONNECTION_STRING"]
 
 # Connecting to Azure App Configuration using AAD
-config = load(
-    connection_string=connection_string, feature_flag_enabled=True, feature_flag_refresh_enabled=True
-)
+config = load(connection_string=connection_string, feature_flag_enabled=True, feature_flag_refresh_enabled=True)
 
 feature_manager = FeatureManager(config, feature_filters=[RandomFilter()])
 
