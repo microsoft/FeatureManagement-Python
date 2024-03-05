@@ -12,8 +12,10 @@ from .._featuremanager import (
     FEATURE_FILTER_NAME,
     REQUIREMENT_TYPE_ALL,
     FEATURE_FILTER_PARAMETERS,
+    FEATURE_MANAGEMENT_KEY,
 )
 from collections.abc import Mapping
+import copy
 import logging
 
 
@@ -32,6 +34,8 @@ class FeatureManager(SyncFeatureManager):
         if configuration is None or not isinstance(configuration, Mapping):
             raise AttributeError("Configuration must be a non-empty dictionary")
         self._configuration = configuration
+        self._cache = {}
+        self._copy = copy.deepcopy(configuration.get(FEATURE_MANAGEMENT_KEY))
 
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
@@ -49,7 +53,14 @@ class FeatureManager(SyncFeatureManager):
         :return: True if the feature flag is enabled for the given context
         :rtype: bool
         """
-        feature_flag = self._get_feature_flag(feature_flag_id)
+        if not self._copy is self._configuration.get(FEATURE_MANAGEMENT_KEY):
+            self._cache = {}
+            self._copy = copy.deepcopy(self._configuration.get(FEATURE_MANAGEMENT_KEY))
+        if not self._cache.get(feature_flag_id):
+            feature_flag = self._get_feature_flag(feature_flag_id)
+            self._cache[feature_flag_id] = feature_flag
+        else:
+            feature_flag = self._cache.get(feature_flag_id)
 
         if not feature_flag:
             logging.warning("Feature flag {} not found".format(feature_flag_id))
