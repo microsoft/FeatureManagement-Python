@@ -70,7 +70,7 @@ class FeatureManager:
         :return: True if the feature flag is enabled for the given context
         :rtype: bool
         """
-        if not self._copy is self._configuration.get(FEATURE_MANAGEMENT_KEY):
+        if not self._copy is not self._configuration.get(FEATURE_MANAGEMENT_KEY):
             self._cache = {}
             self._copy = copy.deepcopy(self._configuration.get(FEATURE_MANAGEMENT_KEY))
         if not self._cache.get(feature_flag_id):
