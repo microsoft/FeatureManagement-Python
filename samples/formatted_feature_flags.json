@@ -123,6 +123,82 @@
                         }
                     ]
                 }
+            },
+            {
+                "id": "Override_True",
+                "description": "",
+                "enabled": "true",
+                "conditions": {
+                    "client_filters": []
+                },
+                "Allocation": {
+                    "default_when_enabled": "True_Override"
+                },
+                "Variants": [
+                    {
+                        "name": "True_Override",
+                        "status_override": "False"
+                    }
+                ]
+        
+            },
+            {
+                "id": "Override_False",
+                "description": "",
+                "enabled": "false",
+                "conditions": {
+                    "client_filters": []
+                },
+                "Allocation": {
+                    "default_when_disabled": "False_Override"
+                },
+                "Variants": [
+                    {
+                        "name": "False_Override",
+                        "status_override": "True"
+                    }
+                ]
+        
+            },
+            {
+                "id": "Override_Variant",
+                "description": "",
+                "enabled": "true",
+                "conditions": {
+                    "client_filters": [
+                        {
+                            "name": "Microsoft.Targeting",
+                            "parameters": {
+                                "Audience": {
+                                    "Users": [],
+                                    "Groups": [],
+                                    "DefaultRolloutPercentage": 100,
+                                    "Exclusion": {
+                                        "Users": [],
+                                        "Groups": []
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Allocation": {
+                    "users": [
+                        {
+                            "variant": "True_Override",
+                            "users": [
+                                "Adam"
+                            ]
+                        }
+                    ]
+                },
+                "Variants": [
+                    {
+                        "name": "True_Override",
+                        "status_override": "False"
+                    }
+                ]
+        
             }
         ]
     }
