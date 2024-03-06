@@ -21,7 +21,9 @@ class TestFeatureManagemerRefresh:
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
         assert feature_manager.is_enabled("Alpha")
+        assert "Alpha" in feature_manager._cache
         assert feature_manager.is_enabled("Alpha")  # test cache
+        assert "Alpha" in feature_manager._cache
 
         feature_flags["feature_management"] = {
             "feature_flags": [
@@ -29,7 +31,10 @@ class TestFeatureManagemerRefresh:
             ]
         }
 
+        assert not feature_manager.is_enabled("Beta") # resets cache
+        assert "Alpha" not in feature_manager._cache
         assert not feature_manager.is_enabled("Alpha")
+        assert "Alpha" in feature_manager._cache
 
     # method: feature_manager_creation
     @pytest.mark.asyncio
@@ -44,7 +49,9 @@ class TestFeatureManagemerRefresh:
         feature_manager = AsyncFeatureManager(feature_flags)
         assert feature_manager is not None
         assert await feature_manager.is_enabled("Alpha")
+        assert "Alpha" in feature_manager._cache
         assert await feature_manager.is_enabled("Alpha")  # test cache
+        assert "Alpha" in feature_manager._cache
 
         feature_flags["feature_management"] = {
             "feature_flags": [
@@ -52,4 +59,7 @@ class TestFeatureManagemerRefresh:
             ]
         }
 
+        assert not await feature_manager.is_enabled("Beta") # resets cache
+        assert "Alpha" not in feature_manager._cache
         assert not await feature_manager.is_enabled("Alpha")
+        assert "Alpha" in feature_manager._cache
