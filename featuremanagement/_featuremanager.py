@@ -38,7 +38,6 @@ class FeatureManager:
         if configuration is None or not isinstance(configuration, Mapping):
             raise AttributeError("Configuration must be a non-empty dictionary")
         self._configuration = configuration
-
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
         for filter in filters:
@@ -59,25 +58,35 @@ class FeatureManager:
                 return FeatureFlag.convert_from_json(feature_flag)
 
         return None
-    
+
     @staticmethod
     def _check_default_disabled_variant(feature_flag):
-        if not feature_flag.variants or not feature_flag.allocation or not feature_flag.allocation.default_when_disabled:
+        if not feature_flag.allocation:
             return False
-        for variant in feature_flag.variants:
-            if variant.name == feature_flag.allocation.default_when_disabled:
-                return variant.status_override
-        return False
-    
+        return FeatureManager._check_variant_override(
+            feature_flag.variants, feature_flag.allocation.default_when_disabled, False
+        )
+
     @staticmethod
     def _check_default_enabled_variant(feature_flag):
-        if not feature_flag.variants or not feature_flag.allocation or not feature_flag.allocation.default_when_enabled:
+        if not feature_flag.allocation:
             return True
-        for variant in feature_flag.variants:
-            if variant.name == feature_flag.allocation.default_when_enabled:
-                return variant.status_override
-        return True
-    
+        return FeatureManager._check_variant_override(
+            feature_flag.variants, feature_flag.allocation.default_when_enabled, True
+        )
+
+    @staticmethod
+    def _check_variant_override(variants, default_variant_name, status):
+        if not variants or not default_variant_name:
+            return status
+        for variant in variants:
+            if variant.name == default_variant_name:
+                if variant.status_override == "Enabled":
+                    return True
+                elif variant.status_override == "Disabled":
+                    return False
+        return status
+
     @staticmethod
     def _is_targeted(context_id):
         """Determine if the user is targeted for the given context"""
@@ -90,28 +99,29 @@ class FeatureManager:
     def _assign_variant(self, feature_flag, **kwargs):
         if not feature_flag.variants or not feature_flag.allocation:
             return None
-        if feature_flag.allocation.users:
+        if feature_flag.allocation.user:
             user = kwargs.get("user")
             if user:
-                for user_allocation in feature_flag.allocation.users:
+                for user_allocation in feature_flag.allocation.user:
                     if user in user_allocation.users:
                         return user_allocation.variant
-        if feature_flag.allocation.groups:
+        if feature_flag.allocation.group:
             groups = kwargs.get("groups")
             if groups:
-                for group_allocation in feature_flag.allocation.groups:
+                for group_allocation in feature_flag.allocation.group:
                     for group in groups:
                         if group in group_allocation.groups:
                             return group_allocation.variant
         if feature_flag.allocation.percentile:
-            percentile = kwargs.get("percentile")
-            if percentile:
-                context_id = user + "\n" + group + "\n" + feature_flag.id + "\n" + feature_flag.allocation.seed
+            user = kwargs.get("user", "")
+            if user:
+                context_id = user + "\n" + feature_flag.id + "\n" + feature_flag.allocation.seed
                 box = self._is_targeted(context_id)
                 for percentile_allocation in feature_flag.allocation.percentile:
+                    if box == 100 and percentile_allocation.percentile_to == 100:
+                        return percentile_allocation.variant
                     if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
                         return percentile_allocation.variant
-                    
         return None
 
     def is_enabled(self, feature_flag_id, **kwargs):
@@ -132,15 +142,15 @@ class FeatureManager:
 
         if not feature_flag.enabled:
             # Feature flags that are disabled are always disabled
-            return self._check_default_disabled_variant(feature_flag)
+            return FeatureManager._check_default_disabled_variant(feature_flag)
 
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
 
         if len(feature_filters) == 0:
             # Feature flags without any filters return evaluate
-            return self._check_default_enabled_variant(feature_flag)
-        
+            return FeatureManager._check_default_enabled_variant(feature_flag)
+
         result = False
 
         for feature_filter in feature_filters:
@@ -156,18 +166,14 @@ class FeatureManager:
             # If this is reached, and true, default return value is true, else false
             result = feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL
 
-
         if feature_flag.allocation and feature_flag.variants:
             variant_name = self._assign_variant(feature_flag, **kwargs)
-            if not variant_name:
-                return result
-            for variant in feature_flag.variants:
-                if variant.name == variant_name:
-                    if variant.status_override is not None:
-                        return _convert_boolean_value(variant.status_override)
-                    return result
-        
-        return result
+            if variant_name:
+                return FeatureManager._check_variant_override(feature_flag.variants, variant_name, result)
+
+        if result:
+            return FeatureManager._check_default_enabled_variant(feature_flag)
+        return FeatureManager._check_default_disabled_variant(feature_flag)
 
     def list_feature_flag_names(self):
         """

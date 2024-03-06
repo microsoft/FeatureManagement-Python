@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 
+
 class Variant:
     """
     A class representing a variant configuration assigned by a feature flag.
@@ -25,7 +26,7 @@ class Variant:
         :rtype: str
         """
         return self._name
-    
+
     @property
     def configuration(self):
         """
