@@ -37,12 +37,6 @@ class FeatureConditions:
             if feature_filter.get(FEATURE_FILTER_NAME) is None:
                 raise ValueError("Feature flag {} is missing filter name.".format(feature_flag_id))
 
-    def __repr__(self):
-        return "<FeatureConditions requirement_type={} client_filters={}>".format(
-            self._requirement_type, self._client_filters
-        )
-
-
 class FeatureFlag:
     @classmethod
     def convert_from_json(cls, jsonValue):
@@ -73,10 +67,6 @@ class FeatureFlag:
         if not isinstance(self._enabled, bool):
             raise ValueError("Feature flag {} must be a boolean.".format(self._id))
         self._conditions._validate(self._id)
-
-    def __repr__(self):
-        return "<FeatureFlag name={} enabled={} conditions={}>".format(self._id, self._enabled, self._conditions)
-
 
 def _convert_boolean_value(enabled):
     if isinstance(enabled, bool):
