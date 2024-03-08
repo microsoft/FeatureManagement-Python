@@ -63,7 +63,7 @@ class FeatureManager(SyncFeatureManager):
             feature_flag = self._cache.get(feature_flag_id)
 
         if not feature_flag:
-            logging.warning("Feature flag {} not found".format(feature_flag_id))
+            logging.warning(f"Feature flag {feature_flag_id} not found")
             # Unknown feature flags are disabled by default
             return False
 
