@@ -77,6 +77,26 @@ class TestFeatureManagemer:
         # The fake time window should override the default one
         assert len(feature_manager._filters) == 4
 
+    # method: list_feature_flags
+    def test_list_feature_flags(self):
+        feature_manager = FeatureManager({})
+        assert feature_manager is not None
+        assert len(feature_manager.list_feature_flag_names()) == 0
+
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": []}},
+                    {"id": "Beta", "description": "", "enabled": "false", "conditions": {"client_filters": []}},
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags)
+        assert feature_manager is not None
+        assert feature_manager.is_enabled("Alpha")
+        assert not feature_manager.is_enabled("Beta")
+        assert len(feature_manager.list_feature_flag_names()) == 2
+
 
 class AllwaysOn(FeatureFilter):
     def evaluate(self, context, **kwargs):

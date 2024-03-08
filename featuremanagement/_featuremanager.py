@@ -39,7 +39,7 @@ def _list_feature_flag_names(configuration):
     """
     List of all feature flag names
     """
-    feature_flags = []
+    feature_flag_names = []
     feature_management = configuration.get(FEATURE_MANAGEMENT_KEY)
     if not feature_management or not isinstance(feature_management, Mapping):
         return []
@@ -48,9 +48,9 @@ def _list_feature_flag_names(configuration):
         return []
 
     for feature_flag in feature_flags:
-        feature_flags.append(feature_flag.get("id"))
+        feature_flag_names.append(feature_flag.get("id"))
 
-    return feature_flags
+    return feature_flag_names
 
 
 class FeatureManager:  # pylint: disable=duplicate-code
