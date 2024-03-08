@@ -12,12 +12,12 @@ from .._defaultfilters import (
 
 
 @FeatureFilter.alias("Microsoft.TimeWindow")
-class TimeWindowFilter(SyncTimeWindowFilter, FeatureFilter):
+class TimeWindowFilter(FeatureFilter):
     """
     Feature Filter that determines if the current time is within the time window
     """
 
-    async def evaluate(self, context, **kwargs):  # pylint: disable=useless-parent-delegation, invalid-overridden-method
+    async def evaluate(self, context, **kwargs):
         """
         Determine if the feature flag is enabled for the given context
 
@@ -26,16 +26,17 @@ class TimeWindowFilter(SyncTimeWindowFilter, FeatureFilter):
         :return: True if the current time is within the time window
         :rtype: bool
         """
-        return super().evaluate(context, **kwargs)
+        time_window_filter = SyncTimeWindowFilter()
+        return time_window_filter.evaluate(context, **kwargs)
 
 
 @FeatureFilter.alias("Microsoft.Targeting")
-class TargetingFilter(SyncTargetingFilter, FeatureFilter):
+class TargetingFilter(FeatureFilter):
     """
     Feature Filter that determines if the user is targeted for the feature flag
     """
 
-    async def evaluate(self, context, **kwargs):  # pylint: disable=useless-parent-delegation, invalid-overridden-method
+    async def evaluate(self, context, **kwargs):
         """
         Determine if the feature flag is enabled for the given context
 
@@ -44,4 +45,5 @@ class TargetingFilter(SyncTargetingFilter, FeatureFilter):
         :return: True if the user is targeted for the feature flag
         :rtype: bool
         """
-        return super().evaluate(context, **kwargs)
+        targeting_filter = SyncTargetingFilter()
+        return targeting_filter.evaluate(context, **kwargs)

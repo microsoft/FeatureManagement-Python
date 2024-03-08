@@ -3,19 +3,47 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from abc import abstractmethod
-from .._featurefilters import FeatureFilter as FF
+from abc import ABC, abstractmethod
 
 
-class FeatureFilter(FF):
+class FeatureFilter(ABC):  # pylint: disable=duplicate-code
     """
-    Parent class for all Async feature filters
+    Parent class for all async feature filters
     """
 
     @abstractmethod
-    async def evaluate(self, context, **kwargs):  # pylint: disable=invalid-overridden-method
+    async def evaluate(self, context, **kwargs):
         """
         Determine if the feature flag is enabled for the given context
+
         :param Mapping context: Context for the feature flag
         :paramtype context: Mapping
         """
+
+    @property
+    def name(self):
+        """
+        Get the name of the filter
+
+        :return: Name of the filter, or alias if it exists
+        :rtype: str
+        """  # pylint: disable=duplicate-code
+        if hasattr(self, "_alias"):
+            return self._alias
+        return self.__class__.__name__
+
+    @staticmethod
+    def alias(alias):
+        """
+        Decorator to set the alias for the filter
+
+        :param str alias: Alias for the filter
+        :return: Decorator
+        :rtype: callable
+        """
+
+        def wrapper(cls):
+            cls._alias = alias  # pylint: disable=protected-access
+            return cls
+
+        return wrapper

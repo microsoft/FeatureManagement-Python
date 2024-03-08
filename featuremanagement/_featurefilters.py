@@ -6,7 +6,7 @@
 from abc import ABC, abstractmethod
 
 
-class FeatureFilter(ABC):
+class FeatureFilter(ABC):  # pylint: disable=duplicate-code
     """
     Parent class for all feature filters
     """
@@ -27,7 +27,7 @@ class FeatureFilter(ABC):
 
         :return: Name of the filter, or alias if it exists
         :rtype: str
-        """
+        """  # pylint: disable=duplicate-code
         if hasattr(self, "_alias"):
             return self._alias
         return self.__class__.__name__
