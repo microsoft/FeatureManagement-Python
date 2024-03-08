@@ -19,6 +19,10 @@ class FeatureConditions:
     Represents the conditions for a feature flag
     """
 
+    def __init__(self):
+        self._requirement_type = REQUIREMENT_TYPE_ANY
+        self._client_filters = []
+
     @classmethod
     def convert_from_json(cls, json_value):
         """
@@ -30,12 +34,8 @@ class FeatureConditions:
         :rtype: FeatureConditions
         """
         conditions = cls()
-        conditions._requirement_type = json_value.get(  # pylint: disable=attribute-defined-outside-init
-            FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY
-        )
-        conditions._client_filters = json_value.get(  # pylint: disable=attribute-defined-outside-init
-            FEATURE_FLAG_CLIENT_FILTERS, []
-        )
+        conditions._requirement_type = json_value.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY)
+        conditions._client_filters = json_value.get(FEATURE_FLAG_CLIENT_FILTERS, [])
         return conditions
 
     @property
@@ -71,6 +71,11 @@ class FeatureFlag:
     Represents a feature flag
     """
 
+    def __init__(self):
+        self._id = None
+        self._enabled = False
+        self._conditions = FeatureConditions()
+
     @classmethod
     def convert_from_json(cls, json_value):
         """
@@ -84,13 +89,9 @@ class FeatureFlag:
         feature_flag = cls()
         if not isinstance(json_value, dict):
             raise ValueError("Feature flag must be a dictionary.")
-        feature_flag._id = json_value.get(FEATURE_FLAG_ID)  # pylint: disable=attribute-defined-outside-init
-        feature_flag._enabled = _convert_boolean_value(  # pylint: disable=attribute-defined-outside-init
-            json_value.get(FEATURE_FLAG_ENABLED, True)
-        )
-        feature_flag._conditions = (  # pylint: disable=attribute-defined-outside-init
-            FeatureConditions.convert_from_json(json_value.get(FEATURE_FLAG_CONDITIONS, {}))
-        )
+        feature_flag._id = json_value.get(FEATURE_FLAG_ID)
+        feature_flag._enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, True))
+        feature_flag._conditions = FeatureConditions.convert_from_json(json_value.get(FEATURE_FLAG_CONDITIONS, {}))
         feature_flag._validate()
         return feature_flag
 
