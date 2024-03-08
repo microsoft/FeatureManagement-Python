@@ -4,6 +4,7 @@
 # license information.
 # --------------------------------------------------------------------------
 from featuremanagement import FeatureManager, FeatureFilter
+import pytest
 
 
 class TestFeatureManagemer:
@@ -77,6 +78,22 @@ class TestFeatureManagemer:
         # The fake time window should override the default one
         assert len(feature_manager._filters) == 4
 
+    # method: is_enabled
+    def test_unknown_feature_filter(self):
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": [{"name": "UnknownFilter", "parameters": {}}]}},
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags, feature_filters=[AllwaysOn(), AllwaysOff()])
+        assert feature_manager is not None
+        with pytest.raises(ValueError) as e_info:
+            feature_manager.is_enabled("Alpha")
+        assert e_info.type == ValueError
+        assert e_info.value.args[0] == "Feature flag Alpha has unknown filter UnknownFilter"
+        
 
 class AllwaysOn(FeatureFilter):
     def evaluate(self, context, **kwargs):

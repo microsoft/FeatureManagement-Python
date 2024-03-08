@@ -89,5 +89,7 @@ class FeatureManager(SyncFeatureManager):
                 else:
                     if await self._filters[filter_name].evaluate(feature_filter, **kwargs):
                         return True
+            else:
+                raise ValueError("Feature flag {} has unknown filter {}".format(feature_flag_id, filter_name))
         # If this is reached, and true, default return value is true, else false
         return feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL
