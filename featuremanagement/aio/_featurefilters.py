@@ -13,7 +13,7 @@ class FeatureFilter(FF):
     """
 
     @abstractmethod
-    async def evaluate(self, context, **kwargs):
+    async def evaluate(self, context, **kwargs): # pylint: disable=invalid-overridden-method
         """
         Determine if the feature flag is enabled for the given context
         :param Mapping context: Context for the feature flag

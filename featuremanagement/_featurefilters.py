@@ -42,7 +42,7 @@ class FeatureFilter(ABC):
         :rtype: callable
         """
         def wrapper(cls):
-            cls._alias = alias
+            cls._alias = alias # pylint: disable=protected-access
             return cls
 
         return wrapper

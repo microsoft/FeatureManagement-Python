@@ -17,7 +17,7 @@ class TimeWindowFilter(SyncTimeWindowFilter, FeatureFilter):
     Feature Filter that determines if the current time is within the time window
     """
 
-    async def evaluate(self, context, **kwargs):
+    async def evaluate(self, context, **kwargs): # pylint: disable=useless-parent-delegation, invalid-overridden-method
         """
         Determine if the feature flag is enabled for the given context
 
@@ -35,7 +35,7 @@ class TargetingFilter(SyncTargetingFilter, FeatureFilter):
     Feature Filter that determines if the user is targeted for the feature flag
     """
 
-    async def evaluate(self, context, **kwargs):
+    async def evaluate(self, context, **kwargs): # pylint: disable=useless-parent-delegation, invalid-overridden-method
         """
         Determine if the feature flag is enabled for the given context
 

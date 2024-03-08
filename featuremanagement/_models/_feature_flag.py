@@ -30,8 +30,8 @@ class FeatureConditions:
         :rtype: FeatureConditions
         """
         conditions = cls()
-        conditions._requirement_type = json_value.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY)
-        conditions._client_filters = json_value.get(FEATURE_FLAG_CLIENT_FILTERS, [])
+        conditions._requirement_type = json_value.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY) # pylint: disable=attribute-defined-outside-init
+        conditions._client_filters = json_value.get(FEATURE_FLAG_CLIENT_FILTERS, []) # pylint: disable=attribute-defined-outside-init
         return conditions
 
     @property
@@ -80,9 +80,9 @@ class FeatureFlag:
         feature_flag = cls()
         if not isinstance(json_value, dict):
             raise ValueError("Feature flag must be a dictionary.")
-        feature_flag._id = json_value.get(FEATURE_FLAG_ID)
-        feature_flag._enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, True))
-        feature_flag._conditions = FeatureConditions.convert_from_json(json_value.get(FEATURE_FLAG_CONDITIONS, {}))
+        feature_flag._id = json_value.get(FEATURE_FLAG_ID) # pylint: disable=attribute-defined-outside-init
+        feature_flag._enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, True)) # pylint: disable=attribute-defined-outside-init
+        feature_flag._conditions = FeatureConditions.convert_from_json(json_value.get(FEATURE_FLAG_CONDITIONS, {})) # pylint: disable=attribute-defined-outside-init
         feature_flag._validate()
         return feature_flag
 
@@ -121,7 +121,7 @@ class FeatureFlag:
             raise ValueError("Feature flag id field must be a string.")
         if not isinstance(self._enabled, bool):
             raise ValueError(f"Feature flag {self._id} must be a boolean.")
-        self._conditions._validate(self._id)
+        self._conditions._validate(self._id) # pylint: disable=protected-access
 
 
 def _convert_boolean_value(enabled):

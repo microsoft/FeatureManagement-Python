@@ -52,7 +52,7 @@ def _list_feature_flag_names(configuration):
     return feature_flags
 
 
-class FeatureManager:
+class FeatureManager: # pylint: disable=duplicate-code
     """
     Feature Manager that determines if a feature flag is enabled for the given context
 
@@ -77,7 +77,7 @@ class FeatureManager:
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
             self._filters[feature_filter.name] = feature_filter
 
-    def is_enabled(self, feature_flag_id, **kwargs): # pylint: disable=duplicate-code
+    def is_enabled(self, feature_flag_id, **kwargs):
         """
         Determine if the feature flag is enabled for the given context
 
