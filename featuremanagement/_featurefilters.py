@@ -15,7 +15,7 @@ class FeatureFilter(ABC):
     def evaluate(self, context, **kwargs):
         """
         Determine if the feature flag is enabled for the given context
-        
+
         :param Mapping context: Context for the feature flag
         :paramtype context: Mapping
         """
@@ -41,8 +41,9 @@ class FeatureFilter(ABC):
         :return: Decorator
         :rtype: callable
         """
+
         def wrapper(cls):
-            cls._alias = alias # pylint: disable=protected-access
+            cls._alias = alias  # pylint: disable=protected-access
             return cls
 
         return wrapper
