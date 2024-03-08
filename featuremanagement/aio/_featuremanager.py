@@ -3,22 +3,22 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-
+from collections.abc import Mapping
+import logging
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from .._featuremanager import (
-    FeatureManager as SyncFeatureManager,
     PROVIDED_FEATURE_FILTERS,
     FEATURE_FILTER_NAME,
     REQUIREMENT_TYPE_ALL,
     FEATURE_FILTER_PARAMETERS,
     FEATURE_MANAGEMENT_KEY,
+    _get_feature_flag,
+    _list_feature_flag_names,
 )
-from collections.abc import Mapping
-import logging
 
 
-class FeatureManager(SyncFeatureManager):
+class FeatureManager: # pylint: disable=duplicate-code
     """
     Feature Manager that determines if a feature flag is enabled for the given context
 
@@ -38,10 +38,10 @@ class FeatureManager(SyncFeatureManager):
 
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
-        for filter in filters:
-            if not isinstance(filter, FeatureFilter):
+        for feature_filter in filters:
+            if not isinstance(feature_filter, FeatureFilter):
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
-            self._filters[filter.name] = filter
+            self._filters[feature_filter.name] = feature_filter
 
     async def is_enabled(self, feature_flag_id, **kwargs):
         """
@@ -57,13 +57,13 @@ class FeatureManager(SyncFeatureManager):
             self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
 
         if not self._cache.get(feature_flag_id):
-            feature_flag = self._get_feature_flag(feature_flag_id)
+            feature_flag = _get_feature_flag(self._configuration, feature_flag_id)
             self._cache[feature_flag_id] = feature_flag
         else:
             feature_flag = self._cache.get(feature_flag_id)
 
         if not feature_flag:
-            logging.warning("Feature flag {} not found".format(feature_flag_id))
+            logging.warning("Feature flag %s not found", feature_flag_id)
             # Unknown feature flags are disabled by default
             return False
 
@@ -91,3 +91,9 @@ class FeatureManager(SyncFeatureManager):
                         return True
         # If this is reached, and true, default return value is true, else false
         return feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL
+
+    def list_feature_flag_names(self):
+        """
+        List of all feature flag names
+        """
+        return _list_feature_flag_names(self._configuration)

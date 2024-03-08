@@ -3,28 +3,11 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-import logging
-
-from datetime import datetime, timezone
-from email.utils import parsedate_to_datetime
 
 from ._featurefilters import FeatureFilter
 from .._defaultfilters import (
     TargetingFilter as SyncTargetingFilter,
     TimeWindowFilter as SyncTimeWindowFilter,
-    FEATURE_FLAG_NAME_KEY,
-    DEFAULT_ROLLOUT_PERCENTAGE_KEY,
-    PARAMETERS_KEY,
-    START_KEY,
-    END_KEY,
-    TARGETED_USER_KEY,
-    TARGETED_GROUPS_KEY,
-    AUDIENCE_KEY,
-    USERS_KEY,
-    GROUPS_KEY,
-    EXCLUSION_KEY,
-    FEATURE_FILTER_NAME_KEY,
-    IGNORE_CASE_KEY,
 )
 
 
