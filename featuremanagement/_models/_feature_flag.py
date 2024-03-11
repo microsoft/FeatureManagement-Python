@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+from collections.abc import Mapping
 
 FEATURE_FLAG_ID = "id"
 FEATURE_FLAG_ENABLED = "enabled"
@@ -34,6 +35,8 @@ class FeatureConditions:
         :rtype: FeatureConditions
         """
         conditions = cls()
+        if json_value is not None and not isinstance(json_value, Mapping):
+            raise AttributeError("Feature flag conditions must be a dictionary")
         conditions._requirement_type = json_value.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY)
         conditions._client_filters = json_value.get(FEATURE_FLAG_CLIENT_FILTERS, [])
         return conditions

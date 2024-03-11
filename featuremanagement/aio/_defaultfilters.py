@@ -17,6 +17,9 @@ class TimeWindowFilter(FeatureFilter):
     Feature Filter that determines if the current time is within the time window
     """
 
+    def __init__(self):
+        self._filter = SyncTimeWindowFilter()
+
     async def evaluate(self, context, **kwargs):
         """
         Determine if the feature flag is enabled for the given context
@@ -26,8 +29,7 @@ class TimeWindowFilter(FeatureFilter):
         :return: True if the current time is within the time window
         :rtype: bool
         """
-        time_window_filter = SyncTimeWindowFilter()
-        return time_window_filter.evaluate(context, **kwargs)
+        return self._filter.evaluate(context, **kwargs)
 
 
 @FeatureFilter.alias("Microsoft.Targeting")
@@ -35,6 +37,9 @@ class TargetingFilter(FeatureFilter):
     """
     Feature Filter that determines if the user is targeted for the feature flag
     """
+
+    def __init__(self):
+        self._filter = SyncTargetingFilter()
 
     async def evaluate(self, context, **kwargs):
         """
@@ -45,5 +50,4 @@ class TargetingFilter(FeatureFilter):
         :return: True if the user is targeted for the feature flag
         :rtype: bool
         """
-        targeting_filter = SyncTargetingFilter()
-        return targeting_filter.evaluate(context, **kwargs)
+        return self._filter.evaluate(context, **kwargs)
