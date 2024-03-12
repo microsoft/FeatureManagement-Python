@@ -80,7 +80,7 @@ class FeatureManager:
             feature_flag = self._cache.get(feature_flag_id)
 
         if not feature_flag:
-            logging.warning("Feature flag {} not found".format(feature_flag_id))
+            logging.warning(f"Feature flag {feature_flag_id} not found")
             # Unknown feature flags are disabled by default
             return False
 
@@ -104,6 +104,8 @@ class FeatureManager:
                 else:
                     if self._filters[filter_name].evaluate(feature_filter, **kwargs):
                         return True
+            else:
+                raise ValueError(f"Feature flag {feature_flag_id} has unknown filter {filter_name}")
         # If this is reached, and true, default return value is true, else false
         return feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL
 
