@@ -12,6 +12,7 @@ from .._featuremanager import (
     FEATURE_FILTER_NAME,
     REQUIREMENT_TYPE_ALL,
     FEATURE_FILTER_PARAMETERS,
+    FEATURE_MANAGEMENT_KEY,
 )
 from collections.abc import Mapping
 import logging
@@ -32,6 +33,8 @@ class FeatureManager(SyncFeatureManager):
         if configuration is None or not isinstance(configuration, Mapping):
             raise AttributeError("Configuration must be a non-empty dictionary")
         self._configuration = configuration
+        self._cache = {}
+        self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
 
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
@@ -49,10 +52,18 @@ class FeatureManager(SyncFeatureManager):
         :return: True if the feature flag is enabled for the given context
         :rtype: bool
         """
-        feature_flag = self._get_feature_flag(feature_flag_id)
+        if self._copy is not self._configuration.get(FEATURE_MANAGEMENT_KEY):
+            self._cache = {}
+            self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
+
+        if not self._cache.get(feature_flag_id):
+            feature_flag = self._get_feature_flag(feature_flag_id)
+            self._cache[feature_flag_id] = feature_flag
+        else:
+            feature_flag = self._cache.get(feature_flag_id)
 
         if not feature_flag:
-            logging.warning("Feature flag {} not found".format(feature_flag_id))
+            logging.warning(f"Feature flag {feature_flag_id} not found")
             # Unknown feature flags are disabled by default
             return False
 
@@ -78,5 +89,7 @@ class FeatureManager(SyncFeatureManager):
                 else:
                     if await self._filters[filter_name].evaluate(feature_filter, **kwargs):
                         return True
+            else:
+                raise ValueError(f"Feature flag {feature_flag_id} has unknown filter {filter_name}")
         # If this is reached, and true, default return value is true, else false
         return feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL

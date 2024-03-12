@@ -4,6 +4,7 @@
 # license information.
 # --------------------------------------------------------------------------
 from featuremanagement import FeatureManager, FeatureFilter
+import pytest
 
 
 class TestFeatureManager:
@@ -37,30 +38,30 @@ class TestFeatureManager:
                         "id": "Alpha",
                         "description": "",
                         "enabled": "true",
-                        "conditions": {"client_filters": [{"name": "AllwaysOn", "parameters": {}}]},
+                        "conditions": {"client_filters": [{"name": "AlwaysOn", "parameters": {}}]},
                     },
                     {
                         "id": "Beta",
                         "description": "",
                         "enabled": "false",
-                        "conditions": {"client_filters": [{"name": "AllwaysOn", "parameters": {}}]},
+                        "conditions": {"client_filters": [{"name": "AlwaysOn", "parameters": {}}]},
                     },
                     {
                         "id": "Gamma",
                         "description": "",
                         "enabled": "True",
-                        "conditions": {"client_filters": [{"name": "AllwaysOff", "parameters": {}}]},
+                        "conditions": {"client_filters": [{"name": "AlwaysOff", "parameters": {}}]},
                     },
                     {
                         "id": "Delta",
                         "description": "",
                         "enabled": "False",
-                        "conditions": {"client_filters": [{"name": "AllwaysOff", "parameters": {}}]},
+                        "conditions": {"client_filters": [{"name": "AlwaysOff", "parameters": {}}]},
                     },
                 ]
             }
         }
-        feature_manager = FeatureManager(feature_flags, feature_filters=[AllwaysOn(), AllwaysOff()])
+        feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOn(), AlwaysOff()])
         assert feature_manager is not None
         assert len(feature_manager._filters) == 4
         assert feature_manager.is_enabled("Alpha")
@@ -71,19 +72,35 @@ class TestFeatureManager:
 
     # method: feature_manager_creation
     def test_feature_manager_creation_with_filters(self):
-        feature_manager = FeatureManager({}, feature_filters=[AllwaysOn(), AllwaysOff(), FakeTimeWindowFilter()])
+        feature_manager = FeatureManager({}, feature_filters=[AlwaysOn(), AlwaysOff(), FakeTimeWindowFilter()])
         assert feature_manager is not None
 
         # The fake time window should override the default one
         assert len(feature_manager._filters) == 4
 
+    # method: is_enabled
+    def test_unknown_feature_filter(self):
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": [{"name": "UnknownFilter", "parameters": {}}]}},
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOn(), AlwaysOff()])
+        assert feature_manager is not None
+        with pytest.raises(ValueError) as e_info:
+            feature_manager.is_enabled("Alpha")
+        assert e_info.type == ValueError
+        assert e_info.value.args[0] == "Feature flag Alpha has unknown filter UnknownFilter"
+        
 
-class AllwaysOn(FeatureFilter):
+class AlwaysOn(FeatureFilter):
     def evaluate(self, context, **kwargs):
         return True
 
 
-class AllwaysOff(FeatureFilter):
+class AlwaysOff(FeatureFilter):
     def evaluate(self, context, **kwargs):
         return False
 

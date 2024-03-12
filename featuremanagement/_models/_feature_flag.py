@@ -73,7 +73,6 @@ class FeatureFlag:
             raise ValueError("Feature flag {} must be a boolean.".format(self.id))
         self.conditions._validate(self.id)
 
-
 class Allocation:
     @classmethod
     def convert_from_json(cls, json):
@@ -137,7 +136,6 @@ class VariantReference:
         variant_reference.configuration_reference = json.get("configuration_reference")
         variant_reference.status_override = json.get("status_override", None)
         return variant_reference
-
 
 def _convert_boolean_value(enabled):
     if isinstance(enabled, bool):
