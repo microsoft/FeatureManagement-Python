@@ -110,7 +110,12 @@ class TestFeatureManager:
         feature_flags = {
             "feature_management": {
                 "feature_flags": [
-                    {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": [{"name": "UnknownFilter", "parameters": {}}]}},
+                    {
+                        "id": "Alpha",
+                        "description": "",
+                        "enabled": "true",
+                        "conditions": {"client_filters": [{"name": "UnknownFilter", "parameters": {}}]},
+                    },
                 ]
             }
         }
@@ -120,6 +125,7 @@ class TestFeatureManager:
             await feature_manager.is_enabled("Alpha")
         assert e_info.type == ValueError
         assert e_info.value.args[0] == "Feature flag Alpha has unknown filter UnknownFilter"
+
 
 class AlwaysOn(FeatureFilter):
     async def evaluate(self, context, **kwargs):
