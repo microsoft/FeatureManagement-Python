@@ -9,7 +9,7 @@ line-length = 120
 [tool.pylint]
 max-line-length = 120
 min-public-methods = 1
-disable = ["missing-module-docstring"]
+disable = ["missing-module-docstring", "duplicate-code"]
 
 [build-system]
 requires = ["setuptools>=61.0"]

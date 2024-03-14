@@ -18,7 +18,7 @@ from .._featuremanager import (
 )
 
 
-class FeatureManager:  # pylint: disable=duplicate-code
+class FeatureManager:
     """
     Feature Manager that determines if a feature flag is enabled for the given context
 

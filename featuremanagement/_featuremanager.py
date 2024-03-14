@@ -53,7 +53,7 @@ def _list_feature_flag_names(configuration):
     return feature_flag_names
 
 
-class FeatureManager:  # pylint: disable=duplicate-code
+class FeatureManager:
     """
     Feature Manager that determines if a feature flag is enabled for the given context
 
