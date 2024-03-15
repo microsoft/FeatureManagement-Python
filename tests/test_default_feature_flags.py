@@ -204,12 +204,6 @@ class TestDefaultfeature_flags(unittest.TestCase):
                                     "parameters": {
                                         "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
                                     },
-                                },
-                                {
-                                    "name": "Microsoft.TimeWindow",
-                                    "parameters": {
-                                        "End": "Wed, 01 Jan 2020 00:00:00 GMT",
-                                    },
                                 }
                             ],
                             "requirement_type": "All"
@@ -233,7 +227,7 @@ class TestDefaultfeature_flags(unittest.TestCase):
                                     },
                                 }
                             ],
-                            "requirement_type": "Any"
+                            "requirement_type": "All"
                         },
                     },
                     {
@@ -246,16 +240,24 @@ class TestDefaultfeature_flags(unittest.TestCase):
                                     "parameters": {
                                         "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
                                     },
+                                },
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "End": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
                                 }
                             ],
-                            "requirement_type": "All"
+                            "requirement_type": "Any"
                         },
-                    },
+                    }
                 ]
             }
         }
+
         feature_manager = FeatureManager(feature_flags)
-        assert feature_manager is not None
-        assert not feature_manager.is_enabled("Alpha")
-        assert feature_manager.is_enabled("Beta")
+
+        assert feature_manager.is_enabled("Alpha")
+        # The second TimeWindow filter failed
+        assert not feature_manager.is_enabled("Beta")
         assert feature_manager.is_enabled("Gamma")
