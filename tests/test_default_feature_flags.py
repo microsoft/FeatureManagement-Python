@@ -189,3 +189,75 @@ class TestDefaultfeature_flags(unittest.TestCase):
         with pytest.raises(ValueError, match="Feature flag featureFlagId is missing filter name."):
             FeatureManager(feature_flags)
             feature_manager.is_enabled("featureFlagId")
+
+    def test_feature_manager_requirement_type(self):
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "Alpha",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                }
+                            ],
+                            "requirement_type": "All"
+                        },
+                    },
+                    {
+                        "id": "Beta",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                },
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "End": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                }
+                            ],
+                            "requirement_type": "All"
+                        },
+                    },
+                    {
+                        "id": "Gamma",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                },
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "End": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                }
+                            ],
+                            "requirement_type": "Any"
+                        },
+                    }
+                ]
+            }
+        }
+
+        feature_manager = FeatureManager(feature_flags)
+
+        assert feature_manager.is_enabled("Alpha")
+        # The second TimeWindow filter failed
+        assert not feature_manager.is_enabled("Beta")
+        assert feature_manager.is_enabled("Gamma")

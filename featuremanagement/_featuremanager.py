@@ -117,7 +117,7 @@ class FeatureManager:
             filter_name = feature_filter[FEATURE_FILTER_NAME]
             if filter_name in self._filters:
                 if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
-                    if not self._filters[filter_name].evaluate(feature_filter[FEATURE_FILTER_PARAMETERS], **kwargs):
+                    if not self._filters[filter_name].evaluate(feature_filter, **kwargs):
                         return False
                 else:
                     if self._filters[filter_name].evaluate(feature_filter, **kwargs):
