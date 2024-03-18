@@ -11,7 +11,6 @@ from .._featuremanager import (
     PROVIDED_FEATURE_FILTERS,
     FEATURE_FILTER_NAME,
     REQUIREMENT_TYPE_ALL,
-    FEATURE_FILTER_PARAMETERS,
     FEATURE_MANAGEMENT_KEY,
     _get_feature_flag,
     _list_feature_flag_names,

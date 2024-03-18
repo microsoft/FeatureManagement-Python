@@ -45,11 +45,11 @@ class TestDefaultfeature_flags(unittest.TestCase):
         # Adam is in the user audience
         assert feature_manager.is_enabled("Target", user="Adam")
         # Brian is not part of the 50% or default 50% of users
-        assert not feature_manager.is_enabled("Target", user="Brian")
+        assert not feature_manager.is_enabled("Target", user="Belle")
         # Brian is enabled because all of Stage 1 is enabled
-        assert feature_manager.is_enabled("Target", user="Brian", groups=["Stage1"])
+        assert feature_manager.is_enabled("Target", user="Belle", groups=["Stage1"])
         # Brian is not enabled because he is not in Stage 2, group isn't looked at when user is targeted
-        assert not feature_manager.is_enabled("Target", user="Brian", groups=["Stage2"])
+        assert not feature_manager.is_enabled("Target", user="Belle", groups=["Stage2"])
 
     # method: feature_manager_creation
     def test_feature_manager_creation_with_time_window(self):
@@ -206,7 +206,7 @@ class TestDefaultfeature_flags(unittest.TestCase):
                                     },
                                 }
                             ],
-                            "requirement_type": "All"
+                            "requirement_type": "All",
                         },
                     },
                     {
@@ -225,9 +225,9 @@ class TestDefaultfeature_flags(unittest.TestCase):
                                     "parameters": {
                                         "End": "Wed, 01 Jan 2020 00:00:00 GMT",
                                     },
-                                }
+                                },
                             ],
-                            "requirement_type": "All"
+                            "requirement_type": "All",
                         },
                     },
                     {
@@ -246,11 +246,11 @@ class TestDefaultfeature_flags(unittest.TestCase):
                                     "parameters": {
                                         "End": "Wed, 01 Jan 2020 00:00:00 GMT",
                                     },
-                                }
+                                },
                             ],
-                            "requirement_type": "Any"
+                            "requirement_type": "Any",
                         },
-                    }
+                    },
                 ]
             }
         }
