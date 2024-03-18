@@ -31,7 +31,7 @@ class TestFeatureManagemerRefresh:
             ]
         }
 
-        assert not feature_manager.is_enabled("Beta") # resets cache
+        assert not feature_manager.is_enabled("Beta")  # resets cache
         assert "Alpha" not in feature_manager._cache
         assert not feature_manager.is_enabled("Alpha")
         assert "Alpha" in feature_manager._cache
@@ -59,7 +59,7 @@ class TestFeatureManagemerRefresh:
             ]
         }
 
-        assert not await feature_manager.is_enabled("Beta") # resets cache
+        assert not await feature_manager.is_enabled("Beta")  # resets cache
         assert "Alpha" not in feature_manager._cache
         assert not await feature_manager.is_enabled("Alpha")
         assert "Alpha" in feature_manager._cache
