@@ -25,7 +25,7 @@ class FeatureConditions:
         self._client_filters = []
 
     @classmethod
-    def convert_from_json(cls, json_value):
+    def convert_from_json(cls, feature_name, json_value):
         """
         Convert a JSON object to FeatureConditions
 
@@ -39,6 +39,8 @@ class FeatureConditions:
             raise AttributeError("Feature flag conditions must be a dictionary")
         conditions._requirement_type = json_value.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY)
         conditions._client_filters = json_value.get(FEATURE_FLAG_CLIENT_FILTERS, [])
+        for feature_filter in conditions._client_filters:
+            feature_filter["feature_name"] = feature_name
         return conditions
 
     @property
@@ -94,7 +96,9 @@ class FeatureFlag:
             raise ValueError("Feature flag must be a dictionary.")
         feature_flag._id = json_value.get(FEATURE_FLAG_ID)
         feature_flag._enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, True))
-        feature_flag._conditions = FeatureConditions.convert_from_json(json_value.get(FEATURE_FLAG_CONDITIONS, {}))
+        feature_flag._conditions = FeatureConditions.convert_from_json(
+            feature_flag._id, json_value.get(FEATURE_FLAG_CONDITIONS, {})
+        )
         feature_flag._validate()
         return feature_flag
 
