@@ -83,10 +83,7 @@ class TargetingFilter(FeatureFilter):
             return True
 
         hashed_context_id = hashlib.sha256(context_id.encode()).digest()
-
-        byte_array = bytearray(hashed_context_id)
-        decimal_values = [int(byte) for byte in byte_array[:4]]
-        context_marker = int.from_bytes(decimal_values, byteorder="little", signed=False)
+        context_marker = int.from_bytes(hashed_context_id[:4], byteorder="little", signed=False)
 
         percentage = (context_marker / (2**32 - 1)) * 100
         return percentage < rollout_percentage
