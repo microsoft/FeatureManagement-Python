@@ -115,7 +115,7 @@
             },
             {
                 "id": "Theta",
-                "description": "A feature flag using a targeting filter, that will return true 50% of the time. Changing to 84% makes the user Brittney true.",
+                "description": "A feature flag using a targeting filter, that will return true 74% of the time. Changing to 75% makes the user Brittney true.",
                 "enabled": "true",
                 "conditions": {
                     "client_filters": [
@@ -125,7 +125,7 @@
                                 "Audience": {
                                     "Users": [],
                                     "Groups": [],
-                                    "DefaultRolloutPercentage": 50,
+                                    "DefaultRolloutPercentage": 74,
                                     "Exclusion": {}
                                 }
                             }
