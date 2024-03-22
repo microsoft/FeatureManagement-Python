@@ -3,19 +3,14 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from featuremanagement import FeatureManager
-import json
+from tests.validation_tests.load_feature_flags import LoadFeatureFlagsFromFile
 import unittest
 
 
-class TestRequirementTypeFromFile(unittest.TestCase):
+class TestRequirementTypeFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
     # method: is_enabled
     def test_requirement_type_any(self):
-        f = open("tests/validation_tests/RequirementType.sample.json", "r")
-
-        feature_flags = json.load(f)
-        feature_manager = FeatureManager(feature_flags)
-        assert feature_manager is not None
+        feature_manager = self.load_from_file("RequirementType.sample.json")
 
         # Feature Flag with two feature filters, the first is true, second is false, so the flag is enabled.
         assert feature_manager.is_enabled("FirstOrFeatureFlag")
@@ -31,11 +26,7 @@ class TestRequirementTypeFromFile(unittest.TestCase):
 
     # method: is_enabled
     def test_requirement_type_all(self):
-        f = open("tests/validation_tests/RequirementType.sample.json", "r")
-
-        feature_flags = json.load(f)
-        feature_manager = FeatureManager(feature_flags)
-        assert feature_manager is not None
+        feature_manager = self.load_from_file("RequirementType.sample.json")
 
         # Feature Flag with two feature filters with the All requirement type, the first is true, second is false, so the flag is disabled.
         assert not feature_manager.is_enabled("TrueRequirementTypeAllFeatureFlag", user="Adam")

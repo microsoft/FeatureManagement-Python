@@ -3,19 +3,14 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from featuremanagement import FeatureManager
-import json
+from tests.validation_tests.load_feature_flags import LoadFeatureFlagsFromFile
 import unittest
 
 
-class TestFeatureFlagFile(unittest.TestCase):
+class TestFeatureFlagFile(LoadFeatureFlagsFromFile, unittest.TestCase):
     # method: is_enabled
     def test_single_filters(self):
-        f = open("tests/validation_tests/TimeWindowFilter.sample.json", "r")
-
-        feature_flags = json.load(f)
-        feature_manager = FeatureManager(feature_flags)
-        assert feature_manager is not None
+        feature_manager = self.load_from_file("TimeWindowFilter.sample.json")
 
         # Feature Flag with Time Window filter, both start and end time have passed.
         assert not feature_manager.is_enabled("PastTimeWindow")

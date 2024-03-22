@@ -3,22 +3,20 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from featuremanagement import FeatureManager
-import json
+from tests.validation_tests.load_feature_flags import LoadFeatureFlagsFromFile
 import unittest
 
 
-class TestNoFiltersFromFile(unittest.TestCase):
+class TestNoFiltersFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
     # method: is_enabled
-    def test_single_filters(self):
-        f = open("tests/validation_tests/NoFilters.sample.json", "r")
-
-        feature_flags = json.load(f)
-        feature_manager = FeatureManager(feature_flags)
-        assert feature_manager is not None
+    def test_enabled_filter(self):
+        feature_manager = self.load_from_file("NoFilters.sample.json")
 
         # Enabled Feature Flag with no filters
         assert feature_manager.is_enabled("EnabledFeatureFlag")
+
+    def test_disabled_filter(self):
+        feature_manager = self.load_from_file("NoFilters.sample.json")
 
         # Disabed Feature Flag with no filters
         assert not feature_manager.is_enabled("DisabledFeatureFlag")

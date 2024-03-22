@@ -3,19 +3,14 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from featuremanagement import FeatureManager
-import json
+from tests.validation_tests.load_feature_flags import LoadFeatureFlagsFromFile
 import unittest
 
 
-class TestTargetingFilterFromFile(unittest.TestCase):
+class TestTargetingFilterFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
     # method: is_enabled
     def test_complex_filter(self):
-        f = open("tests/validation_tests/TargetingFilter.sample.json", "r")
-
-        feature_flags = json.load(f)
-        feature_manager = FeatureManager(feature_flags)
-        assert feature_manager is not None
+        feature_manager = self.load_from_file("TargetingFilter.sample.json")
 
         # Feature Flag with Targeting filter, Adam is not part of the default rollout.
         assert not feature_manager.is_enabled("ComplexTargeting", user="Aiden")
@@ -51,11 +46,7 @@ class TestTargetingFilterFromFile(unittest.TestCase):
         assert not feature_manager.is_enabled("ComplexTargeting", user="Dave", groups=["Stage1"])
 
     def test_rollout_percentage(self):
-        f = open("tests/validation_tests/TargetingFilter.sample.json", "r")
-
-        feature_flags = json.load(f)
-        feature_manager = FeatureManager(feature_flags)
-        assert feature_manager is not None
+        feature_manager = self.load_from_file("TargetingFilter.sample.json")
 
         # Feature Flag with Targeting filter, with just 50% rollout. Aiden is not part of the 50%, Brittney is not, group isn't part of the rollout so value isn't changed.
         assert feature_manager.is_enabled("RolloutPercentageUpdate", user="Aiden")
@@ -68,11 +59,7 @@ class TestTargetingFilterFromFile(unittest.TestCase):
         assert not feature_manager.is_enabled("RolloutPercentageUpdate", user="Brittney", groups=["Stage3"])
 
     def test_rollout_percentage_modified(self):
-        f = open("tests/validation_tests/TargetingFilter.modified.sample.json", "r")
-
-        feature_flags = json.load(f)
-        feature_manager = FeatureManager(feature_flags)
-        assert feature_manager is not None
+        feature_manager = self.load_from_file("TargetingFilter.modified.sample.json")
 
         # Feature Flag with Targeting filter, with just 50% rollout. Aiden is not part of the 50%, Brittney is not, group isn't part of the rollout so value isn't changed.
         assert feature_manager.is_enabled("RolloutPercentageUpdate", user="Aiden")
