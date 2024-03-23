@@ -95,7 +95,7 @@ class FeatureFlag:
         if not isinstance(json_value, dict):
             raise ValueError("Feature flag must be a dictionary.")
         feature_flag._id = json_value.get(FEATURE_FLAG_ID)
-        feature_flag._enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, True))
+        feature_flag._enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, False))
         feature_flag._conditions = FeatureConditions.convert_from_json(
             feature_flag._id, json_value.get(FEATURE_FLAG_CONDITIONS, {})
         )

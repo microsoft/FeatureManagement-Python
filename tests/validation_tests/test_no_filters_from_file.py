@@ -9,14 +9,37 @@ import unittest
 
 class TestNoFiltersFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
     # method: is_enabled
-    def test_enabled_filter(self):
+    def test_enabled(self):
         feature_manager = self.load_from_file("NoFilters.sample.json")
 
         # Enabled Feature Flag with no filters
         assert feature_manager.is_enabled("EnabledFeatureFlag")
 
-    def test_disabled_filter(self):
+        # Enabled Feature Flag with no filters
+        assert feature_manager.is_enabled("BooleanTrueFeatureFlag")
+
+        # A Feature Flag with just an id and enabled field set to true
+        assert feature_manager.is_enabled("MinimalFeatureFlag")
+
+        # A Feature Flag with no conditions
+        assert feature_manager.is_enabled("NoConditions")
+
+    def test_disabled(self):
         feature_manager = self.load_from_file("NoFilters.sample.json")
 
         # Disabed Feature Flag with no filters
         assert not feature_manager.is_enabled("DisabledFeatureFlag")
+
+        # Disabed Feature Flag with no filters
+        assert not feature_manager.is_enabled("BooleanFalseFeatureFlag")
+
+        # A Feature Flag with just an id
+        assert not feature_manager.is_enabled("NoEnabled")
+
+    def test_invalid(self):
+        feature_manager = self.load_from_file("NoFilters.sample.json")
+
+        # enabled is non-boolean
+        with self.assertRaises(ValueError) as ex:
+            feature_manager.is_enabled("InvalidEnabledFeatureFlag")
+            assert "Invalid value for 'enabled' in feature flag 'InvalidEnabledFeatureFlag'." in str(ex)
