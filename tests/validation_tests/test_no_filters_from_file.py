@@ -13,10 +13,10 @@ class TestNoFiltersFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
         feature_manager = self.load_from_file("NoFilters.sample.json")
 
         # Enabled Feature Flag with no filters
-        assert feature_manager.is_enabled("EnabledFeatureFlag")
+        assert feature_manager.is_enabled("BooleanTrueFeatureFlag")
 
         # Enabled Feature Flag with no filters
-        assert feature_manager.is_enabled("BooleanTrueFeatureFlag")
+        assert feature_manager.is_enabled("StringTrueFeatureFlag")
 
         # A Feature Flag with just an id and enabled field set to true
         assert feature_manager.is_enabled("MinimalFeatureFlag")
@@ -28,10 +28,10 @@ class TestNoFiltersFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
         feature_manager = self.load_from_file("NoFilters.sample.json")
 
         # Disabed Feature Flag with no filters
-        assert not feature_manager.is_enabled("DisabledFeatureFlag")
+        assert not feature_manager.is_enabled("BooleanFalseFeatureFlag")
 
         # Disabed Feature Flag with no filters
-        assert not feature_manager.is_enabled("BooleanFalseFeatureFlag")
+        assert not feature_manager.is_enabled("StringFalseFeatureFlag")
 
         # A Feature Flag with just an id
         assert not feature_manager.is_enabled("NoEnabled")
