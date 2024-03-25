@@ -10,9 +10,9 @@ import json
 class LoadFeatureFlagsFromFile:
     @staticmethod
     def load_from_file(file):
-        f = open("tests/validation_tests/" + file, "r")
+        feature_flags_file = open("tests/validation_tests/" + file, "r")
+        feature_flags = json.load(feature_flags_file)
 
-        feature_flags = json.load(f)
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
