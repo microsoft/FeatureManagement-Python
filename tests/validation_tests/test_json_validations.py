@@ -51,14 +51,19 @@ class TestNoFiltersFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
             test = feature_flag_tests[feature_flag_test]
             expected_result = test[expected_result_key]
             failed_description = "Test " + feature_flag_test + " failed. Description: " + test["Description"]
-            
-            if isinstance(expected_result , bool):
+
+            if isinstance(expected_result, bool):
                 if "Inputs" in test:
                     user = test["Inputs"].get("user", None)
                     groups = test["Inputs"].get("groups", [])
-                    assert feature_manager.is_enabled(test[feature_flag_name_key], user=user, groups=groups) == expected_result, failed_description
+                    assert (
+                        feature_manager.is_enabled(test[feature_flag_name_key], user=user, groups=groups)
+                        == expected_result
+                    ), failed_description
                 else:
-                    assert feature_manager.is_enabled(test[feature_flag_name_key]) == expected_result, failed_description
+                    assert (
+                        feature_manager.is_enabled(test[feature_flag_name_key]) == expected_result
+                    ), failed_description
             else:
                 with self.assertRaises(ValueError):
                     feature_manager.is_enabled(test[feature_flag_name_key]), failed_description
