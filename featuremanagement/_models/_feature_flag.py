@@ -22,9 +22,10 @@ class FeatureConditions:
     """
     Represents the conditions for a feature flag
     """
+
     def __init__(self):
-        self.requirement_type = REQUIREMENT_TYPE_ANY
-        self.client_filters = []
+        self._requirement_type = REQUIREMENT_TYPE_ANY
+        self._client_filters = []
 
     @classmethod
     def convert_from_json(cls, feature_name, json_value):
@@ -72,6 +73,7 @@ class FeatureConditions:
         """
         return self._client_filters
 
+
 class FeatureFlag:
     """
     Represents a feature flag
@@ -81,6 +83,8 @@ class FeatureFlag:
         self._id = None
         self._enabled = False
         self._conditions = FeatureConditions()
+        self.allocation = None
+        self.variants = None
 
     @classmethod
     def convert_from_json(cls, json_value):
@@ -95,19 +99,21 @@ class FeatureFlag:
         feature_flag = cls()
         if not isinstance(json_value, dict):
             raise ValueError("Feature flag must be a dictionary.")
-        feature_flag.id = jsonValue.get(FEATURE_FLAG_ID)
-        feature_flag.enabled = _convert_boolean_value(jsonValue.get(FEATURE_FLAG_ENABLED, True))
+        feature_flag._id = json_value.get(FEATURE_FLAG_ID)
+        feature_flag.enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, True))
         feature_flag._conditions = FeatureConditions.convert_from_json(
             feature_flag._id, json_value.get(FEATURE_FLAG_CONDITIONS, {})
         )
-        if FEATURE_FLAG_CONDITIONS in jsonValue:
-            feature_flag.conditions = FeatureConditions.convert_from_json(jsonValue.get(FEATURE_FLAG_CONDITIONS, {}))
+        if FEATURE_FLAG_CONDITIONS in json_value:
+            feature_flag.conditions = FeatureConditions.convert_from_json(
+                feature_flag._id, json_value.get(FEATURE_FLAG_CONDITIONS, {})
+            )
         else:
             feature_flag.conditions = FeatureConditions()
-        feature_flag.allocation = Allocation.convert_from_json(jsonValue.get(FEATURE_FLAG_ALLOCATION, None))
+        feature_flag.allocation = Allocation.convert_from_json(json_value.get(FEATURE_FLAG_ALLOCATION, None))
         feature_flag.variants = None
-        if FEATURE_FLAG_VARIANTS in jsonValue:
-            variants = jsonValue.get(FEATURE_FLAG_VARIANTS)
+        if FEATURE_FLAG_VARIANTS in json_value:
+            variants = json_value.get(FEATURE_FLAG_VARIANTS)
             feature_flag.variants = []
             for variant in variants:
                 feature_flag.variants.append(VariantReference.convert_from_json(variant))
@@ -145,15 +151,36 @@ class FeatureFlag:
         return self._conditions
 
     def _validate(self):
-        if not isinstance(self.id, str):
+        if not isinstance(self._id, str):
             raise ValueError("Feature flag id field must be a string.")
         if not isinstance(self._enabled, bool):
             raise ValueError(f"Feature flag {self._id} must be a boolean.")
         self._conditions._validate(self._id)  # pylint: disable=protected-access
 
+
 class Allocation:
+    """
+    Represents an allocation
+    """
+
+    def __init__(self):
+        self.default_when_enabled = None
+        self.default_when_disabled = None
+        self.user = []
+        self.group = []
+        self.percentile = []
+        self.seed = None
+
     @classmethod
     def convert_from_json(cls, json):
+        """
+        Convert a JSON object to Allocation
+
+        :param json: JSON object
+        :type json: dict
+        :return: Allocation
+        :rtype: Allocation
+        """
         if not json:
             return None
         allocation = cls()
@@ -180,19 +207,44 @@ class Allocation:
 
 @dataclass
 class UserAllocation:
+    """
+    Represents a user allocation
+    """
+
     variant: str
     users: list
 
 
 @dataclass
 class GroupAllocation:
+    """
+    Represents a group allocation
+    """
+
     variant: str
     groups: list
 
 
 class PercentileAllocation:
+    """
+    Represents a percentile allocation
+    """
+
+    def __init__(self):
+        self.variant = None
+        self.percentile_from = None
+        self.percentile_to = None
+
     @classmethod
     def convert_from_json(cls, json):
+        """
+        Convert a JSON object to PercentileAllocation
+
+        :param json: JSON object
+        :type json: dict
+        :return: PercentileAllocation
+        :rtype: PercentileAllocation
+        """
         if not json:
             return None
         user_allocation = cls()
@@ -204,16 +256,35 @@ class PercentileAllocation:
 
 @dataclass
 class VariantReference:
+    """
+    Represents a variant reference
+    """
+
+    def __init__(self):
+        self._name = None
+        self._configuration_value = None
+        self._configuration_reference = None
+        self._status_override = None
+
     @classmethod
     def convert_from_json(cls, json):
+        """
+        Convert a JSON object to VariantReference
+
+        :param json: JSON object
+        :type json: dict
+        :return: VariantReference
+        :rtype: VariantReference
+        """
         if not json:
             return None
         variant_reference = cls()
-        variant_reference.name = json.get("name")
-        variant_reference.configuration_value = json.get("configuration_value")
-        variant_reference.configuration_reference = json.get("configuration_reference")
-        variant_reference.status_override = json.get("status_override", None)
+        variant_reference._name = json.get("name")
+        variant_reference._configuration_value = json.get("configuration_value")
+        variant_reference._configuration_reference = json.get("configuration_reference")
+        variant_reference._status_override = json.get("status_override", None)
         return variant_reference
+
 
 def _convert_boolean_value(enabled):
     """

@@ -3,12 +3,13 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+import logging
+import hashlib
 from collections.abc import Mapping
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from ._models._feature_flag import FeatureFlag, _convert_boolean_value
-import logging
-import hashlib
+from ._models._feature_flag import FeatureFlag
+
 
 FEATURE_MANAGEMENT_KEY = "feature_management"
 FEATURE_FLAG_KEY = "feature_flags"
@@ -102,7 +103,7 @@ class FeatureManager:
             if variant.name == default_variant_name:
                 if variant.status_override == "Enabled":
                     return True
-                elif variant.status_override == "Disabled":
+                if variant.status_override == "Disabled":
                     return False
         return status
 
@@ -203,8 +204,6 @@ class FeatureManager:
         if result:
             return FeatureManager._check_default_enabled_variant(feature_flag)
         return FeatureManager._check_default_disabled_variant(feature_flag)
-        # If this is reached, and true, default return value is true, else false
-        return feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL
 
     def list_feature_flag_names(self):
         """
