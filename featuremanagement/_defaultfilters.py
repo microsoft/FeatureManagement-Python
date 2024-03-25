@@ -11,7 +11,7 @@ from email.utils import parsedate_to_datetime
 
 from ._featurefilters import FeatureFilter
 
-FEATURE_FLAG_NAME_KEY = "name"
+FEATURE_FLAG_NAME_KEY = "feature_name"
 ROLLOUT_PERCENTAGE_KEY = "RolloutPercentage"
 DEFAULT_ROLLOUT_PERCENTAGE_KEY = "DefaultRolloutPercentage"
 PARAMETERS_KEY = "parameters"
@@ -82,14 +82,16 @@ class TargetingFilter(FeatureFilter):
         if rollout_percentage == 100:
             return True
 
-        hashed_context_id = hashlib.sha256(context_id.encode()).hexdigest()
-        context_marker = abs(int(hashed_context_id, 16))
-        percentage = (context_marker / (2**256 - 1)) * 100
+        hashed_context_id = hashlib.sha256(context_id.encode()).digest()
+        context_marker = int.from_bytes(hashed_context_id[:4], byteorder="little", signed=False)
 
+        percentage = (context_marker / (2**32 - 1)) * 100
         return percentage < rollout_percentage
 
     def _target_group(self, target_user, target_group, group, feature_flag_name):
         group_rollout_percentage = group.get(ROLLOUT_PERCENTAGE_KEY, 0)
+        if not target_user:
+            target_user = ""
         audience_context_id = (
             target_user + "\n" + target_group + "\n" + feature_flag_name + "\n" + group.get(FEATURE_FILTER_NAME_KEY, "")
         )
@@ -129,7 +131,7 @@ class TargetingFilter(FeatureFilter):
 
         # Check if the user is in an excluded group
         for group in audience.get(EXCLUSION_KEY, {}).get(GROUPS_KEY, []):
-            if group.get(FEATURE_FILTER_NAME_KEY) in target_groups:
+            if group in target_groups:
                 return False
 
         # Check if the user is targeted
@@ -147,6 +149,8 @@ class TargetingFilter(FeatureFilter):
                     if self._target_group(target_user, target_group, group, feature_flag_name):
                         return True
 
+        if not target_user:
+            target_user = ""
         # Check if the user is in the default rollout
         context_id = target_user + "\n" + feature_flag_name
         return self._is_targeted(context_id, default_rollout_percentage)

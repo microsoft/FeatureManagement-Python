@@ -83,13 +83,39 @@ class TestFeatureManager:
         # The fake time window should override the default one
         assert len(feature_manager._filters) == 4
 
+    # method: list_feature_flags
+    @pytest.mark.asyncio
+    async def test_list_feature_flags(self):
+        feature_manager = FeatureManager({})
+        assert feature_manager is not None
+        assert len(feature_manager.list_feature_flag_names()) == 0
+
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": []}},
+                    {"id": "Beta", "description": "", "enabled": "false", "conditions": {"client_filters": []}},
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags)
+        assert feature_manager is not None
+        assert await feature_manager.is_enabled("Alpha")
+        assert not await feature_manager.is_enabled("Beta")
+        assert len(feature_manager.list_feature_flag_names()) == 2
+
     # method: is_enabled
     @pytest.mark.asyncio
     async def test_unknown_feature_filter(self):
         feature_flags = {
             "feature_management": {
                 "feature_flags": [
-                    {"id": "Alpha", "description": "", "enabled": "true", "conditions": {"client_filters": [{"name": "UnknownFilter", "parameters": {}}]}},
+                    {
+                        "id": "Alpha",
+                        "description": "",
+                        "enabled": "true",
+                        "conditions": {"client_filters": [{"name": "UnknownFilter", "parameters": {}}]},
+                    },
                 ]
             }
         }
@@ -99,6 +125,7 @@ class TestFeatureManager:
             await feature_manager.is_enabled("Alpha")
         assert e_info.type == ValueError
         assert e_info.value.args[0] == "Feature flag Alpha has unknown filter UnknownFilter"
+
 
 class AlwaysOn(FeatureFilter):
     async def evaluate(self, context, **kwargs):

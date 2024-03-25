@@ -46,11 +46,11 @@ class TestDefaultfeature_flags(IsolatedAsyncioTestCase):
         # Adam is in the user audience
         assert await feature_manager.is_enabled("Target", user="Adam")
         # Brian is not part of the 50% or default 50% of users
-        assert not await feature_manager.is_enabled("Target", user="Brian")
+        assert not await feature_manager.is_enabled("Target", user="Belle")
         # Brian is enabled because all of Stage 1 is enabled
-        assert await feature_manager.is_enabled("Target", user="Brian", groups=["Stage1"])
+        assert await feature_manager.is_enabled("Target", user="Belle", groups=["Stage1"])
         # Brian is not enabled because he is not in Stage 2, group isn't looked at when user is targeted
-        assert not await feature_manager.is_enabled("Target", user="Brian", groups=["Stage2"])
+        assert not await feature_manager.is_enabled("Target", user="Belle", groups=["Stage2"])
 
     # method: feature_manager_creation
     @pytest.mark.asyncio
@@ -192,3 +192,76 @@ class TestDefaultfeature_flags(IsolatedAsyncioTestCase):
         with pytest.raises(ValueError, match="Feature flag featureFlagId is missing filter name."):
             FeatureManager(feature_flags)
             await feature_manager.is_enabled("featureFlagId")
+
+    @pytest.mark.asyncio
+    async def test_feature_manager_requirement_type(self):
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "Alpha",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                }
+                            ],
+                            "requirement_type": "All",
+                        },
+                    },
+                    {
+                        "id": "Beta",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                },
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "End": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                },
+                            ],
+                            "requirement_type": "All",
+                        },
+                    },
+                    {
+                        "id": "Gamma",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "Start": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                },
+                                {
+                                    "name": "Microsoft.TimeWindow",
+                                    "parameters": {
+                                        "End": "Wed, 01 Jan 2020 00:00:00 GMT",
+                                    },
+                                },
+                            ],
+                            "requirement_type": "Any",
+                        },
+                    },
+                ]
+            }
+        }
+
+        feature_manager = FeatureManager(feature_flags)
+
+        assert await feature_manager.is_enabled("Alpha")
+        # The second TimeWindow filter failed
+        assert not await feature_manager.is_enabled("Beta")
+        assert await feature_manager.is_enabled("Gamma")
