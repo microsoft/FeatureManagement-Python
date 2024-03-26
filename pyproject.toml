@@ -9,7 +9,7 @@ line-length = 120
 [tool.pylint]
 max-line-length = 120
 min-public-methods = 1
-max-branches = 16
+max-branches = 20
 max-returns = 7
 disable = ["missing-module-docstring", "duplicate-code"]
 

@@ -9,6 +9,7 @@ from collections.abc import Mapping
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from ._models._feature_flag import FeatureFlag
+from ._models._variant import Variant
 
 
 FEATURE_MANAGEMENT_KEY = "feature_management"
@@ -110,11 +111,10 @@ class FeatureManager:
     @staticmethod
     def _is_targeted(context_id):
         """Determine if the user is targeted for the given context"""
-        hashed_context_id = hashlib.sha256(context_id.encode()).hexdigest()
-        context_marker = abs(int(hashed_context_id, 16))
-        percentage = (context_marker / (2**256 - 1)) * 100
+        hashed_context_id = hashlib.sha256(context_id.encode()).digest()
+        context_marker = int.from_bytes(hashed_context_id[:4], byteorder="little", signed=False)
 
-        return percentage
+        return (context_marker / (2**32 - 1)) * 100
 
     def _assign_variant(self, feature_flag, **kwargs):
         if not feature_flag.variants or not feature_flag.allocation:
@@ -153,6 +153,33 @@ class FeatureManager:
         :return: True if the feature flag is enabled for the given context
         :rtype: bool
         """
+        return self._check_feature(feature_flag_id, **kwargs)["enabled"]
+
+    def get_variant(self, feature_flag_id, **kwargs):
+        """
+        Determine the variant for the given context
+
+        :param str feature_flag_id: Name of the feature flag
+        :paramtype feature_flag_id: str
+        :return: Name of the variant
+        :rtype: str
+        """
+        varinat_reference = self._check_feature(feature_flag_id, **kwargs)["variant"]
+        configuration = varinat_reference.configuration_value
+        if not configuration:
+            self._configuration.get(varinat_reference.configuration_reference)
+        return Variant(varinat_reference.name, configuration)
+
+    def _check_feature(self, feature_flag_id, **kwargs):
+        """
+        Determine if the feature flag is enabled for the given context
+
+        :param str feature_flag_id: Name of the feature flag
+        :paramtype feature_flag_id: str
+        :return: True if the feature flag is enabled for the given context
+        :rtype: bool
+        """
+        result = {"enabled": None, "variant": None}
         if self._copy is not self._configuration.get(FEATURE_MANAGEMENT_KEY):
             self._cache = {}
             self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
@@ -166,44 +193,54 @@ class FeatureManager:
         if not feature_flag:
             logging.warning("Feature flag %s not found", feature_flag_id)
             # Unknown feature flags are disabled by default
-            return False
+            return result
 
         if not feature_flag.enabled:
             # Feature flags that are disabled are always disabled
-            return FeatureManager._check_default_disabled_variant(feature_flag)
+            result["enabled"] = FeatureManager._check_default_disabled_variant(feature_flag)
+            return result
 
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
 
         if len(feature_filters) == 0:
             # Feature flags without any filters return evaluate
-            return FeatureManager._check_default_enabled_variant(feature_flag)
-
-        result = False
+            result["enabled"] = FeatureManager._check_default_enabled_variant(feature_flag)
+        else:
+            # The assumed value is no filters is based on the requirement type.
+            # Requirement type Any assumes false until proven true, All assumes true until proven false
+            result["enabled"] = feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL
 
         for feature_filter in feature_filters:
             filter_name = feature_filter[FEATURE_FILTER_NAME]
             if filter_name in self._filters:
                 if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
                     if not self._filters[filter_name].evaluate(feature_filter, **kwargs):
-                        return False
+                        result["enabled"] = False
                 else:
                     if self._filters[filter_name].evaluate(feature_filter, **kwargs):
-                        result = True
+                        result["enabled"] = True
             else:
                 raise ValueError(f"Feature flag {feature_flag_id} has unknown filter {filter_name}")
-        if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
-            # If this is reached, and true, default return value is true, else false
-            result = True
 
         if feature_flag.allocation and feature_flag.variants:
             variant_name = self._assign_variant(feature_flag, **kwargs)
             if variant_name:
-                return FeatureManager._check_variant_override(feature_flag.variants, variant_name, result)
+                result["enabled"] = FeatureManager._check_variant_override(
+                    feature_flag.variants, variant_name, result["enabled"]
+                )
+                result["variant"] = variant_name
+                return result
 
-        if result:
-            return FeatureManager._check_default_enabled_variant(feature_flag)
-        return FeatureManager._check_default_disabled_variant(feature_flag)
+        if result["enabled"]:
+            result["enabled"] = FeatureManager._check_default_enabled_variant(feature_flag)
+            if feature_flag.allocation:
+                result["variant"] = feature_flag.allocation.default_when_enabled
+        else:
+            result["enabled"] = FeatureManager._check_default_disabled_variant(feature_flag)
+            if feature_flag.allocation:
+                result["variant"] = feature_flag.allocation.default_when_disabled
+        return result
 
     def list_feature_flag_names(self):
         """
