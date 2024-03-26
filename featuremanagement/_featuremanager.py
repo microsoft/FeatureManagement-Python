@@ -204,7 +204,7 @@ class FeatureManager:
 
         if len(feature_filters) == 0:
             # Feature flags without any filters return evaluate
-            result["enabled"] = FeatureManager._check_default_enabled_variant(feature_flag)
+            result["enabled"] = True
         else:
             # The assumed value is no filters is based on the requirement type.
             # Requirement type Any assumes false until proven true, All assumes true until proven false

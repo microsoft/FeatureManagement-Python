@@ -133,7 +133,6 @@ class TestFeatureVariants:
                 ]
             }
         }
-        test = AlwaysOnFilter()
         feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOnFilter()])
         assert feature_manager.is_enabled("Alpha")
         assert not feature_manager.is_enabled("Alpha", user="Adam", groups=["Group1"])
@@ -171,7 +170,7 @@ class TestFeatureVariants:
             }
         }
         feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOnFilter()])
-        assert feature_manager.is_enabled("Alpha")
+        assert not feature_manager.is_enabled("Alpha")
         assert feature_manager.is_enabled("Alpha", user="Adam")
         assert not feature_manager.is_enabled("Alpha", user="Babs")
         assert not feature_manager.is_enabled("Alpha", user="Babs", groups=["Group1"])
