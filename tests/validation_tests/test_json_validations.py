@@ -48,22 +48,21 @@ class TestNoFiltersFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
         feature_flag_tests = json.load(feature_flag_test_file)
 
         for feature_flag_test in feature_flag_tests:
-            test = feature_flag_tests[feature_flag_test]
-            expected_result = test[expected_result_key]
-            failed_description = "Test " + feature_flag_test + " failed. Description: " + test["Description"]
+            expected_result = feature_flag_test[expected_result_key]
+            failed_description = "Test " + feature_flag_test["Test ID"] + " failed. Description: " + feature_flag_test["Description"]
 
             if isinstance(expected_result, bool):
-                if "Inputs" in test:
-                    user = test["Inputs"].get("user", None)
-                    groups = test["Inputs"].get("groups", [])
+                if "Inputs" in feature_flag_test:
+                    user = feature_flag_test["Inputs"].get("user", None)
+                    groups = feature_flag_test["Inputs"].get("groups", [])
                     assert (
-                        feature_manager.is_enabled(test[feature_flag_name_key], user=user, groups=groups)
+                        feature_manager.is_enabled(feature_flag_test[feature_flag_name_key], user=user, groups=groups)
                         == expected_result
                     ), failed_description
                 else:
                     assert (
-                        feature_manager.is_enabled(test[feature_flag_name_key]) == expected_result
+                        feature_manager.is_enabled(feature_flag_test[feature_flag_name_key]) == expected_result
                     ), failed_description
             else:
                 with self.assertRaises(ValueError):
-                    feature_manager.is_enabled(test[feature_flag_name_key]), failed_description
+                    feature_manager.is_enabled(feature_flag_test[feature_flag_name_key]), failed_description
