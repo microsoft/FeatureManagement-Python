@@ -1,0 +1,68 @@
+# ------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for
+# license information.
+# -------------------------------------------------------------------------
+from collections.abc import Mapping
+
+FEATURE_FLAG_CLIENT_FILTERS = "client_filters"
+FEATURE_FILTER_NAME = "name"
+FEATURE_FILTER_REQUIREMENT_TYPE = "requirement_type"
+REQUIREMENT_TYPE_ALL = "All"
+REQUIREMENT_TYPE_ANY = "Any"
+
+
+class FeatureConditions:
+    """
+    Represents the conditions for a feature flag
+    """
+
+    def __init__(self):
+        self._requirement_type = REQUIREMENT_TYPE_ANY
+        self._client_filters = []
+
+    @classmethod
+    def convert_from_json(cls, feature_name, json_value):
+        """
+        Convert a JSON object to FeatureConditions
+
+        :param json: JSON object
+        :type json: dict
+        :return: FeatureConditions
+        :rtype: FeatureConditions
+        """
+        conditions = cls()
+        if json_value is not None and not isinstance(json_value, Mapping):
+            raise AttributeError("Feature flag conditions must be a dictionary")
+        conditions._requirement_type = json_value.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY)
+        conditions._client_filters = json_value.get(FEATURE_FLAG_CLIENT_FILTERS, [])
+        for feature_filter in conditions._client_filters:
+            feature_filter["feature_name"] = feature_name
+        return conditions
+
+    @property
+    def requirement_type(self):
+        """
+        Get the requirement type for the feature flag
+
+        :return: Requirement type
+        :rtype: str
+        """
+        return self._requirement_type
+
+    @property
+    def client_filters(self):
+        """
+        Get the client filters for the feature flag
+
+        :return: Client filters
+        :rtype: list[dict]
+        """
+        return self._client_filters
+
+    def _validate(self, feature_flag_id):
+        if self._requirement_type not in [REQUIREMENT_TYPE_ALL, REQUIREMENT_TYPE_ANY]:
+            raise ValueError(f"Feature flag {feature_flag_id} has invalid requirement type.")
+        for feature_filter in self._client_filters:
+            if feature_filter.get(FEATURE_FILTER_NAME) is None:
+                raise ValueError(f"Feature flag {feature_flag_id} is missing filter name.")
