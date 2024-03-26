@@ -135,7 +135,7 @@ class FeatureManager:
         if feature_flag.allocation.percentile:
             user = kwargs.get("user", "")
             if user:
-                context_id = user + "\n" + feature_flag.id + "\n" + feature_flag.allocation.seed
+                context_id = user + "\n" + feature_flag.name + "\n" + feature_flag.allocation.seed
                 box = self._is_targeted(context_id)
                 for percentile_allocation in feature_flag.allocation.percentile:
                     if box == 100 and percentile_allocation.percentile_to == 100:
@@ -192,9 +192,9 @@ class FeatureManager:
                         result = True
             else:
                 raise ValueError(f"Feature flag {feature_flag_id} has unknown filter {filter_name}")
-        if not feature_filters:
+        if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
             # If this is reached, and true, default return value is true, else false
-            result = feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL
+            result = True
 
         if feature_flag.allocation and feature_flag.variants:
             variant_name = self._assign_variant(feature_flag, **kwargs)

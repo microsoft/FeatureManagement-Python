@@ -46,13 +46,6 @@ class FeatureConditions:
             feature_filter["feature_name"] = feature_name
         return conditions
 
-    def _validate(self, feature_flag_id):
-        if self._requirement_type not in [REQUIREMENT_TYPE_ALL, REQUIREMENT_TYPE_ANY]:
-            raise ValueError(f"Feature flag {feature_flag_id} has invalid requirement type.")
-        for feature_filter in self._client_filters:
-            if feature_filter.get(FEATURE_FILTER_NAME) is None:
-                raise ValueError(f"Feature flag {feature_flag_id} is missing filter name.")
-
     @property
     def requirement_type(self):
         """
@@ -73,6 +66,13 @@ class FeatureConditions:
         """
         return self._client_filters
 
+    def _validate(self, feature_flag_id):
+        if self._requirement_type not in [REQUIREMENT_TYPE_ALL, REQUIREMENT_TYPE_ANY]:
+            raise ValueError(f"Feature flag {feature_flag_id} has invalid requirement type.")
+        for feature_filter in self._client_filters:
+            if feature_filter.get(FEATURE_FILTER_NAME) is None:
+                raise ValueError(f"Feature flag {feature_flag_id} is missing filter name.")
+
 
 class FeatureFlag:
     """
@@ -83,8 +83,8 @@ class FeatureFlag:
         self._id = None
         self._enabled = False
         self._conditions = FeatureConditions()
-        self.allocation = None
-        self.variants = None
+        self._allocation = None
+        self._variants = None
 
     @classmethod
     def convert_from_json(cls, json_value):
@@ -100,23 +100,23 @@ class FeatureFlag:
         if not isinstance(json_value, dict):
             raise ValueError("Feature flag must be a dictionary.")
         feature_flag._id = json_value.get(FEATURE_FLAG_ID)
-        feature_flag.enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, True))
+        feature_flag._enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, True))
         feature_flag._conditions = FeatureConditions.convert_from_json(
             feature_flag._id, json_value.get(FEATURE_FLAG_CONDITIONS, {})
         )
         if FEATURE_FLAG_CONDITIONS in json_value:
-            feature_flag.conditions = FeatureConditions.convert_from_json(
+            feature_flag._conditions = FeatureConditions.convert_from_json(
                 feature_flag._id, json_value.get(FEATURE_FLAG_CONDITIONS, {})
             )
         else:
-            feature_flag.conditions = FeatureConditions()
-        feature_flag.allocation = Allocation.convert_from_json(json_value.get(FEATURE_FLAG_ALLOCATION, None))
-        feature_flag.variants = None
+            feature_flag._conditions = FeatureConditions()
+        feature_flag._allocation = Allocation.convert_from_json(json_value.get(FEATURE_FLAG_ALLOCATION, None))
+        feature_flag._variants = None
         if FEATURE_FLAG_VARIANTS in json_value:
             variants = json_value.get(FEATURE_FLAG_VARIANTS)
-            feature_flag.variants = []
+            feature_flag._variants = []
             for variant in variants:
-                feature_flag.variants.append(VariantReference.convert_from_json(variant))
+                feature_flag._variants.append(VariantReference.convert_from_json(variant))
         feature_flag._validate()
         return feature_flag
 
@@ -150,12 +150,32 @@ class FeatureFlag:
         """
         return self._conditions
 
+    @property
+    def allocation(self):
+        """
+        Get the allocation for the feature flag
+
+        :return: Allocation for the feature flag
+        :rtype: Allocation
+        """
+        return self._allocation
+
+    @property
+    def variants(self):
+        """
+        Get the variants for the feature flag
+
+        :return: Variants for the feature flag
+        :rtype: list[VariantReference]
+        """
+        return self._variants
+
     def _validate(self):
         if not isinstance(self._id, str):
             raise ValueError("Feature flag id field must be a string.")
         if not isinstance(self._enabled, bool):
             raise ValueError(f"Feature flag {self._id} must be a boolean.")
-        self._conditions._validate(self._id)  # pylint: disable=protected-access
+        self.conditions._validate(self._id)  # pylint: disable=protected-access
 
 
 class Allocation:
@@ -164,12 +184,12 @@ class Allocation:
     """
 
     def __init__(self):
-        self.default_when_enabled = None
-        self.default_when_disabled = None
-        self.user = []
-        self.group = []
-        self.percentile = []
-        self.seed = None
+        self._default_when_enabled = None
+        self._default_when_disabled = None
+        self._user = []
+        self._group = []
+        self._percentile = []
+        self._seed = None
 
     @classmethod
     def convert_from_json(cls, json):
@@ -184,25 +204,85 @@ class Allocation:
         if not json:
             return None
         allocation = cls()
-        allocation.default_when_enabled = json.get("default_when_enabled")
-        allocation.default_when_disabled = json.get("default_when_disabled")
-        allocation.user = []
-        allocation.group = []
-        allocation.percentile = []
+        allocation._default_when_enabled = json.get("default_when_enabled")
+        allocation._default_when_disabled = json.get("default_when_disabled")
+        allocation._user = []
+        allocation._group = []
+        allocation._percentile = []
         if "user" in json:
             allocations = json.get("user")
             for user_allocation in allocations:
-                allocation.user.append(UserAllocation(**user_allocation))
+                allocation._user.append(UserAllocation(**user_allocation))
         if "group" in json:
             allocations = json.get("group")
             for group_allocation in allocations:
-                allocation.group.append(GroupAllocation(**group_allocation))
+                allocation._group.append(GroupAllocation(**group_allocation))
         if "percentile" in json:
             allocations = json.get("percentile")
             for percentile_allocation in allocations:
-                allocation.percentile.append(PercentileAllocation.convert_from_json(percentile_allocation))
-        allocation.seed = json.get("seed", "")
+                allocation._percentile.append(PercentileAllocation.convert_from_json(percentile_allocation))
+        allocation._seed = json.get("seed", "")
         return allocation
+
+    @property
+    def default_when_enabled(self):
+        """
+        Get the default variant when the feature flag is enabled
+
+        :return: Default variant when the feature flag is enabled
+        :rtype: str
+        """
+        return self._default_when_enabled
+
+    @property
+    def default_when_disabled(self):
+        """
+        Get the default variant when the feature flag is disabled
+
+        :return: Default variant when the feature flag is disabled
+        :rtype: str
+        """
+        return self._default_when_disabled
+
+    @property
+    def user(self):
+        """
+        Get the user allocations
+
+        :return: User allocations
+        :rtype: list[UserAllocation]
+        """
+        return self._user
+
+    @property
+    def group(self):
+        """
+        Get the group allocations
+
+        :return: Group allocations
+        :rtype: list[GroupAllocation]
+        """
+        return self._group
+
+    @property
+    def percentile(self):
+        """
+        Get the percentile allocations
+
+        :return: Percentile allocations
+        :rtype: list[PercentileAllocation]
+        """
+        return self._percentile
+
+    @property
+    def seed(self):
+        """
+        Get the seed for the allocation
+
+        :return: Seed for the allocation
+        :rtype: str
+        """
+        return self._seed
 
 
 @dataclass
@@ -231,9 +311,9 @@ class PercentileAllocation:
     """
 
     def __init__(self):
-        self.variant = None
-        self.percentile_from = None
-        self.percentile_to = None
+        self._variant = None
+        self._percentile_from = None
+        self._percentile_to = None
 
     @classmethod
     def convert_from_json(cls, json):
@@ -248,10 +328,40 @@ class PercentileAllocation:
         if not json:
             return None
         user_allocation = cls()
-        user_allocation.variant = json.get("variant")
-        user_allocation.percentile_from = json.get("from")
-        user_allocation.percentile_to = json.get("to")
+        user_allocation._variant = json.get("variant")
+        user_allocation._percentile_from = json.get("from")
+        user_allocation._percentile_to = json.get("to")
         return user_allocation
+
+    @property
+    def variant(self):
+        """
+        Get the variant for the allocation
+
+        :return: Variant for the allocation
+        :rtype: str
+        """
+        return self._variant
+
+    @property
+    def percentile_from(self):
+        """
+        Get the starting percentile for the allocation
+
+        :return: Starting percentile for the allocation
+        :rtype: int
+        """
+        return self._percentile_from
+
+    @property
+    def percentile_to(self):
+        """
+        Get the ending percentile for the allocation
+
+        :return: Ending percentile for the allocation
+        :rtype: int
+        """
+        return self._percentile_to
 
 
 @dataclass
@@ -284,6 +394,46 @@ class VariantReference:
         variant_reference._configuration_reference = json.get("configuration_reference")
         variant_reference._status_override = json.get("status_override", None)
         return variant_reference
+
+    @property
+    def name(self):
+        """
+        Get the name of the variant
+
+        :return: Name of the variant
+        :rtype: str
+        """
+        return self._name
+
+    @property
+    def configuration_value(self):
+        """
+        Get the configuration value for the variant
+
+        :return: Configuration value for the variant
+        :rtype: str
+        """
+        return self._configuration_value
+
+    @property
+    def configuration_reference(self):
+        """
+        Get the configuration reference for the variant
+
+        :return: Configuration reference for the variant
+        :rtype: str
+        """
+        return self._configuration_reference
+
+    @property
+    def status_override(self):
+        """
+        Get the status override for the variant
+
+        :return: Status override for the variant
+        :rtype: str
+        """
+        return self._status_override
 
 
 def _convert_boolean_value(enabled):

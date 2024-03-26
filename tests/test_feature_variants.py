@@ -194,7 +194,7 @@ class TestFeatureVariants:
                                 {"variant": "On", "from": 0, "to": 50},
                                 {"variant": "Off", "from": 50, "to": 100},
                             ],
-                            "seed": "test-seed3",
+                            "seed": "test-seed2",
                         },
                         "conditions": {
                             "client_filters": [
@@ -210,10 +210,10 @@ class TestFeatureVariants:
         }
         feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOnFilter()])
         assert feature_manager.is_enabled("Alpha")
-        assert not feature_manager.is_enabled("Alpha", user="Adam")
+        assert not feature_manager.is_enabled("Alpha", user="Alison")
         assert feature_manager.is_enabled("Alpha", user="Brittney")
         assert feature_manager.is_enabled("Alpha", user="Brittney", groups=["Group1"])
-        assert feature_manager.is_enabled("Alpha", user="Charlie")
+        assert feature_manager.is_enabled("Alpha", user="Chad")
         assert not feature_manager.is_enabled("Alpha", user="Daniel")
 
 
