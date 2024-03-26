@@ -49,7 +49,9 @@ class TestNoFiltersFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
 
         for feature_flag_test in feature_flag_tests:
             expected_result = feature_flag_test[expected_result_key]
-            failed_description = "Test " + feature_flag_test["Test ID"] + " failed. Description: " + feature_flag_test["Description"]
+            failed_description = (
+                "Test " + feature_flag_test["Test ID"] + " failed. Description: " + feature_flag_test["Description"]
+            )
 
             if isinstance(expected_result, bool):
                 if "Inputs" in feature_flag_test:
