@@ -131,10 +131,10 @@
                 "conditions": {
                     "client_filters": []
                 },
-                "Allocation": {
+                "allocation": {
                     "default_when_enabled": "True_Override"
                 },
-                "Variants": [
+                "variants": [
                     {
                         "name": "True_Override",
                         "status_override": "False"
@@ -149,10 +149,10 @@
                 "conditions": {
                     "client_filters": []
                 },
-                "Allocation": {
+                "allocation": {
                     "default_when_disabled": "False_Override"
                 },
-                "Variants": [
+                "variants": [
                     {
                         "name": "False_Override",
                         "status_override": "True"
@@ -161,7 +161,7 @@
         
             },
             {
-                "id": "Override_Variant",
+                "id": "TestVariants",
                 "description": "",
                 "enabled": "true",
                 "conditions": {
@@ -182,7 +182,7 @@
                         }
                     ]
                 },
-                "Allocation": {
+                "allocation": {
                     "users": [
                         {
                             "variant": "True_Override",
@@ -190,16 +190,35 @@
                                 "Adam"
                             ]
                         }
+                    ],
+                    "percentile": [
+                        {
+                            "variant": "True_Override",
+                            "from": 0,
+                            "to": 50
+                        },
+                        {
+                            "variant": "False_Override",
+                            "from": 50,
+                            "to": 100
+                        }
                     ]
                 },
-                "Variants": [
+                "variants": [
                     {
                         "name": "True_Override",
+                        "configuration_value": "The Variant True_Override overrides to False",
                         "status_override": "False"
+                    },
+                    {
+                        "name": "False_Override",
+                        "configuration_reference": "false-override",
+                        "status_override": "True"
                     }
                 ]
         
             }
         ]
-    }
+    },
+    "false-override": "The Variant False_Override overrides to True"
 }

@@ -134,7 +134,7 @@ class FeatureManager:
                             return group_allocation.variant
         if feature_flag.allocation.percentile:
             user = kwargs.get("user", "")
-            context_id = user + "\n" + feature_flag.name + "\n" + feature_flag.allocation.seed
+            context_id = user + "\n" + feature_flag.allocation.seed
             box = self._is_targeted(context_id)
             for percentile_allocation in feature_flag.allocation.percentile:
                 if box == 100 and percentile_allocation.percentile_to == 100:
@@ -142,7 +142,7 @@ class FeatureManager:
                 if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
                     return percentile_allocation.variant
         return None
-    
+
     def _variant_name_to_variant(self, feature_flag, variant_name):
         if not feature_flag.variants:
             return None
@@ -150,7 +150,7 @@ class FeatureManager:
             if variant_reference.name == variant_name:
                 configuration = variant_reference.configuration_value
                 if not configuration:
-                    self._configuration.get(variant_reference.configuration_reference)
+                    configuration = self._configuration.get(variant_reference.configuration_reference)
                 return Variant(variant_reference.name, configuration)
         return None
 

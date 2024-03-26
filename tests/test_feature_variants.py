@@ -181,16 +181,16 @@ class TestFeatureVariants:
             }
         }
         feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOnFilter()])
-        assert not feature_manager.is_enabled("Alpha")
-        assert feature_manager.get_variant("Alpha").name is "On"
+        assert feature_manager.is_enabled("Alpha")
+        assert feature_manager.get_variant("Alpha").name is "Off"
         assert feature_manager.is_enabled("Alpha", user="Adam")
         assert feature_manager.get_variant("Alpha", user="Adam").name is "Off"
-        assert not feature_manager.is_enabled("Alpha", user="Babs")
-        assert feature_manager.get_variant("Alpha", user="Babs").name is "On"
-        assert not feature_manager.is_enabled("Alpha", user="Babs", groups=["Group1"])
-        assert feature_manager.get_variant("Alpha", user="Babs", groups=["Group1"]).name is "On"
-        assert feature_manager.is_enabled("Alpha", user="Charlie")
-        assert feature_manager.get_variant("Alpha", user="Charlie").name is "Off"
+        assert not feature_manager.is_enabled("Alpha", user="Brittney")
+        assert feature_manager.get_variant("Alpha", user="Brittney").name is "On"
+        assert not feature_manager.is_enabled("Alpha", user="Brittney", groups=["Group1"])
+        assert feature_manager.get_variant("Alpha", user="Brittney", groups=["Group1"]).name is "On"
+        assert feature_manager.is_enabled("Alpha", user="Cassidy")
+        assert feature_manager.get_variant("Alpha", user="Cassidy").name is "Off"
 
     # method: is_enabled
     def test_basic_feature_variant_allocation_percentile_seeded(self):
@@ -226,12 +226,12 @@ class TestFeatureVariants:
         feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOnFilter()])
         assert feature_manager.is_enabled("Alpha")
         assert feature_manager.get_variant("Alpha").name is "Off"
-        assert not feature_manager.is_enabled("Alpha", user="Alison")
-        assert feature_manager.get_variant("Alpha", user="Alison").name is "On"
-        assert feature_manager.is_enabled("Alpha", user="Brittney")
-        assert feature_manager.get_variant("Alpha", user="Brittney").name is "Off"
-        assert feature_manager.is_enabled("Alpha", user="Brittney", groups=["Group1"])
-        assert feature_manager.get_variant("Alpha", user="Brittney", groups=["Group1"]).name is "Off"
+        assert not feature_manager.is_enabled("Alpha", user="Allison")
+        assert feature_manager.get_variant("Alpha", user="Allison").name is "On"
+        assert feature_manager.is_enabled("Alpha", user="Bubbles")
+        assert feature_manager.get_variant("Alpha", user="Bubbles").name is "Off"
+        assert feature_manager.is_enabled("Alpha", user="Bubbles", groups=["Group1"])
+        assert feature_manager.get_variant("Alpha", user="Bubbles", groups=["Group1"]).name is "Off"
         assert feature_manager.is_enabled("Alpha", user="Cassidy")
         assert feature_manager.get_variant("Alpha", user="Cassidy").name is "Off"
         assert not feature_manager.is_enabled("Alpha", user="Dan")
