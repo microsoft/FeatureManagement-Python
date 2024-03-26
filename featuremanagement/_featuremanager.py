@@ -142,6 +142,17 @@ class FeatureManager:
                 if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
                     return percentile_allocation.variant
         return None
+    
+    def _variant_name_to_variant(self, feature_flag, variant_name):
+        if not feature_flag.variants:
+            return None
+        for variant_reference in feature_flag.variants:
+            if variant_reference.name == variant_name:
+                configuration = variant_reference.configuration_value
+                if not configuration:
+                    self._configuration.get(variant_reference.configuration_reference)
+                return Variant(variant_reference.name, configuration)
+        return None
 
     def is_enabled(self, feature_flag_id, **kwargs):
         """
@@ -163,11 +174,7 @@ class FeatureManager:
         :return: Name of the variant
         :rtype: str
         """
-        varinat_reference = self._check_feature(feature_flag_id, **kwargs)["variant"]
-        configuration = varinat_reference.configuration_value
-        if not configuration:
-            self._configuration.get(varinat_reference.configuration_reference)
-        return Variant(varinat_reference.name, configuration)
+        return self._check_feature(feature_flag_id, **kwargs)["variant"]
 
     def _check_feature(self, feature_flag_id, **kwargs):
         """
@@ -197,6 +204,9 @@ class FeatureManager:
         if not feature_flag.enabled:
             # Feature flags that are disabled are always disabled
             result["enabled"] = FeatureManager._check_default_disabled_variant(feature_flag)
+            if feature_flag.allocation:
+                variant_name = feature_flag.allocation.default_when_disabled
+                result["variant"] = self._variant_name_to_variant(feature_flag, variant_name)
             return result
 
         feature_conditions = feature_flag.conditions
@@ -212,15 +222,15 @@ class FeatureManager:
 
         for feature_filter in feature_filters:
             filter_name = feature_filter[FEATURE_FILTER_NAME]
-            if filter_name in self._filters:
-                if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
-                    if not self._filters[filter_name].evaluate(feature_filter, **kwargs):
-                        result["enabled"] = False
-                else:
-                    if self._filters[filter_name].evaluate(feature_filter, **kwargs):
-                        result["enabled"] = True
-            else:
+            if filter_name not in self._filters:
                 raise ValueError(f"Feature flag {feature_flag_id} has unknown filter {filter_name}")
+            if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
+                if not self._filters[filter_name].evaluate(feature_filter, **kwargs):
+                    result["enabled"] = False
+                    break
+            elif self._filters[filter_name].evaluate(feature_filter, **kwargs):
+                result["enabled"] = True
+                break
 
         if feature_flag.allocation and feature_flag.variants:
             variant_name = self._assign_variant(feature_flag, **kwargs)
@@ -228,17 +238,19 @@ class FeatureManager:
                 result["enabled"] = FeatureManager._check_variant_override(
                     feature_flag.variants, variant_name, result["enabled"]
                 )
-                result["variant"] = variant_name
+                result["variant"] = self._variant_name_to_variant(feature_flag, variant_name)
                 return result
 
+        variant_name = None
         if result["enabled"]:
             result["enabled"] = FeatureManager._check_default_enabled_variant(feature_flag)
             if feature_flag.allocation:
-                result["variant"] = feature_flag.allocation.default_when_enabled
+                variant_name = feature_flag.allocation.default_when_enabled
         else:
             result["enabled"] = FeatureManager._check_default_disabled_variant(feature_flag)
             if feature_flag.allocation:
-                result["variant"] = feature_flag.allocation.default_when_disabled
+                variant_name = feature_flag.allocation.default_when_disabled
+        result["variant"] = self._variant_name_to_variant(feature_flag, variant_name)
         return result
 
     def list_feature_flag_names(self):
