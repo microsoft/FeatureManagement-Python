@@ -51,7 +51,9 @@ class FeatureFlag:
             )
         else:
             feature_flag._conditions = FeatureConditions()
-        feature_flag._allocation = Allocation.convert_from_json(json_value.get(FEATURE_FLAG_ALLOCATION, None))
+        feature_flag._allocation = Allocation.convert_from_json(
+            json_value.get(FEATURE_FLAG_ALLOCATION, None), feature_flag._id
+        )
         feature_flag._variants = None
         if FEATURE_FLAG_VARIANTS in json_value:
             variants = json_value.get(FEATURE_FLAG_VARIANTS)

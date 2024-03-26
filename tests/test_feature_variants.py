@@ -173,9 +173,9 @@ class TestFeatureVariants:
         feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOnFilter()])
         assert feature_manager.is_enabled("Alpha")
         assert feature_manager.is_enabled("Alpha", user="Adam")
-        assert not feature_manager.is_enabled("Alpha", user="Brittney")
-        assert not feature_manager.is_enabled("Alpha", user="Brittney", groups=["Group1"])
-        assert feature_manager.is_enabled("Alpha", user="Constantine")
+        assert not feature_manager.is_enabled("Alpha", user="Babs")
+        assert not feature_manager.is_enabled("Alpha", user="Babs", groups=["Group1"])
+        assert feature_manager.is_enabled("Alpha", user="Charlie")
 
     # method: is_enabled
     def test_basic_feature_variant_allocation_percentile_seeded(self):

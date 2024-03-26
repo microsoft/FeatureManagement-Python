@@ -12,16 +12,16 @@ class Allocation:
     Represents an allocation
     """
 
-    def __init__(self):
+    def __init__(self, feature_name):
         self._default_when_enabled = None
         self._default_when_disabled = None
         self._user = []
         self._group = []
         self._percentile = []
-        self._seed = None
+        self._seed = "allocation\n" + feature_name
 
     @classmethod
-    def convert_from_json(cls, json):
+    def convert_from_json(cls, json, feature_name):
         """
         Convert a JSON object to Allocation
 
@@ -32,7 +32,7 @@ class Allocation:
         """
         if not json:
             return None
-        allocation = cls()
+        allocation = cls(feature_name)
         allocation._default_when_enabled = json.get(DEFAULT_WHEN_ENABLED)
         allocation._default_when_disabled = json.get(DEFAULT_WHEN_DISABLED)
         allocation._user = []
@@ -50,7 +50,7 @@ class Allocation:
             allocations = json.get(PERCENTILE)
             for percentile_allocation in allocations:
                 allocation._percentile.append(PercentileAllocation.convert_from_json(percentile_allocation))
-        allocation._seed = json.get(SEED, "")
+        allocation._seed = json.get(SEED, "allocation\n" + feature_name)
         return allocation
 
     @property
