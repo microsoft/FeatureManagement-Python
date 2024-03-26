@@ -134,14 +134,13 @@ class FeatureManager:
                             return group_allocation.variant
         if feature_flag.allocation.percentile:
             user = kwargs.get("user", "")
-            if user:
-                context_id = user + "\n" + feature_flag.name + "\n" + feature_flag.allocation.seed
-                box = self._is_targeted(context_id)
-                for percentile_allocation in feature_flag.allocation.percentile:
-                    if box == 100 and percentile_allocation.percentile_to == 100:
-                        return percentile_allocation.variant
-                    if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
-                        return percentile_allocation.variant
+            context_id = user + "\n" + feature_flag.name + "\n" + feature_flag.allocation.seed
+            box = self._is_targeted(context_id)
+            for percentile_allocation in feature_flag.allocation.percentile:
+                if box == 100 and percentile_allocation.percentile_to == 100:
+                    return percentile_allocation.variant
+                if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
+                    return percentile_allocation.variant
         return None
 
     def is_enabled(self, feature_flag_id, **kwargs):
