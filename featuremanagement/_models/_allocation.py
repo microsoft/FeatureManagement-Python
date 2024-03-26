@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 from dataclasses import dataclass
+from ._constants import DEFAULT_WHEN_ENABLED, DEFAULT_WHEN_DISABLED, USER, GROUP, PERCENTILE, SEED
 
 
 class Allocation:
@@ -32,24 +33,24 @@ class Allocation:
         if not json:
             return None
         allocation = cls()
-        allocation._default_when_enabled = json.get("default_when_enabled")
-        allocation._default_when_disabled = json.get("default_when_disabled")
+        allocation._default_when_enabled = json.get(DEFAULT_WHEN_ENABLED)
+        allocation._default_when_disabled = json.get(DEFAULT_WHEN_DISABLED)
         allocation._user = []
         allocation._group = []
         allocation._percentile = []
-        if "user" in json:
-            allocations = json.get("user")
+        if USER in json:
+            allocations = json.get(USER)
             for user_allocation in allocations:
                 allocation._user.append(UserAllocation(**user_allocation))
-        if "group" in json:
-            allocations = json.get("group")
+        if GROUP in json:
+            allocations = json.get(GROUP)
             for group_allocation in allocations:
                 allocation._group.append(GroupAllocation(**group_allocation))
-        if "percentile" in json:
-            allocations = json.get("percentile")
+        if PERCENTILE in json:
+            allocations = json.get(PERCENTILE)
             for percentile_allocation in allocations:
                 allocation._percentile.append(PercentileAllocation.convert_from_json(percentile_allocation))
-        allocation._seed = json.get("seed", "")
+        allocation._seed = json.get(SEED, "")
         return allocation
 
     @property

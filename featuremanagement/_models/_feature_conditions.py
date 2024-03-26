@@ -4,12 +4,13 @@
 # license information.
 # -------------------------------------------------------------------------
 from collections.abc import Mapping
-
-FEATURE_FLAG_CLIENT_FILTERS = "client_filters"
-FEATURE_FILTER_NAME = "name"
-FEATURE_FILTER_REQUIREMENT_TYPE = "requirement_type"
-REQUIREMENT_TYPE_ALL = "All"
-REQUIREMENT_TYPE_ANY = "Any"
+from ._constants import (
+    FEATURE_FLAG_CLIENT_FILTERS,
+    FEATURE_FILTER_NAME,
+    FEATURE_FILTER_REQUIREMENT_TYPE,
+    REQUIREMENT_TYPE_ALL,
+    REQUIREMENT_TYPE_ANY,
+)
 
 
 class FeatureConditions:

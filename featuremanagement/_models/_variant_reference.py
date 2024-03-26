@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 from dataclasses import dataclass
+from ._constants import VARIANT_REFERENCE_NAME, CONFIGURATION_VALUE, CONFIGURATION_REFERENCE, STATUS_OVERRIDE
 
 
 @dataclass
@@ -31,10 +32,10 @@ class VariantReference:
         if not json:
             return None
         variant_reference = cls()
-        variant_reference._name = json.get("name")
-        variant_reference._configuration_value = json.get("configuration_value")
-        variant_reference._configuration_reference = json.get("configuration_reference")
-        variant_reference._status_override = json.get("status_override", None)
+        variant_reference._name = json.get(VARIANT_REFERENCE_NAME)
+        variant_reference._configuration_value = json.get(CONFIGURATION_VALUE)
+        variant_reference._configuration_reference = json.get(CONFIGURATION_REFERENCE)
+        variant_reference._status_override = json.get(STATUS_OVERRIDE, None)
         return variant_reference
 
     @property

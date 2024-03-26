@@ -6,17 +6,13 @@
 from ._feature_conditions import FeatureConditions
 from ._allocation import Allocation
 from ._variant_reference import VariantReference
-
-FEATURE_FLAG_ID = "id"
-FEATURE_FLAG_ENABLED = "enabled"
-FEATURE_FLAG_CONDITIONS = "conditions"
-FEATURE_FLAG_CLIENT_FILTERS = "client_filters"
-FEATURE_FLAG_ALLOCATION = "allocation"
-FEATURE_FLAG_VARIANTS = "variants"
-FEATURE_FILTER_NAME = "name"
-FEATURE_FILTER_REQUIREMENT_TYPE = "requirement_type"
-REQUIREMENT_TYPE_ALL = "All"
-REQUIREMENT_TYPE_ANY = "Any"
+from ._constants import (
+    FEATURE_FLAG_ID,
+    FEATURE_FLAG_ENABLED,
+    FEATURE_FLAG_CONDITIONS,
+    FEATURE_FLAG_ALLOCATION,
+    FEATURE_FLAG_VARIANTS,
+)
 
 
 class FeatureFlag:
