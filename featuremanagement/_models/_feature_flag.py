@@ -3,72 +3,16 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from collections.abc import Mapping
-
-FEATURE_FLAG_ID = "id"
-FEATURE_FLAG_ENABLED = "enabled"
-FEATURE_FLAG_CONDITIONS = "conditions"
-FEATURE_FLAG_CLIENT_FILTERS = "client_filters"
-FEATURE_FILTER_NAME = "name"
-FEATURE_FILTER_REQUIREMENT_TYPE = "requirement_type"
-REQUIREMENT_TYPE_ALL = "All"
-REQUIREMENT_TYPE_ANY = "Any"
-
-
-class FeatureConditions:
-    """
-    Represents the conditions for a feature flag
-    """
-
-    def __init__(self):
-        self._requirement_type = REQUIREMENT_TYPE_ANY
-        self._client_filters = []
-
-    @classmethod
-    def convert_from_json(cls, feature_name, json_value):
-        """
-        Convert a JSON object to FeatureConditions
-
-        :param json: JSON object
-        :type json: dict
-        :return: FeatureConditions
-        :rtype: FeatureConditions
-        """
-        conditions = cls()
-        if json_value is not None and not isinstance(json_value, Mapping):
-            raise AttributeError("Feature flag conditions must be a dictionary")
-        conditions._requirement_type = json_value.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY)
-        conditions._client_filters = json_value.get(FEATURE_FLAG_CLIENT_FILTERS, [])
-        for feature_filter in conditions._client_filters:
-            feature_filter["feature_name"] = feature_name
-        return conditions
-
-    @property
-    def requirement_type(self):
-        """
-        Get the requirement type for the feature flag
-
-        :return: Requirement type
-        :rtype: str
-        """
-        return self._requirement_type
-
-    @property
-    def client_filters(self):
-        """
-        Get the client filters for the feature flag
-
-        :return: Client filters
-        :rtype: list[dict]
-        """
-        return self._client_filters
-
-    def _validate(self, feature_flag_id):
-        if self._requirement_type not in [REQUIREMENT_TYPE_ALL, REQUIREMENT_TYPE_ANY]:
-            raise ValueError(f"Feature flag {feature_flag_id} has invalid requirement type.")
-        for feature_filter in self._client_filters:
-            if feature_filter.get(FEATURE_FILTER_NAME) is None:
-                raise ValueError(f"Feature flag {feature_flag_id} is missing filter name.")
+from ._feature_conditions import FeatureConditions
+from ._allocation import Allocation
+from ._variant_reference import VariantReference
+from ._constants import (
+    FEATURE_FLAG_ID,
+    FEATURE_FLAG_ENABLED,
+    FEATURE_FLAG_CONDITIONS,
+    FEATURE_FLAG_ALLOCATION,
+    FEATURE_FLAG_VARIANTS,
+)
 
 
 class FeatureFlag:
@@ -80,6 +24,8 @@ class FeatureFlag:
         self._id = None
         self._enabled = False
         self._conditions = FeatureConditions()
+        self._allocation = None
+        self._variants = None
 
     @classmethod
     def convert_from_json(cls, json_value):
@@ -99,6 +45,21 @@ class FeatureFlag:
         feature_flag._conditions = FeatureConditions.convert_from_json(
             feature_flag._id, json_value.get(FEATURE_FLAG_CONDITIONS, {})
         )
+        if FEATURE_FLAG_CONDITIONS in json_value:
+            feature_flag._conditions = FeatureConditions.convert_from_json(
+                feature_flag._id, json_value.get(FEATURE_FLAG_CONDITIONS, {})
+            )
+        else:
+            feature_flag._conditions = FeatureConditions()
+        feature_flag._allocation = Allocation.convert_from_json(
+            json_value.get(FEATURE_FLAG_ALLOCATION, None), feature_flag._id
+        )
+        feature_flag._variants = None
+        if FEATURE_FLAG_VARIANTS in json_value:
+            variants = json_value.get(FEATURE_FLAG_VARIANTS)
+            feature_flag._variants = []
+            for variant in variants:
+                feature_flag._variants.append(VariantReference.convert_from_json(variant))
         feature_flag._validate()
         return feature_flag
 
@@ -132,12 +93,32 @@ class FeatureFlag:
         """
         return self._conditions
 
+    @property
+    def allocation(self):
+        """
+        Get the allocation for the feature flag
+
+        :return: Allocation for the feature flag
+        :rtype: Allocation
+        """
+        return self._allocation
+
+    @property
+    def variants(self):
+        """
+        Get the variants for the feature flag
+
+        :return: Variants for the feature flag
+        :rtype: list[VariantReference]
+        """
+        return self._variants
+
     def _validate(self):
         if not isinstance(self._id, str):
             raise ValueError("Feature flag id field must be a string.")
         if not isinstance(self._enabled, bool):
             raise ValueError(f"Feature flag {self._id} must be a boolean.")
-        self._conditions._validate(self._id)  # pylint: disable=protected-access
+        self.conditions._validate(self._id)  # pylint: disable=protected-access
 
 
 def _convert_boolean_value(enabled):

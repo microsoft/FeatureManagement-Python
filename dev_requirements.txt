@@ -1,4 +1,5 @@
 pytest
+pytest-cov
 pytest-asyncio
 black
 pylint
@@ -6,3 +7,4 @@ mypy
 sphinx
 sphinx_rtd_theme
 myst_parser
+azure-appconfiguration-provider

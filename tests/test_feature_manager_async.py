@@ -67,8 +67,8 @@ class TestFeatureManager:
         }
         feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOn(), AlwaysOff()])
         assert feature_manager is not None
-        assert len(feature_manager._filters) == 4
-        assert feature_manager.is_enabled("Alpha")
+        assert len(feature_manager._filters) == 4  # pylint: disable=protected-access
+        assert await feature_manager.is_enabled("Alpha")
         assert not await feature_manager.is_enabled("Beta")
         assert not await feature_manager.is_enabled("Gamma")
         assert not await feature_manager.is_enabled("Delta")
@@ -76,12 +76,12 @@ class TestFeatureManager:
 
     # method: feature_manager_creation
     @pytest.mark.asyncio
-    async def test_feature_manager_creation_with_filters(self):
+    async def test_feature_manager_creation_with_override_default(self):
         feature_manager = FeatureManager({}, feature_filters=[AlwaysOn(), AlwaysOff(), FakeTimeWindowFilter()])
         assert feature_manager is not None
 
         # The fake time window should override the default one
-        assert len(feature_manager._filters) == 4
+        assert len(feature_manager._filters) == 4  # pylint: disable=protected-access
 
     # method: list_feature_flags
     @pytest.mark.asyncio
