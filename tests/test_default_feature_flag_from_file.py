@@ -3,17 +3,17 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from featuremanagement import FeatureManager
 import json
 import unittest
+from featuremanagement import FeatureManager
 
 
 class TestFeatureFlagFile(unittest.TestCase):
     # method: is_enabled
     def test_single_filters(self):
-        f = open("tests/all_feature_flag_options.json", "r")
+        with open("tests/all_feature_flag_options.json", "r", encoding="utf-8") as f:
+            feature_flags = json.load(f)
 
-        feature_flags = json.load(f)
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
@@ -68,7 +68,8 @@ class TestFeatureFlagFile(unittest.TestCase):
         # Feature Flag with Targeting filter, Stage 1 is 100% rolled out, but Dave is excluded.
         assert not feature_manager.is_enabled("Eta", user="Dave", groups=["Stage1"])
 
-        # Feature Flag with Targeting filter, with just 50% rollout. Adama is not part of the 50%, Brittney is not, group isn't part of the rollout so value isn't changed.
+        # Feature Flag with Targeting filter, with just 50% rollout. Adama is not part of the 50%,
+        # Brittney is not, group isn't part of the rollout so value isn't changed.
         assert feature_manager.is_enabled("Theta", user="Adam")
         assert feature_manager.is_enabled("Theta", user="Adam", groups=["Stage1"])
         assert feature_manager.is_enabled("Theta", user="Adam", groups=["Stage2"])
@@ -80,9 +81,9 @@ class TestFeatureFlagFile(unittest.TestCase):
 
     # method: is_enabled
     def test_requirement_type_any(self):
-        f = open("tests/all_feature_flag_options.json", "r")
+        with open("tests/all_feature_flag_options.json", "r", encoding="utf-8") as f:
+            feature_flags = json.load(f)
 
-        feature_flags = json.load(f)
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
@@ -100,13 +101,14 @@ class TestFeatureFlagFile(unittest.TestCase):
 
     # method: is_enabled
     def test_requirement_type_all(self):
-        f = open("tests/all_feature_flag_options.json", "r")
+        with open("tests/all_feature_flag_options.json", "r", encoding="utf-8") as f:
+            feature_flags = json.load(f)
 
-        feature_flags = json.load(f)
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
 
-        # Feature Flag with two feature filters with the All requirement type, the first is true, second is false, so the flag is disabled.
+        # Feature Flag with two feature filters with the All requirement type,
+        # the first is true, second is false, so the flag is disabled.
         assert not feature_manager.is_enabled("Nu", user="Adam")
 
         # Feature Flag with two feature filters with the All requirement type, both are true, so the flag is enabled.

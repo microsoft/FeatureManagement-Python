@@ -3,8 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from featuremanagement import FeatureManager, FeatureFilter
 import pytest
+from featuremanagement import FeatureManager, FeatureFilter
 
 
 class TestFeatureManagemer:
@@ -63,7 +63,7 @@ class TestFeatureManagemer:
         }
         feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOn(), AlwaysOff()])
         assert feature_manager is not None
-        assert len(feature_manager._filters) == 4
+        assert len(feature_manager._filters) == 4  # pylint: disable=protected-access
         assert feature_manager.is_enabled("Alpha")
         assert not feature_manager.is_enabled("Beta")
         assert not feature_manager.is_enabled("Gamma")
@@ -71,12 +71,12 @@ class TestFeatureManagemer:
         assert not feature_manager.is_enabled("Epsilon")
 
     # method: feature_manager_creation
-    def test_feature_manager_creation_with_filters(self):
+    def test_feature_manager_creation_with_override_default(self):
         feature_manager = FeatureManager({}, feature_filters=[AlwaysOn(), AlwaysOff(), FakeTimeWindowFilter()])
         assert feature_manager is not None
 
         # The fake time window should override the default one
-        assert len(feature_manager._filters) == 4
+        assert len(feature_manager._filters) == 4  # pylint: disable=protected-access
 
     # method: list_feature_flags
     def test_list_feature_flags(self):

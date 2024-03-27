@@ -1,8 +1,14 @@
-from featuremanagement import FeatureManager
-from random_filter import RandomFilter
-from azure.appconfiguration.provider import load
-import os
+# ------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for
+# license information.
+# -------------------------------------------------------------------------
+
 from time import sleep
+import os
+from azure.appconfiguration.provider import load
+from random_filter import RandomFilter
+from featuremanagement import FeatureManager
 
 connection_string = os.environ["APPCONFIGURATION_CONNECTION_STRING"]
 
