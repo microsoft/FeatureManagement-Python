@@ -44,7 +44,6 @@ class FeatureManager:
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
             self._filters[feature_filter.name] = feature_filter
 
-
     @staticmethod
     def _check_default_disabled_variant(feature_flag):
         if not feature_flag.allocation:
@@ -197,7 +196,7 @@ class FeatureManager:
                 if await self._filters[filter_name].evaluate(feature_filter, **kwargs):
                     result["enabled"] = True
                     break
-        
+
         if feature_flag.allocation and feature_flag.variants:
             variant_name = self._assign_variant(feature_flag, **kwargs)
             if variant_name:
