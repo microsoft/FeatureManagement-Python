@@ -10,7 +10,6 @@ import sys
 from random_filter import RandomFilter
 from featuremanagement import FeatureManager
 
-
 script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 with open(script_directory + "/formatted_feature_flags.json", "r", encoding="utf-8") as f:
