@@ -3,8 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from featuremanagement.aio import FeatureManager, FeatureFilter
 from unittest import IsolatedAsyncioTestCase
+from featuremanagement.aio import FeatureManager, FeatureFilter
 
 
 class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
