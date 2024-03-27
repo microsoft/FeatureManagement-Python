@@ -20,10 +20,10 @@ jobs:
         pip install pylint
     - name: Analysing the code/samples with pylint
       run: |
-        pylint $(git ls-files 'featuremanagement/*') $(git ls-files 'samples/*') 
+        pylint featuremanagement samples
     - name: Analysing the tests with pylint
       run: |
-        pylint --disable=missing-function-docstring,missing-class-docstring $(git ls-files 'tests/*')
+        pylint --disable=missing-function-docstring,missing-class-docstring tests
     - uses: psf/black@stable
     - name: Test with pytest
       run: |
