@@ -3,12 +3,12 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+from unittest import IsolatedAsyncioTestCase
 import pytest
 from featuremanagement.aio import FeatureManager
-from unittest import IsolatedAsyncioTestCase
 
 
-class TestDefaultfeature_flags(IsolatedAsyncioTestCase):
+class TestDefaultfeatureFlags(IsolatedAsyncioTestCase):
     def test_invalid_feature_flags(self):
         with self.assertRaises(AttributeError):
             FeatureManager("")
