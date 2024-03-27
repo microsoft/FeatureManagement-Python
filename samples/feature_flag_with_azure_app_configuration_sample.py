@@ -17,9 +17,18 @@ config = load(connection_string=connection_string, feature_flag_enabled=True, fe
 
 feature_manager = FeatureManager(config, feature_filters=[RandomFilter()])
 
-alpha = feature_manager.is_enabled("Alpha")
-# Is always true
-print("Alpha is ", alpha)
+def check_for_changes():
+    alpha = feature_manager.is_enabled("Alpha")
+    # Is always true
+    print("Alpha is ", alpha is True)
+    while feature_manager.is_enabled("Alpha") == alpha:
+        sleep(5)
+        config.refresh()
+
+    alpha = feature_manager.is_enabled("Alpha")
+    print("Alpha is ", feature_manager.is_enabled("Alpha"))
+
+
 # Is always false
 print("Beta is ", feature_manager.is_enabled("Beta"))
 # Is false 50% of the time
@@ -33,9 +42,4 @@ print("Epsilon is ", feature_manager.is_enabled("Epsilon"))
 # Target is true for Adam, group Stage 1, and 50% of users
 print("Target is ", feature_manager.is_enabled("Target", user="Adam"))
 print("Target is ", feature_manager.is_enabled("Target", user="Brian"))
-
-while feature_manager.is_enabled("Alpha") == alpha:
-    sleep(5)
-    config.refresh()
-
-print("Alpha is ", feature_manager.is_enabled("Alpha"))
+check_for_changes()
