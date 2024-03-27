@@ -68,7 +68,7 @@ class TestFeatureManager:
         feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOn(), AlwaysOff()])
         assert feature_manager is not None
         assert len(feature_manager._filters) == 4  # pylint: disable=protected-access
-        assert feature_manager.is_enabled("Alpha")
+        assert await feature_manager.is_enabled("Alpha")
         assert not await feature_manager.is_enabled("Beta")
         assert not await feature_manager.is_enabled("Gamma")
         assert not await feature_manager.is_enabled("Delta")
