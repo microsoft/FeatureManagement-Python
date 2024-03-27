@@ -17,6 +17,7 @@ config = load(connection_string=connection_string, feature_flag_enabled=True, fe
 
 feature_manager = FeatureManager(config, feature_filters=[RandomFilter()])
 
+
 def check_for_changes():
     alpha = feature_manager.is_enabled("Alpha")
     # Is always true
