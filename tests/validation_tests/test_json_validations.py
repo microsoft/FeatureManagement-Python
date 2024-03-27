@@ -10,8 +10,11 @@ import json
 file_path = "tests/validation_tests/"
 sample_json_key = ".sample.json"
 tests_json_key = ".tests.json"
-expected_result_key = "Expected Result"
-feature_flag_name_key = "Feature Flag Name"
+test_id_key = "TestID"
+expected_result_key = "ExpectedResult"
+feature_flag_name_key = "FeatureFlagName"
+inputs_key = "Inputs"
+description_key = "Description"
 
 
 class TestNoFiltersFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
@@ -50,13 +53,13 @@ class TestNoFiltersFromFile(LoadFeatureFlagsFromFile, unittest.TestCase):
         for feature_flag_test in feature_flag_tests:
             expected_result = feature_flag_test[expected_result_key]
             failed_description = (
-                "Test " + feature_flag_test["Test ID"] + " failed. Description: " + feature_flag_test["Description"]
+                "Test " + feature_flag_test[test_id_key] + " failed. Description: " + feature_flag_test[description_key]
             )
 
             if isinstance(expected_result, bool):
-                if "Inputs" in feature_flag_test:
-                    user = feature_flag_test["Inputs"].get("user", None)
-                    groups = feature_flag_test["Inputs"].get("groups", [])
+                if inputs_key in feature_flag_test:
+                    user = feature_flag_test[inputs_key].get("user", None)
+                    groups = feature_flag_test[inputs_key].get("groups", [])
                     assert (
                         feature_manager.is_enabled(feature_flag_test[feature_flag_name_key], user=user, groups=groups)
                         == expected_result
