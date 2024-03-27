@@ -7,7 +7,7 @@ import pytest
 from featuremanagement import FeatureManager, FeatureFilter
 
 
-class TestFeatureManagemer:
+class TestFeatureManager:
     # method: feature_manager_creation
     def test_empty_feature_manager_creation(self):
         feature_manager = FeatureManager({})
