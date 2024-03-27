@@ -50,7 +50,7 @@ class Allocation:
             allocations = json.get(PERCENTILE)
             for percentile_allocation in allocations:
                 allocation._percentile.append(PercentileAllocation.convert_from_json(percentile_allocation))
-        allocation._seed = json.get(SEED, "allocation\n" + feature_name)
+        allocation._seed = json.get(SEED, allocation._seed)
         return allocation
 
     @property
