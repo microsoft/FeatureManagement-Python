@@ -54,7 +54,6 @@ class TestNoFiltersFromFile(unittest.TestCase):
 
         return feature_manager
 
-
     # method: is_enabled
     def run_tests(self, test_key):
         feature_manager = self.load_from_file(test_key + SAMPLE_JSON_KEY)
