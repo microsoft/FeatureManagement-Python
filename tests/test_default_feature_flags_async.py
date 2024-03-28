@@ -171,7 +171,7 @@ class TestDefaultfeatureFlags(IsolatedAsyncioTestCase):
 
         feature_flags["feature_management"]["feature_flags"][0]["id"] = 1
 
-        with pytest.raises(ValueError, match="Feature flag id field must be a string."):
+        with pytest.raises(ValueError, match="Invalid setting id with value 1 for feature 1."):
             feature_manager = FeatureManager(feature_flags)
             await feature_manager.is_enabled(1)
 
