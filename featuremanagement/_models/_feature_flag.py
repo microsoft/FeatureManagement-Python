@@ -115,9 +115,9 @@ class FeatureFlag:
 
     def _validate(self):
         if not isinstance(self._id, str):
-            raise ValueError("Feature flag id field must be a string.")
+            raise ValueError(f"Invalid setting id with value {self._id} for feature {self._id}.")
         if not isinstance(self._enabled, bool):
-            raise ValueError(f"Feature flag {self._id} must be a boolean.")
+            raise ValueError(f"Invalid setting enabled with value {self._enabled} for feature {self._id}.")
         self.conditions._validate(self._id)  # pylint: disable=protected-access
 
 

@@ -9,7 +9,7 @@ import unittest
 from pytest import raises
 from featuremanagement import FeatureManager
 
-FILE_PATH = "tests/validation_tests/"
+FILE_PATH = "tests/validation_tests/TestFiles/"
 SAMPLE_JSON_KEY = ".sample.json"
 TESTS_JSON_KEY = ".tests.json"
 TEST_ID_KEY = "TestID"
