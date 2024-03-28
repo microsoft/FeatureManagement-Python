@@ -1,4 +1,0 @@
-[submodule "AppConfiguration"]
-	path = AppConfiguration
-	url = https://github.com/Azure/AppConfiguration/
-	branch = FeatureFlagSchemaSample
