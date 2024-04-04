@@ -6,6 +6,7 @@
 from ._feature_conditions import FeatureConditions
 from ._allocation import Allocation
 from ._variant_reference import VariantReference
+from ._telemetry import Telemetry
 from ._constants import (
     FEATURE_FLAG_ID,
     FEATURE_FLAG_ENABLED,
@@ -26,6 +27,7 @@ class FeatureFlag:
         self._conditions = FeatureConditions()
         self._allocation = None
         self._variants = None
+        self._telemetry = Telemetry()
 
     @classmethod
     def convert_from_json(cls, json_value):
@@ -60,6 +62,8 @@ class FeatureFlag:
             feature_flag._variants = []
             for variant in variants:
                 feature_flag._variants.append(VariantReference.convert_from_json(variant))
+        if "telemetry" in json_value:
+            feature_flag._telemetry = Telemetry(**json_value.get("telemetry"))
         feature_flag._validate()
         return feature_flag
 
@@ -112,6 +116,16 @@ class FeatureFlag:
         :rtype: list[VariantReference]
         """
         return self._variants
+
+    @property
+    def telemetry(self):
+        """
+        Get the telemetry for the feature flag
+
+        :return: Telemetry for the feature flag
+        :rtype: Telemetry
+        """
+        return self._telemetry
 
     def _validate(self):
         if not isinstance(self._id, str):

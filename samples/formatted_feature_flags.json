@@ -164,6 +164,12 @@
                 "id": "TestVariants",
                 "description": "",
                 "enabled": "true",
+                "telemetry": {
+                    "enabled": "true",
+                    "metadata": {
+                        "etag": "my-fake-etag"
+                    }
+                },
                 "conditions": {
                     "client_filters": [
                         {
