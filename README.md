@@ -417,7 +417,7 @@ If you are using a feature flag with binary variants, the `status_override` prop
         "status_override": "Disabled"
     }    
 ],
-"enabled_ror": [ 
+"enabled_for": [ 
     { 
         "name": "AlwaysOn" 
     } 
