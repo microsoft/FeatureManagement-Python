@@ -272,7 +272,7 @@ class MyCustomFilter(FeatureFilter):
 
 When new features are added to an application, there may come a time when a feature has multiple different proposed design options. A common solution for deciding on a design is some form of A/B testing, which involves providing a different version of the feature to different segments of the user base and choosing a version based on user interaction. In this library, this functionality is enabled by representing different configurations of a feature with variants.
 
-Variants enable a feature flag to become more than a simple on/off flag. A variant represents a value of a feature flag that can be a string, a number, a boolean, or even a configuration object. A feature flag that declares variants should define under what circumstances each variant should be used, which is covered in greater detail in the [Allocating Variants]() section.
+Variants enable a feature flag to become more than a simple on/off flag. A variant represents a value of a feature flag that can be a string, a number, a boolean, or even a configuration object. A feature flag that declares variants should define under what circumstances each variant should be used, which is covered in greater detail in the [Allocating Variants](./README.md#AllocatingVariants) section.
 
 ```python
 class Variant():
@@ -286,7 +286,7 @@ class Variant():
 
 #### Getting Variants
 
-For each feature, a variant can be retrieved using `FeatureManager`'s `get_variant` method. The method returns a `Variant` object that contains the name and configuration of the variant.
+For each feature, a variant can be retrieved using `FeatureManager`'s `get_variant` method. The method returns a `Variant` object that contains the name and configuration of the variant. Once a variant is retrieved, the configuration of a variant can be used directly as JSON from the variant's `configuration` property.
 
 ```python
 feature_manager = FeatureManager(feature_flags)
@@ -295,10 +295,10 @@ variant = feature_manager.get_variant("FeatureU")
 
 my_configuration = variant.configuration
 
-# Do something with the resulting variant and its configuration
-```
+variant = feature_manager.get_variant("FeatureV")
 
-Once a variant is retrieved, the configuration of a variant can be used directly as JSON from the variant's `configuration` property.
+sub_configuration = variant.configuration["json_key"]
+```
 
 #### Defining Variants
 
