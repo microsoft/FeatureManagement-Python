@@ -12,19 +12,20 @@ from featuremanagement import FeatureManager
 FILE_PATH = "tests/validation_tests/"
 SAMPLE_JSON_KEY = ".sample.json"
 TESTS_JSON_KEY = ".tests.json"
-TEST_ID_KEY = "TestID"
-EXPECTED_RESULT_KEY = "ExpectedResult"
+FRIENDLY_NAME_KEY = "FriendlyName"
 IS_ENABLED_KEY = "IsEnabled"
+RESULT_KEY = "Result"
 FEATURE_FLAG_NAME_KEY = "FeatureFlagName"
 INPUTS_KEY = "Inputs"
 USER_KEY = "user"
 GROUPS_KEY = "groups"
 EXCEPTION_KEY = "Exception"
-EXCEPTION_MESSAGE_KEY = "Message"
 DESCRIPTION_KEY = "Description"
 
 
 def convert_boolean_value(enabled):
+    if enabled is None:
+        return None
     if isinstance(enabled, bool):
         return enabled
     if enabled.lower() == "true":
@@ -78,11 +79,11 @@ class TestNoFiltersFromFile(unittest.TestCase):
             feature_flag_tests = json.load(feature_flag_test_file)
 
         for feature_flag_test in feature_flag_tests:
-            expected_result = feature_flag_test[EXPECTED_RESULT_KEY]
-            expected_is_enabled_result = convert_boolean_value(expected_result.get(IS_ENABLED_KEY))
-            failed_description = (
-                "Test " + feature_flag_test[TEST_ID_KEY] + " failed. Description: " + feature_flag_test[DESCRIPTION_KEY]
-            )
+            is_enabled = feature_flag_test[IS_ENABLED_KEY]
+            expected_is_enabled_result = convert_boolean_value(is_enabled.get(RESULT_KEY))
+            feature_flag_id = test_key + "." + feature_flag_test[FEATURE_FLAG_NAME_KEY]
+
+            failed_description = f"Test {feature_flag_id} failed. Description: {feature_flag_test[DESCRIPTION_KEY]}"
 
             if isinstance(expected_is_enabled_result, bool):
                 user = feature_flag_test[INPUTS_KEY].get(USER_KEY, None)
@@ -94,5 +95,5 @@ class TestNoFiltersFromFile(unittest.TestCase):
             else:
                 with raises(ValueError) as ex_info:
                     feature_manager.is_enabled(feature_flag_test[FEATURE_FLAG_NAME_KEY])
-                expected_message = feature_flag_test.get(EXCEPTION_KEY).get(EXCEPTION_MESSAGE_KEY)
+                expected_message = is_enabled.get(EXCEPTION_KEY)
                 assert str(ex_info.value) == expected_message, failed_description
