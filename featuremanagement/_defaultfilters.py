@@ -93,7 +93,7 @@ class TargetingFilter(FeatureFilter):
         if not target_user:
             target_user = ""
         audience_context_id = (
-            target_user + "\n" + target_group + "\n" + feature_flag_name + "\n" + group.get(FEATURE_FILTER_NAME_KEY, "")
+            target_user + "\n" + feature_flag_name + "\n" + target_group
         )
 
         return self._is_targeted(audience_context_id, group_rollout_percentage)
