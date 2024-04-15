@@ -8,7 +8,8 @@ import json
 import os
 import sys
 from random_filter import RandomFilter
-from featuremanagement import FeatureManager, send_telemetry_appinsights
+from featuremanagement import FeatureManager
+from featuremanagement.appinsights import send_telemetry_appinsights
 
 try:
     from azure.monitor.opentelemetry import configure_azure_monitor
@@ -24,7 +25,7 @@ with open(script_directory + "/formatted_feature_flags.json", "r", encoding="utf
     feature_flags = json.load(f)
 
 # Initialize the feature manager with telemetry callback
-feature_manager = FeatureManager(feature_flags, feature_filters=[RandomFilter()], telemetry=send_telemetry_appinsights)
+feature_manager = FeatureManager(feature_flags, feature_filters=[RandomFilter()])
 
 # Evaluate the feature flag for the user
-print(feature_manager.get_variant("TestVariants", user="Adam").configuration)
+print(feature_manager.get_variant("TestVariants", user="Adam", telemetry=send_telemetry_appinsights).configuration)

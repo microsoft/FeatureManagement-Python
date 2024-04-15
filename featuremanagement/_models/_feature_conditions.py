@@ -37,6 +37,8 @@ class FeatureConditions:
             raise AttributeError("Feature flag conditions must be a dictionary")
         conditions._requirement_type = json_value.get(FEATURE_FILTER_REQUIREMENT_TYPE, REQUIREMENT_TYPE_ANY)
         conditions._client_filters = json_value.get(FEATURE_FLAG_CLIENT_FILTERS, [])
+        if not isinstance(conditions._client_filters, list):
+            conditions._client_filters = []
         for feature_filter in conditions._client_filters:
             feature_filter["feature_name"] = feature_name
         return conditions

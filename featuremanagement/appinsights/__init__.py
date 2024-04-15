@@ -3,14 +3,11 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from dataclasses import dataclass
+
+from ._send_telemetry_appinsights import send_telemetry, track_event
 
 
-@dataclass
-class Telemetry:
-    """
-    Represents the telemetry for a feature flag
-    """
-
-    enabled: bool = False
-    metadata: dict = None
+__all__ = [
+    "send_telemetry",
+    "track_event",
+]

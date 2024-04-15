@@ -12,8 +12,8 @@ class VaraintAssignmentReason(Enum):
     """
 
     NONE = "NONE"
-    DEFAULT_WHEN_DISABLED = "DEFAULT_WHEN_DISABLED"
-    DEFAULT_WHEN_ENABLED = "DEFAULT_WHEN_ENABLED"
-    USER = "USER"
-    GROUP = "GROUP"
-    PERCENTILE = "PERCENTILE"
+    DEFAULT_WHEN_DISABLED = "DefaultWhenDisabled"
+    DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
+    USER = "User"
+    GROUP = "Group"
+    PERCENTILE = "Percentile"

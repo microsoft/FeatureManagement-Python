@@ -214,9 +214,9 @@ class FeatureManager:
             variant_name, evaluation_event = self._assign_variant(feature_flag, **kwargs)
             evaluation_event.enabled = default_enabled
             if variant_name:
-                evaluation_event = FeatureManager._check_variant_override(
+                evaluation_event.enabled = FeatureManager._check_variant_override(
                     feature_flag.variants, variant_name, evaluation_event.enabled
-                )
+                ).enabled
                 evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
                 evaluation_event.feature = feature_flag
                 return evaluation_event

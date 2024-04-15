@@ -7,7 +7,6 @@ from ._featuremanager import FeatureManager
 from ._featurefilters import FeatureFilter
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._models import FeatureFlag, Variant, EvaluationEvent, VaraintAssignmentReason
-from ._send_telemetry_appinsights import send_telemetry_appinsights
 
 from ._version import VERSION
 
@@ -21,5 +20,4 @@ __all__ = [
     "Variant",
     "EvaluationEvent",
     "VaraintAssignmentReason",
-    "send_telemetry_appinsights",
 ]
