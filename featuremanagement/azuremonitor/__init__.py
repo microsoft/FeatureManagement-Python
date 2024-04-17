@@ -4,10 +4,10 @@
 # license information.
 # -------------------------------------------------------------------------
 
-from ._send_telemetry_appinsights import send_telemetry, track_event
+from ._send_telemetry import publish_telemetry, track_event
 
 
 __all__ = [
-    "send_telemetry",
+    "publish_telemetry",
     "track_event",
 ]

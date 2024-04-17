@@ -151,7 +151,7 @@ class FeatureManager:
             else:
                 self._telemetry(result)
         return result.variant
-    
+
     async def _check_feature_filters(self, feature_flag, evaluation_event, **kwargs):
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
@@ -177,7 +177,7 @@ class FeatureManager:
                     evaluation_event.enabled = True
                     break
         return evaluation_event
-    
+
     def _assign_allocation(self, feature_flag, evaluation_event, **kwargs):
         if feature_flag.allocation and feature_flag.variants:
             default_enabled = evaluation_event.enabled
@@ -237,7 +237,7 @@ class FeatureManager:
                 evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
             evaluation_event.feature = feature_flag
             return evaluation_event
-        
+
         evaluation_event = await self._check_feature_filters(feature_flag, evaluation_event, **kwargs)
         return self._assign_allocation(feature_flag, evaluation_event, **kwargs)
 

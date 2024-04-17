@@ -6,9 +6,10 @@
 import logging
 import hashlib
 from collections.abc import Mapping
+from typing import overload
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from ._models import FeatureFlag, Variant, EvaluationEvent, VaraintAssignmentReason
+from ._models import FeatureFlag, Variant, EvaluationEvent, VaraintAssignmentReason, TargetingContext
 
 
 FEATURE_MANAGEMENT_KEY = "feature_management"
@@ -63,8 +64,8 @@ class FeatureManager:
     :type configuration: Mapping
     :keyword feature_filters: Custom filters to be used for evaluating feature flags
     :paramtype feature_filters: list[FeatureFilter]
-    :keyword telemetry: Telemetry callback function
-    :paramtype telemetry: Callable[EvaluationEvent]
+    :keyword on_feature_evaluated: Callback function to be called when a feature flag is evaluated
+    :paramtype on_feature_evaluated: Callable[EvaluationEvent]
     """
 
     def __init__(self, configuration, **kwargs):
@@ -74,7 +75,7 @@ class FeatureManager:
         self._configuration = configuration
         self._cache = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
-        self._telemetry = kwargs.get("telemetry", None)
+        self._on_feature_evaluated = kwargs.get("on_feature_evaluated", None)
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
         for feature_filter in filters:
@@ -118,25 +119,23 @@ class FeatureManager:
 
         return (context_marker / (2**32 - 1)) * 100
 
-    def _assign_variant(self, feature_flag, **kwargs):
-        user = kwargs.get("user", "")
-        groups = kwargs.get("groups", [])
+    def _assign_variant(self, feature_flag, targeting_context):
         evaluation_event = EvaluationEvent(feature_flag=feature_flag)
         if not feature_flag.variants or not feature_flag.allocation:
             return None, evaluation_event
-        if feature_flag.allocation.user and user:
+        if feature_flag.allocation.user and targeting_context.user_id:
             for user_allocation in feature_flag.allocation.user:
-                if user in user_allocation.users:
+                if targeting_context.user_id in user_allocation.users:
                     evaluation_event.reason = VaraintAssignmentReason.USER
                     return user_allocation.variant, evaluation_event
-        if feature_flag.allocation.group and len(groups):
+        if feature_flag.allocation.group and len(targeting_context.groups) > 0:
             for group_allocation in feature_flag.allocation.group:
-                for group in groups:
+                for group in targeting_context.groups:
                     if group in group_allocation.groups:
                         evaluation_event.reason = VaraintAssignmentReason.GROUP
                         return group_allocation.variant, evaluation_event
         if feature_flag.allocation.percentile:
-            context_id = user + "\n" + feature_flag.allocation.seed
+            context_id = targeting_context.user_id + "\n" + feature_flag.allocation.seed
             box = self._is_targeted(context_id)
             for percentile_allocation in feature_flag.allocation.percentile:
                 if box == 100 and percentile_allocation.percentile_to == 100:
@@ -157,7 +156,20 @@ class FeatureManager:
                 return Variant(variant_reference.name, configuration)
         return None
 
-    def is_enabled(self, feature_flag_id, **kwargs):
+    @overload
+    def is_enabled(self, feature_flag_id, user_id, **kwargs):
+        """
+        Determine if the feature flag is enabled for the given context
+
+        :param str feature_flag_id: Name of the feature flag
+        :paramtype feature_flag_id: str
+        :param str user_id: User identifier
+        :paramtype user_id: str
+        :return: True if the feature flag is enabled for the given context
+        :rtype: bool
+        """
+
+    def is_enabled(self, feature_flag_id, *args, **kwargs):
         """
         Determine if the feature flag is enabled for the given context
 
@@ -166,24 +178,55 @@ class FeatureManager:
         :return: True if the feature flag is enabled for the given context
         :rtype: bool
         """
-        return self._check_feature(feature_flag_id, **kwargs).enabled
+        targeting_context = TargetingContext()
+        if len(args) == 1 and isinstance(args[0], str):
+            targeting_context = TargetingContext(user_id=args[0], groups=[])
+        elif len(args) == 1 and isinstance(args[0], TargetingContext):
+            targeting_context = args[0]
 
-    def get_variant(self, feature_flag_id, **kwargs):
+        result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
+        if self._on_feature_evaluated and result.feature.telemetry.enabled:
+            result.user = targeting_context.user_id
+            self._on_feature_evaluated(result)
+        return result.enabled
+
+    @overload
+    def get_variant(self, feature_flag_id, user_id, **kwargs):
         """
         Determine the variant for the given context
 
         :param str feature_flag_id: Name of the feature flag
         :paramtype feature_flag_id: str
-        :return: Name of the variant
-        :rtype: str
+        :param str user_id: User identifier
+        :paramtype user_id: str
+        :return: return: Variant instance
+        :rtype: Variant
         """
-        result = self._check_feature(feature_flag_id, **kwargs)
-        if self._telemetry and result.feature.telemetry.enabled:
-            result.user = kwargs.get("user", "")
-            self._telemetry(result)
+
+    def get_variant(self, feature_flag_id, *args, **kwargs):
+        """
+        Determine the variant for the given context
+
+        :param str feature_flag_id: Name of the feature flag
+        :paramtype feature_flag_id: str
+        :kwyword targeting_context: Targeting context
+        :paramtype TargetingContext: TargetingContext
+        :return: Variant instance
+        :rtype: Variant
+        """
+        targeting_context = TargetingContext()
+        if len(args) == 1 and isinstance(args[0], str):
+            targeting_context = TargetingContext(user_id=args[0], groups=[])
+        elif len(args) == 1 and isinstance(args[0], TargetingContext):
+            targeting_context = args[0]
+
+        result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
+        if self._on_feature_evaluated and result.feature.telemetry.enabled:
+            result.user = targeting_context.user_id
+            self._on_feature_evaluated(result)
         return result.variant
 
-    def _check_feature_filters(self, feature_flag, evaluation_event, **kwargs):
+    def _check_feature_filters(self, feature_flag, evaluation_event, targeting_context, **kwargs):
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
 
@@ -197,6 +240,8 @@ class FeatureManager:
 
         for feature_filter in feature_filters:
             filter_name = feature_filter[FEATURE_FILTER_NAME]
+            kwargs["user"] = targeting_context.user_id
+            kwargs["groups"] = targeting_context.groups
             if filter_name not in self._filters:
                 raise ValueError(f"Feature flag {feature_flag.name} has unknown filter {filter_name}")
             if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
@@ -208,10 +253,10 @@ class FeatureManager:
                 break
         return evaluation_event
 
-    def _assign_allocation(self, feature_flag, evaluation_event, **kwargs):
+    def _assign_allocation(self, feature_flag, evaluation_event, targeting_context):
         if feature_flag.allocation and feature_flag.variants:
             default_enabled = evaluation_event.enabled
-            variant_name, evaluation_event = self._assign_variant(feature_flag, **kwargs)
+            variant_name, evaluation_event = self._assign_variant(feature_flag, targeting_context)
             evaluation_event.enabled = default_enabled
             if variant_name:
                 evaluation_event.enabled = FeatureManager._check_variant_override(
@@ -234,7 +279,7 @@ class FeatureManager:
         evaluation_event.feature = feature_flag
         return evaluation_event
 
-    def _check_feature(self, feature_flag_id, **kwargs):
+    def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
         """
         Determine if the feature flag is enabled for the given context
 
@@ -268,9 +313,9 @@ class FeatureManager:
             evaluation_event.feature = feature_flag
             return evaluation_event
 
-        evaluation_event = self._check_feature_filters(feature_flag, evaluation_event, **kwargs)
+        evaluation_event = self._check_feature_filters(feature_flag, evaluation_event, targeting_context, **kwargs)
 
-        return self._assign_allocation(feature_flag, evaluation_event, **kwargs)
+        return self._assign_allocation(feature_flag, evaluation_event, targeting_context)
 
     def list_feature_flag_names(self):
         """

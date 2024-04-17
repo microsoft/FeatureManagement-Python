@@ -9,7 +9,7 @@ import os
 import sys
 from random_filter import RandomFilter
 from featuremanagement import FeatureManager
-from featuremanagement.appinsights import send_telemetry_appinsights
+from featuremanagement.azuremonitor import send_telemetry_appinsights
 
 try:
     from azure.monitor.opentelemetry import configure_azure_monitor

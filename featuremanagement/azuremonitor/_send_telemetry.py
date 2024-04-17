@@ -7,7 +7,7 @@ import logging
 from .._models import VaraintAssignmentReason
 
 try:
-    from azure.monitor.events.extension import track_event as appinsights_track_event
+    from azure.monitor.events.extension import track_event as azure_monitor_track_event
 
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = True
 except ImportError:
@@ -24,6 +24,7 @@ REASON = "VariantAssignmentReason"
 
 EVENT_NAME = "FeatureEvaluation"
 
+
 def track_event(event_name, user, event_properties=None):
     """
     Track an event with the specified name and properties.
@@ -36,11 +37,12 @@ def track_event(event_name, user, event_properties=None):
     if event_properties is None:
         event_properties = {}
     event_properties[TARGETING_ID] = user
-    appinsights_track_event(event_name, event_properties)
+    azure_monitor_track_event(event_name, event_properties)
 
-def send_telemetry(evaluation_event):
+
+def publish_telemetry(evaluation_event):
     """
-    Send telemetry for feature evaluation events.
+    Publishes the telemetry for a feature's evaluation event.
     """
     if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
         return
@@ -53,8 +55,8 @@ def send_telemetry(evaluation_event):
     if evaluation_event.reason and evaluation_event.reason != VaraintAssignmentReason.NONE:
         event[VARIANT] = evaluation_event.variant.name
         event[REASON] = evaluation_event.reason.value
-    
-    event["ETag"] = evaluation_event.feature.telemetry.metadata.get("etag")
-    event["FeatureFlagReference"] = evaluation_event.feature.telemetry.metadata.get("feature_flag_reference")
-    event["FeatureFlagId"] = evaluation_event.feature.telemetry.metadata.get("feature_flag_id")
-    appinsights_track_event(EVENT_NAME, event)
+
+    event["ETag"] = evaluation_event.feature.telemetry.metadata.get("etag", "")
+    event["FeatureFlagReference"] = evaluation_event.feature.telemetry.metadata.get("feature_flag_reference", "")
+    event["FeatureFlagId"] = evaluation_event.feature.telemetry.metadata.get("feature_flag_id", "")
+    azure_monitor_track_event(EVENT_NAME, event)

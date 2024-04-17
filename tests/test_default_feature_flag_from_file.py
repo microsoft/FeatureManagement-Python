@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------------
 import json
 import unittest
-from featuremanagement import FeatureManager
+from featuremanagement import FeatureManager, TargetingContext
 
 
 class TestFeatureFlagFile(unittest.TestCase):
@@ -36,48 +36,48 @@ class TestFeatureFlagFile(unittest.TestCase):
         assert feature_manager.is_enabled("Zeta")
 
         # Feature Flag with Targeting filter, Adam is not part of the default rollout.
-        assert not feature_manager.is_enabled("Eta", user="Adam")
+        assert not feature_manager.is_enabled("Eta", "Adam")
 
         # Feature Flag with Targeting filter, Ellie is part of the default rollout.
-        assert feature_manager.is_enabled("Eta", user="Ellie")
+        assert feature_manager.is_enabled("Eta", "Ellie")
 
         # Feature Flag with Targeting filter, Alice is a targeted user.
-        assert feature_manager.is_enabled("Eta", user="Alice")
+        assert feature_manager.is_enabled("Eta", "Alice")
 
         # Feature Flag with Targeting filter, Stage1 group is 100% targeted.
-        assert feature_manager.is_enabled("Eta", user="Adam", groups=["Stage1"])
+        assert feature_manager.is_enabled("Eta", TargetingContext(user_id="Adam", groups=["Stage1"]))
 
         # Feature Flag with Targeting filter, Stage2 group is 50% targeted.
-        assert feature_manager.is_enabled("Eta", groups=["Stage2"])
+        assert feature_manager.is_enabled("Eta", TargetingContext(groups=["Stage2"]))
 
         # Feature Flag with Targeting filter, Adam is enabled when part of Stage2 group.
-        assert feature_manager.is_enabled("Eta", user="Adam", groups=["Stage2"])
+        assert feature_manager.is_enabled("Eta", TargetingContext(user_id="Adam", groups=["Stage2"]))
 
         # Feature Flag with Targeting filter, Chad is not part of the Stage2 group rollout nor the default rollout.
-        assert not feature_manager.is_enabled("Eta", user="Chad", groups=["Stage2"])
+        assert not feature_manager.is_enabled("Eta", TargetingContext(user_id="Chad", groups=["Stage2"]))
 
         # Feature Flag with Targeting filter, Stage 3 group is excluded.
-        assert not feature_manager.is_enabled("Eta", groups=["Stage3"])
+        assert not feature_manager.is_enabled("Eta", TargetingContext(groups=["Stage3"]))
 
         # Feature Flag with Targeting filter, Alice is approved, but exlusion of group 3 overrides.
-        assert not feature_manager.is_enabled("Eta", user="Alice", groups=["Stage3"])
+        assert not feature_manager.is_enabled("Eta", TargetingContext(user_id="Alice", groups=["Stage3"]))
 
         # Feature Flag with Targeting filter, Ellie is part of default rollout, but exlusion of group 3 overrides.
-        assert not feature_manager.is_enabled("Eta", user="Ellie", groups=["Stage3"])
+        assert not feature_manager.is_enabled("Eta", TargetingContext(user_id="Ellie", groups=["Stage3"]))
 
         # Feature Flag with Targeting filter, Stage 1 is 100% rolled out, but Dave is excluded.
-        assert not feature_manager.is_enabled("Eta", user="Dave", groups=["Stage1"])
+        assert not feature_manager.is_enabled("Eta", TargetingContext(user_id="Dave", groups=["Stage1"]))
 
         # Feature Flag with Targeting filter, with just 50% rollout. Adama is not part of the 50%,
         # Brittney is not, group isn't part of the rollout so value isn't changed.
-        assert feature_manager.is_enabled("Theta", user="Adam")
-        assert feature_manager.is_enabled("Theta", user="Adam", groups=["Stage1"])
-        assert feature_manager.is_enabled("Theta", user="Adam", groups=["Stage2"])
-        assert feature_manager.is_enabled("Theta", user="Adam", groups=["Stage3"])
-        assert not feature_manager.is_enabled("Theta", user="Brittney")
-        assert not feature_manager.is_enabled("Theta", user="Brittney", groups=["Stage1"])
-        assert not feature_manager.is_enabled("Theta", user="Brittney", groups=["Stage2"])
-        assert not feature_manager.is_enabled("Theta", user="Brittney", groups=["Stage3"])
+        assert feature_manager.is_enabled("Theta", "Adam")
+        assert feature_manager.is_enabled("Theta", TargetingContext(user_id="Adam", groups=["Stage1"]))
+        assert feature_manager.is_enabled("Theta", TargetingContext(user_id="Adam", groups=["Stage2"]))
+        assert feature_manager.is_enabled("Theta", TargetingContext(user_id="Adam", groups=["Stage3"]))
+        assert not feature_manager.is_enabled("Theta", "Brittney")
+        assert not feature_manager.is_enabled("Theta", TargetingContext(user_id="Brittney", groups=["Stage1"]))
+        assert not feature_manager.is_enabled("Theta", TargetingContext(user_id="Brittney", groups=["Stage2"]))
+        assert not feature_manager.is_enabled("Theta", TargetingContext(user_id="Brittney", groups=["Stage3"]))
 
     # method: is_enabled
     def test_requirement_type_any(self):
@@ -109,7 +109,7 @@ class TestFeatureFlagFile(unittest.TestCase):
 
         # Feature Flag with two feature filters with the All requirement type,
         # the first is true, second is false, so the flag is disabled.
-        assert not feature_manager.is_enabled("Nu", user="Adam")
+        assert not feature_manager.is_enabled("Nu", "Adam")
 
         # Feature Flag with two feature filters with the All requirement type, both are true, so the flag is enabled.
-        assert feature_manager.is_enabled("Xi", user="Adam")
+        assert feature_manager.is_enabled("Xi", "Adam")

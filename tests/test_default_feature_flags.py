@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------------
 import unittest
 import pytest
-from featuremanagement import FeatureManager
+from featuremanagement import FeatureManager, TargetingContext
 
 
 class TestDefaultfeatureFlags(unittest.TestCase):
@@ -43,13 +43,13 @@ class TestDefaultfeatureFlags(unittest.TestCase):
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
         # Adam is in the user audience
-        assert feature_manager.is_enabled("Target", user="Adam")
+        assert feature_manager.is_enabled("Target", "Adam")
         # Brian is not part of the 50% or default 50% of users
-        assert not feature_manager.is_enabled("Target", user="Belle")
+        assert not feature_manager.is_enabled("Target", "Belle")
         # Brian is enabled because all of Stage 1 is enabled
-        assert feature_manager.is_enabled("Target", user="Belle", groups=["Stage1"])
+        assert feature_manager.is_enabled("Target", TargetingContext(user_id="Belle", groups=["Stage1"]))
         # Brian is not enabled because he is not in Stage 2, group isn't looked at when user is targeted
-        assert not feature_manager.is_enabled("Target", user="Belle", groups=["Stage2"])
+        assert not feature_manager.is_enabled("Target", TargetingContext(user_id="Belle", groups=["Stage2"]))
 
     # method: feature_manager_creation
     def test_feature_manager_creation_with_time_window(self):

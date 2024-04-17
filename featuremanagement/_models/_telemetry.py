@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -13,4 +13,4 @@ class Telemetry:
     """
 
     enabled: bool = False
-    metadata: dict = None
+    metadata: dict = field(default_factory=dict)
