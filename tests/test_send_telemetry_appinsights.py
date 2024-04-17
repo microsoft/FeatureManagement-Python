@@ -27,7 +27,10 @@ class TestSendTelemetryAppinsights:
         evaluation_event.reason = VaraintAssignmentReason.DEFAULT_WHEN_DISABLED
 
         with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
-            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(evaluation_event)
+            # This is called like this so we can override the track_event function
+            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(
+                evaluation_event
+            )  # pylint: disable=protected-access
             mock_track_event.assert_called_once()
             assert mock_track_event.call_args[0][0] == "FeatureEvaluation"
             assert mock_track_event.call_args[0][1]["FeatureName"] == "TestFeature"
@@ -46,7 +49,10 @@ class TestSendTelemetryAppinsights:
         evaluation_event.reason = VaraintAssignmentReason.DEFAULT_WHEN_DISABLED
 
         with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
-            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(evaluation_event)
+            # This is called like this so we can override the track_event function
+            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(
+                evaluation_event
+            )  # pylint: disable=protected-access
             mock_track_event.assert_called_once()
             assert mock_track_event.call_args[0][0] == "FeatureEvaluation"
             assert mock_track_event.call_args[0][1]["FeatureName"] == "TestFeature"
@@ -63,7 +69,10 @@ class TestSendTelemetryAppinsights:
         evaluation_event.user = "test_user"
 
         with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
-            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(evaluation_event)
+            # This is called like this so we can override the track_event function
+            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(
+                evaluation_event
+            )  # pylint: disable=protected-access
             mock_track_event.assert_called_once()
             assert mock_track_event.call_args[0][0] == "FeatureEvaluation"
             assert mock_track_event.call_args[0][1]["FeatureName"] == "TestFeature"
@@ -81,5 +90,7 @@ class TestSendTelemetryAppinsights:
         with patch.dict("sys.modules", {"azure.monitor.events.extension": None}):
             reload(sys.modules["featuremanagement.azuremonitor._send_telemetry"])
             caplog.set_level(logging.WARNING)
-            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(evaluation_event)
+            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(
+                evaluation_event
+            )  # pylint: disable=protected-access
             assert "Telemetry will not be sent to Application Insights." in caplog.text

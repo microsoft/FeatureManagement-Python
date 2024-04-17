@@ -18,8 +18,8 @@ with open(script_directory + "/formatted_feature_flags.json", "r", encoding="utf
 
 feature_manager = FeatureManager(feature_flags, feature_filters=[RandomFilter()])
 
-print(feature_manager.is_enabled("TestVariants", user="Adam"))
-print(feature_manager.get_variant("TestVariants", user="Adam").configuration)
+print(feature_manager.is_enabled("TestVariants", "Adam"))
+print(feature_manager.get_variant("TestVariants", "Adam").configuration)
 
-print(feature_manager.is_enabled("TestVariants", user="Cass"))
-print(feature_manager.get_variant("TestVariants", user="Cass").configuration)
+print(feature_manager.is_enabled("TestVariants", "Cass"))
+print(feature_manager.get_variant("TestVariants", "Cass").configuration)

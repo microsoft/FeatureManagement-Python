@@ -17,7 +17,7 @@ from .._featuremanager import (
     _get_feature_flag,
     _list_feature_flag_names,
 )
-from .._models import FeatureFlag, Variant, EvaluationEvent, VaraintAssignmentReason
+from .._models import Variant, EvaluationEvent, VaraintAssignmentReason
 
 
 class FeatureManager:

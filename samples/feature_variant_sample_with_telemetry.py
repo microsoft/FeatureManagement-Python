@@ -9,7 +9,7 @@ import os
 import sys
 from random_filter import RandomFilter
 from featuremanagement import FeatureManager
-from featuremanagement.azuremonitor import send_telemetry_appinsights
+from featuremanagement.azuremonitor import publish_telemetry
 
 try:
     from azure.monitor.opentelemetry import configure_azure_monitor
@@ -25,7 +25,9 @@ with open(script_directory + "/formatted_feature_flags.json", "r", encoding="utf
     feature_flags = json.load(f)
 
 # Initialize the feature manager with telemetry callback
-feature_manager = FeatureManager(feature_flags, feature_filters=[RandomFilter()])
+feature_manager = FeatureManager(
+    feature_flags, feature_filters=[RandomFilter()], on_feature_evaluated=publish_telemetry
+)
 
 # Evaluate the feature flag for the user
-print(feature_manager.get_variant("TestVariants", user="Adam", telemetry=send_telemetry_appinsights).configuration)
+print(feature_manager.get_variant("TestVariants", "Adam").configuration)
