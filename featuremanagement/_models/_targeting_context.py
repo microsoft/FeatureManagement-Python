@@ -4,7 +4,7 @@
 # license information.
 # --------------------------------------------------------------------------
 
-from typing import NamedTuple
+from typing import NamedTuple, List
 
 
 class TargetingContext(NamedTuple):
@@ -16,4 +16,4 @@ class TargetingContext(NamedTuple):
     user_id: str = ""
 
     # The users groups
-    groups: list[str] = []
+    groups: List[str] = []
