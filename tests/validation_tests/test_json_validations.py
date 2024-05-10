@@ -89,7 +89,9 @@ class TestNoFiltersFromFile(unittest.TestCase):
                 user = feature_flag_test[INPUTS_KEY].get(USER_KEY, None)
                 groups = feature_flag_test[INPUTS_KEY].get(GROUPS_KEY, [])
                 assert (
-                    feature_manager.is_enabled(feature_flag_test[FEATURE_FLAG_NAME_KEY], TargetingContext(user_id=user, groups=groups))
+                    feature_manager.is_enabled(
+                        feature_flag_test[FEATURE_FLAG_NAME_KEY], TargetingContext(user_id=user, groups=groups)
+                    )
                     == expected_is_enabled_result
                 ), failed_description
             else:
