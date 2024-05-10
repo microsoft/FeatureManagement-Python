@@ -62,7 +62,7 @@ class FeatureManager:
         :return: True if the feature flag is enabled for the given context
         :rtype: bool
         """
-        result = {"enabled": None, "variant": None}
+        result = {"enabled": None}
         if self._copy is not self._configuration.get(FEATURE_MANAGEMENT_KEY):
             self._cache = {}
             self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
@@ -80,7 +80,7 @@ class FeatureManager:
 
         if not feature_flag.enabled:
             # Feature flags that are disabled are always disabled
-            return False
+            return {"enabled": False}
 
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
