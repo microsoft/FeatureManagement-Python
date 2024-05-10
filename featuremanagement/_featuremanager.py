@@ -116,7 +116,9 @@ class FeatureManager:
 
         if not feature_flag.enabled:
             # Feature flags that are disabled are always disabled
-            return {"enabled": False,}
+            return {
+                "enabled": False,
+            }
 
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
