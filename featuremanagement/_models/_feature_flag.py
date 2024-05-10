@@ -4,7 +4,6 @@
 # license information.
 # -------------------------------------------------------------------------
 from ._feature_conditions import FeatureConditions
-from ._allocation import Allocation
 from ._variant_reference import VariantReference
 from ._constants import (
     FEATURE_FLAG_ID,
@@ -24,8 +23,6 @@ class FeatureFlag:
         self._id = None
         self._enabled = False
         self._conditions = FeatureConditions()
-        self._allocation = None
-        self._variants = None
 
     @classmethod
     def convert_from_json(cls, json_value):
@@ -51,15 +48,6 @@ class FeatureFlag:
             )
         else:
             feature_flag._conditions = FeatureConditions()
-        feature_flag._allocation = Allocation.convert_from_json(
-            json_value.get(FEATURE_FLAG_ALLOCATION, None), feature_flag._id
-        )
-        feature_flag._variants = None
-        if FEATURE_FLAG_VARIANTS in json_value:
-            variants = json_value.get(FEATURE_FLAG_VARIANTS)
-            feature_flag._variants = []
-            for variant in variants:
-                feature_flag._variants.append(VariantReference.convert_from_json(variant))
         feature_flag._validate()
         return feature_flag
 
@@ -92,26 +80,6 @@ class FeatureFlag:
         :rtype: FeatureConditions
         """
         return self._conditions
-
-    @property
-    def allocation(self):
-        """
-        Get the allocation for the feature flag
-
-        :return: Allocation for the feature flag
-        :rtype: Allocation
-        """
-        return self._allocation
-
-    @property
-    def variants(self):
-        """
-        Get the variants for the feature flag
-
-        :return: Variants for the feature flag
-        :rtype: list[VariantReference]
-        """
-        return self._variants
 
     def _validate(self):
         if not isinstance(self._id, str):
