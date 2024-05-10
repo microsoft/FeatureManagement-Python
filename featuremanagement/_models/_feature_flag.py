@@ -4,13 +4,10 @@
 # license information.
 # -------------------------------------------------------------------------
 from ._feature_conditions import FeatureConditions
-from ._variant_reference import VariantReference
 from ._constants import (
     FEATURE_FLAG_ID,
     FEATURE_FLAG_ENABLED,
     FEATURE_FLAG_CONDITIONS,
-    FEATURE_FLAG_ALLOCATION,
-    FEATURE_FLAG_VARIANTS,
 )
 
 
