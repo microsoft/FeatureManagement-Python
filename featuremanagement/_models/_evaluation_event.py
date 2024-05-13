@@ -9,7 +9,7 @@ from dataclasses import dataclass
 @dataclass
 class EvaluationEvent:
     """
-    Represents an evaluation event
+    Represents a feature flag evaluation event
     """
 
     def __init__(self, *, enabled=False, feature_flag=None):
