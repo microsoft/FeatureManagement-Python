@@ -26,7 +26,8 @@ class FeatureManager:
 
     :param Mapping configuration: Configuration object.
     :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags
-    :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is evaluated.
+    :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is
+    evaluated.
     """
 
     def __init__(self, configuration, **kwargs):

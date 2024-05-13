@@ -62,7 +62,8 @@ class FeatureManager:
 
     :param Mapping configuration: Configuration object.
     :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags.
-    :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is evaluated.
+    :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is
+    evaluated.
     """
 
     def __init__(self, configuration, **kwargs):
@@ -84,17 +85,21 @@ class FeatureManager:
     def _check_default_disabled_variant(feature_flag):
         if not feature_flag.allocation:
             return EvaluationEvent(enabled=False)
-        return FeatureManager._check_variant_override(
+        evaluation_event = FeatureManager._check_variant_override(
             feature_flag.variants, feature_flag.allocation.default_when_disabled, False
         )
+        evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
+        return evaluation_event
 
     @staticmethod
     def _check_default_enabled_variant(feature_flag):
         if not feature_flag.allocation:
             return EvaluationEvent(enabled=True)
-        return FeatureManager._check_variant_override(
+        evaluation_event = FeatureManager._check_variant_override(
             feature_flag.variants, feature_flag.allocation.default_when_enabled, True
         )
+        evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_ENABLED
+        return evaluation_event
 
     @staticmethod
     def _check_variant_override(variants, default_variant_name, status):
