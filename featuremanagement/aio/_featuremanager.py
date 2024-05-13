@@ -6,7 +6,6 @@
 from collections.abc import Mapping
 import logging
 import hashlib
-import inspect
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from .._featuremanager import (
@@ -17,7 +16,7 @@ from .._featuremanager import (
     _get_feature_flag,
     _list_feature_flag_names,
 )
-from .._models import Variant, EvaluationEvent, VariantAssignmentReason
+from .._models import Variant, EvaluationEvent
 
 
 class FeatureManager:
@@ -25,9 +24,7 @@ class FeatureManager:
     Feature Manager that determines if a feature flag is enabled for the given context.
 
     :param Mapping configuration: Configuration object.
-    :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags
-    :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is
-    evaluated.
+    :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags.
     """
 
     def __init__(self, configuration, **kwargs):
@@ -37,7 +34,6 @@ class FeatureManager:
         self._configuration = configuration
         self._cache = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
-        self._on_feature_evaluated = kwargs.pop("on_feature_evaluated", None)
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
         for feature_filter in filters:
@@ -90,13 +86,11 @@ class FeatureManager:
         if feature_flag.allocation.user and user:
             for user_allocation in feature_flag.allocation.user:
                 if user in user_allocation.users:
-                    evaluation_event.reason = VariantAssignmentReason.USER
                     return user_allocation.variant, evaluation_event
         if feature_flag.allocation.group and groups:
             for group_allocation in feature_flag.allocation.group:
                 for group in groups:
                     if group in group_allocation.groups:
-                        evaluation_event.reason = VariantAssignmentReason.GROUP
                         return group_allocation.variant, evaluation_event
         if feature_flag.allocation.percentile:
             user = kwargs.get("user", "")
@@ -106,7 +100,6 @@ class FeatureManager:
                 if box == 100 and percentile_allocation.percentile_to == 100:
                     return percentile_allocation.variant
                 if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
-                    evaluation_event.reason = VariantAssignmentReason.PERCENTILE
                     return percentile_allocation.variant, evaluation_event
         return None, evaluation_event
 
@@ -140,12 +133,6 @@ class FeatureManager:
         :rtype: str
         """
         result = await self._check_feature(feature_flag_id, **kwargs)
-        if self._on_feature_evaluated and result.feature.telemetry.enabled:
-            result.user = kwargs.get("user", "")
-            if inspect.iscoroutinefunction(self._on_feature_evaluated):
-                await self._on_feature_evaluated(result)
-            else:
-                self._on_feature_evaluated(result)
         return result.variant
 
     async def _check_feature_filters(self, feature_flag, evaluation_event, **kwargs):

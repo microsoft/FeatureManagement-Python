@@ -9,7 +9,7 @@ from collections.abc import Mapping
 from typing import overload
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from ._models import FeatureFlag, Variant, EvaluationEvent, VariantAssignmentReason, TargetingContext
+from ._models import FeatureFlag, Variant, EvaluationEvent, TargetingContext
 
 
 FEATURE_MANAGEMENT_KEY = "feature_management"
@@ -62,8 +62,6 @@ class FeatureManager:
 
     :param Mapping configuration: Configuration object.
     :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags.
-    :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is
-    evaluated.
     """
 
     def __init__(self, configuration, **kwargs):
@@ -73,7 +71,6 @@ class FeatureManager:
         self._configuration = configuration
         self._cache = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
-        self._on_feature_evaluated = kwargs.get("on_feature_evaluated", None)
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
         for feature_filter in filters:
@@ -88,7 +85,6 @@ class FeatureManager:
         evaluation_event = FeatureManager._check_variant_override(
             feature_flag.variants, feature_flag.allocation.default_when_disabled, False
         )
-        evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
         return evaluation_event
 
     @staticmethod
@@ -98,7 +94,6 @@ class FeatureManager:
         evaluation_event = FeatureManager._check_variant_override(
             feature_flag.variants, feature_flag.allocation.default_when_enabled, True
         )
-        evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_ENABLED
         return evaluation_event
 
     @staticmethod
@@ -128,13 +123,11 @@ class FeatureManager:
         if feature_flag.allocation.user and targeting_context.user_id:
             for user_allocation in feature_flag.allocation.user:
                 if targeting_context.user_id in user_allocation.users:
-                    evaluation_event.reason = VariantAssignmentReason.USER
                     return user_allocation.variant, evaluation_event
         if feature_flag.allocation.group and len(targeting_context.groups) > 0:
             for group_allocation in feature_flag.allocation.group:
                 for group in targeting_context.groups:
                     if group in group_allocation.groups:
-                        evaluation_event.reason = VariantAssignmentReason.GROUP
                         return group_allocation.variant, evaluation_event
         if feature_flag.allocation.percentile:
             context_id = targeting_context.user_id + "\n" + feature_flag.allocation.seed
@@ -143,7 +136,6 @@ class FeatureManager:
                 if box == 100 and percentile_allocation.percentile_to == 100:
                     return percentile_allocation.variant
                 if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
-                    evaluation_event.reason = VariantAssignmentReason.PERCENTILE
                     return percentile_allocation.variant, evaluation_event
         return None, evaluation_event
 
@@ -184,9 +176,6 @@ class FeatureManager:
             targeting_context = args[0]
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature.telemetry.enabled:
-            result.user = targeting_context.user_id
-            self._on_feature_evaluated(result)
         return result.enabled
 
     @overload
@@ -216,9 +205,6 @@ class FeatureManager:
             targeting_context = args[0]
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature.telemetry.enabled:
-            result.user = targeting_context.user_id
-            self._on_feature_evaluated(result)
         return result.variant
 
     def _check_feature_filters(self, feature_flag, evaluation_event, targeting_context, **kwargs):
