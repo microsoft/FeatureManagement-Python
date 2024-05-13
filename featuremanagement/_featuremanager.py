@@ -9,7 +9,7 @@ from collections.abc import Mapping
 from typing import overload
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from ._models import FeatureFlag, Variant, EvaluationEvent, VaraintAssignmentReason, TargetingContext
+from ._models import FeatureFlag, Variant, EvaluationEvent, VariantAssignmentReason, TargetingContext
 
 
 FEATURE_MANAGEMENT_KEY = "feature_management"
@@ -123,13 +123,13 @@ class FeatureManager:
         if feature_flag.allocation.user and targeting_context.user_id:
             for user_allocation in feature_flag.allocation.user:
                 if targeting_context.user_id in user_allocation.users:
-                    evaluation_event.reason = VaraintAssignmentReason.USER
+                    evaluation_event.reason = VariantAssignmentReason.USER
                     return user_allocation.variant, evaluation_event
         if feature_flag.allocation.group and len(targeting_context.groups) > 0:
             for group_allocation in feature_flag.allocation.group:
                 for group in targeting_context.groups:
                     if group in group_allocation.groups:
-                        evaluation_event.reason = VaraintAssignmentReason.GROUP
+                        evaluation_event.reason = VariantAssignmentReason.GROUP
                         return group_allocation.variant, evaluation_event
         if feature_flag.allocation.percentile:
             context_id = targeting_context.user_id + "\n" + feature_flag.allocation.seed
@@ -138,7 +138,7 @@ class FeatureManager:
                 if box == 100 and percentile_allocation.percentile_to == 100:
                     return percentile_allocation.variant
                 if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
-                    evaluation_event.reason = VaraintAssignmentReason.PERCENTILE
+                    evaluation_event.reason = VariantAssignmentReason.PERCENTILE
                     return percentile_allocation.variant, evaluation_event
         return None, evaluation_event
 

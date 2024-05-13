@@ -17,7 +17,7 @@ from .._featuremanager import (
     _get_feature_flag,
     _list_feature_flag_names,
 )
-from .._models import Variant, EvaluationEvent, VaraintAssignmentReason
+from .._models import Variant, EvaluationEvent, VariantAssignmentReason
 
 
 class FeatureManager:
@@ -89,13 +89,13 @@ class FeatureManager:
         if feature_flag.allocation.user and user:
             for user_allocation in feature_flag.allocation.user:
                 if user in user_allocation.users:
-                    evaluation_event.reason = VaraintAssignmentReason.USER
+                    evaluation_event.reason = VariantAssignmentReason.USER
                     return user_allocation.variant, evaluation_event
         if feature_flag.allocation.group and groups:
             for group_allocation in feature_flag.allocation.group:
                 for group in groups:
                     if group in group_allocation.groups:
-                        evaluation_event.reason = VaraintAssignmentReason.GROUP
+                        evaluation_event.reason = VariantAssignmentReason.GROUP
                         return group_allocation.variant, evaluation_event
         if feature_flag.allocation.percentile:
             user = kwargs.get("user", "")
@@ -105,7 +105,7 @@ class FeatureManager:
                 if box == 100 and percentile_allocation.percentile_to == 100:
                     return percentile_allocation.variant
                 if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
-                    evaluation_event.reason = VaraintAssignmentReason.PERCENTILE
+                    evaluation_event.reason = VariantAssignmentReason.PERCENTILE
                     return percentile_allocation.variant, evaluation_event
         return None, evaluation_event
 

@@ -6,9 +6,9 @@
 from ._feature_flag import FeatureFlag
 from ._variant import Variant
 from ._evaluation_event import EvaluationEvent
-from ._variant_assignment_reason import VaraintAssignmentReason
+from ._variant_assignment_reason import VariantAssignmentReason
 from ._targeting_context import TargetingContext
 
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)  # type: ignore
 
-__all__ = ["FeatureFlag", "Variant", "EvaluationEvent", "VaraintAssignmentReason", "TargetingContext"]
+__all__ = ["FeatureFlag", "Variant", "EvaluationEvent", "VariantAssignmentReason", "TargetingContext"]

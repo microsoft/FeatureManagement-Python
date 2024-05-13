@@ -6,7 +6,7 @@
 from enum import Enum
 
 
-class VaraintAssignmentReason(Enum):
+class VariantAssignmentReason(Enum):
     """
     Represents an assignment reason.
     """

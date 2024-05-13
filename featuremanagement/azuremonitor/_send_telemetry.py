@@ -4,7 +4,7 @@
 # license information.
 # --------------------------------------------------------------------------
 import logging
-from .._models import VaraintAssignmentReason
+from .._models import VariantAssignmentReason
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event
@@ -52,7 +52,7 @@ def publish_telemetry(evaluation_event):
     if evaluation_event.user:
         event[TARGETING_ID] = evaluation_event.user
 
-    if evaluation_event.reason and evaluation_event.reason != VaraintAssignmentReason.NONE:
+    if evaluation_event.reason and evaluation_event.reason != VariantAssignmentReason.NONE:
         event[VARIANT] = evaluation_event.variant.name
         event[REASON] = evaluation_event.reason.value
 

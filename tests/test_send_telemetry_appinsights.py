@@ -9,7 +9,7 @@ import logging
 from importlib import reload
 from unittest.mock import patch
 import pytest
-from featuremanagement import EvaluationEvent, FeatureFlag, Variant, VaraintAssignmentReason
+from featuremanagement import EvaluationEvent, FeatureFlag, Variant, VariantAssignmentReason
 import featuremanagement.azuremonitor._send_telemetry
 
 
@@ -24,7 +24,7 @@ class TestSendTelemetryAppinsights:
         evaluation_event.enabled = True
         evaluation_event.user = "test_user"
         evaluation_event.variant = variant
-        evaluation_event.reason = VaraintAssignmentReason.DEFAULT_WHEN_DISABLED
+        evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
 
         with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
@@ -46,7 +46,7 @@ class TestSendTelemetryAppinsights:
         evaluation_event.feature = feature_flag
         evaluation_event.enabled = False
         evaluation_event.variant = variant
-        evaluation_event.reason = VaraintAssignmentReason.DEFAULT_WHEN_DISABLED
+        evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
 
         with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
