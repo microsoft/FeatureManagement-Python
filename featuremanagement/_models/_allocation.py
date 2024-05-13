@@ -9,7 +9,7 @@ from ._constants import DEFAULT_WHEN_ENABLED, DEFAULT_WHEN_DISABLED, USER, GROUP
 
 class Allocation:
     """
-    Represents an allocation
+    Represents an allocation configuration for a feature flag.
     """
 
     def __init__(self, feature_name):
@@ -23,7 +23,7 @@ class Allocation:
     @classmethod
     def convert_from_json(cls, json, feature_name):
         """
-        Convert a JSON object to Allocation
+        Convert a JSON object to Allocation.
 
         :param json: JSON object
         :type json: dict
@@ -56,9 +56,9 @@ class Allocation:
     @property
     def default_when_enabled(self):
         """
-        Get the default variant when the feature flag is enabled
+        Get the default variant when the feature flag is enabled.
 
-        :return: Default variant when the feature flag is enabled
+        :return: Default variant when the feature flag is enabled.
         :rtype: str
         """
         return self._default_when_enabled
@@ -66,9 +66,9 @@ class Allocation:
     @property
     def default_when_disabled(self):
         """
-        Get the default variant when the feature flag is disabled
+        Get the default variant when the feature flag is disabled.
 
-        :return: Default variant when the feature flag is disabled
+        :return: Default variant when the feature flag is disabled.
         :rtype: str
         """
         return self._default_when_disabled
@@ -76,9 +76,9 @@ class Allocation:
     @property
     def user(self):
         """
-        Get the user allocations
+        Get the user allocations.
 
-        :return: User allocations
+        :return: User allocations.
         :rtype: list[UserAllocation]
         """
         return self._user
@@ -86,9 +86,9 @@ class Allocation:
     @property
     def group(self):
         """
-        Get the group allocations
+        Get the group allocations.
 
-        :return: Group allocations
+        :return: Group allocations.
         :rtype: list[GroupAllocation]
         """
         return self._group
@@ -96,9 +96,9 @@ class Allocation:
     @property
     def percentile(self):
         """
-        Get the percentile allocations
+        Get the percentile allocations.
 
-        :return: Percentile allocations
+        :return: Percentile allocations.
         :rtype: list[PercentileAllocation]
         """
         return self._percentile
@@ -106,9 +106,9 @@ class Allocation:
     @property
     def seed(self):
         """
-        Get the seed for the allocation
+        Get the seed for the allocation.
 
-        :return: Seed for the allocation
+        :return: Seed for the allocation.
         :rtype: str
         """
         return self._seed
@@ -117,7 +117,7 @@ class Allocation:
 @dataclass
 class UserAllocation:
     """
-    Represents a user allocation
+    Represents a user allocation.
     """
 
     variant: str
@@ -127,7 +127,7 @@ class UserAllocation:
 @dataclass
 class GroupAllocation:
     """
-    Represents a group allocation
+    Represents a group allocation.
     """
 
     variant: str
@@ -136,7 +136,7 @@ class GroupAllocation:
 
 class PercentileAllocation:
     """
-    Represents a percentile allocation
+    Represents a percentile allocation.
     """
 
     def __init__(self):
@@ -147,10 +147,9 @@ class PercentileAllocation:
     @classmethod
     def convert_from_json(cls, json):
         """
-        Convert a JSON object to PercentileAllocation
+        Convert a JSON object to PercentileAllocation.
 
-        :param json: JSON object
-        :type json: dict
+        :param dict json: JSON object.
         :return: PercentileAllocation
         :rtype: PercentileAllocation
         """
@@ -165,9 +164,9 @@ class PercentileAllocation:
     @property
     def variant(self):
         """
-        Get the variant for the allocation
+        Get the variant for the allocation.
 
-        :return: Variant for the allocation
+        :return: Variant for the allocation.
         :rtype: str
         """
         return self._variant
@@ -175,9 +174,9 @@ class PercentileAllocation:
     @property
     def percentile_from(self):
         """
-        Get the starting percentile for the allocation
+        Get the starting percentile for the allocation.
 
-        :return: Starting percentile for the allocation
+        :return: Starting percentile for the allocation.
         :rtype: int
         """
         return self._percentile_from
@@ -185,9 +184,9 @@ class PercentileAllocation:
     @property
     def percentile_to(self):
         """
-        Get the ending percentile for the allocation
+        Get the ending percentile for the allocation.
 
-        :return: Ending percentile for the allocation
+        :return: Ending percentile for the allocation.
         :rtype: int
         """
         return self._percentile_to

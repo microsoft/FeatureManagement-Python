@@ -8,7 +8,7 @@ from enum import Enum
 
 class VaraintAssignmentReason(Enum):
     """
-    Represents an assignment reason
+    Represents an assignment reason.
     """
 
     NONE = "NONE"

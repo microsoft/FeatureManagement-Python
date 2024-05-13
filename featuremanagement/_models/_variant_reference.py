@@ -10,7 +10,7 @@ from ._constants import VARIANT_REFERENCE_NAME, CONFIGURATION_VALUE, CONFIGURATI
 @dataclass
 class VariantReference:
     """
-    Represents a variant reference
+    Represents a variant reference.
     """
 
     def __init__(self):
@@ -22,10 +22,9 @@ class VariantReference:
     @classmethod
     def convert_from_json(cls, json):
         """
-        Convert a JSON object to VariantReference
+        Convert a JSON object to VariantReference.
 
-        :param json: JSON object
-        :type json: dict
+        :param dict json: JSON object
         :return: VariantReference
         :rtype: VariantReference
         """
@@ -41,7 +40,7 @@ class VariantReference:
     @property
     def name(self):
         """
-        Get the name of the variant
+        Get the name of the variant.
 
         :return: Name of the variant
         :rtype: str
@@ -51,9 +50,9 @@ class VariantReference:
     @property
     def configuration_value(self):
         """
-        Get the configuration value for the variant
+        Get the configuration value for the variant.
 
-        :return: Configuration value for the variant
+        :return: Configuration value for the variant.
         :rtype: str
         """
         return self._configuration_value
@@ -61,9 +60,9 @@ class VariantReference:
     @property
     def configuration_reference(self):
         """
-        Get the configuration reference for the variant
+        Get the configuration reference for the variant.
 
-        :return: Configuration reference for the variant
+        :return: Configuration reference for the variant.
         :rtype: str
         """
         return self._configuration_reference
@@ -71,9 +70,9 @@ class VariantReference:
     @property
     def status_override(self):
         """
-        Get the status override for the variant
+        Get the status override for the variant.
 
-        :return: Status override for the variant
+        :return: Status override for the variant.
         :rtype: str
         """
         return self._status_override

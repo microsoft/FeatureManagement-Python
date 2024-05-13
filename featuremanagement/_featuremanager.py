@@ -40,7 +40,7 @@ def _get_feature_flag(configuration, feature_flag_name):
 
 def _list_feature_flag_names(configuration):
     """
-    List of all feature flag names
+    List of all feature flag names.
     """
     feature_flag_names = []
     feature_management = configuration.get(FEATURE_MANAGEMENT_KEY)
@@ -58,14 +58,11 @@ def _list_feature_flag_names(configuration):
 
 class FeatureManager:
     """
-    Feature Manager that determines if a feature flag is enabled for the given context
+    Feature Manager that determines if a feature flag is enabled for the given context.
 
-    :param configuration: Configuration object
-    :type configuration: Mapping
-    :keyword feature_filters: Custom filters to be used for evaluating feature flags
-    :paramtype feature_filters: list[FeatureFilter]
-    :keyword on_feature_evaluated: Callback function to be called when a feature flag is evaluated
-    :paramtype on_feature_evaluated: Callable[EvaluationEvent]
+    :param Mapping configuration: Configuration object.
+    :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags.
+    :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is evaluated.
     """
 
     def __init__(self, configuration, **kwargs):
@@ -159,23 +156,20 @@ class FeatureManager:
     @overload
     def is_enabled(self, feature_flag_id, user_id, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :param str feature_flag_id: Name of the feature flag
-        :paramtype feature_flag_id: str
-        :param str user_id: User identifier
-        :paramtype user_id: str
-        :return: True if the feature flag is enabled for the given context
+        :param str feature_flag_id: Name of the feature flag.
+        :param str user_id: User identifier.
+        :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
 
     def is_enabled(self, feature_flag_id, *args, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :param str feature_flag_id: Name of the feature flag
-        :paramtype feature_flag_id: str
-        :return: True if the feature flag is enabled for the given context
+        :param str feature_flag_id: Name of the feature flag.
+        :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
         targeting_context = TargetingContext()
@@ -193,25 +187,21 @@ class FeatureManager:
     @overload
     def get_variant(self, feature_flag_id, user_id, **kwargs):
         """
-        Determine the variant for the given context
+        Determine the variant for the given context.
 
-        :param str feature_flag_id: Name of the feature flag
-        :paramtype feature_flag_id: str
-        :param str user_id: User identifier
-        :paramtype user_id: str
-        :return: return: Variant instance
+        :param str feature_flag_id: Name of the feature flag.
+        :param str user_id: User identifier.
+        :return: return: Variant instance.
         :rtype: Variant
         """
 
     def get_variant(self, feature_flag_id, *args, **kwargs):
         """
-        Determine the variant for the given context
+        Determine the variant for the given context.
 
         :param str feature_flag_id: Name of the feature flag
-        :paramtype feature_flag_id: str
-        :kwyword targeting_context: Targeting context
-        :paramtype TargetingContext: TargetingContext
-        :return: Variant instance
+        :keyword TargetingContext targeting_context: Targeting context.
+        :return: Variant instance.
         :rtype: Variant
         """
         targeting_context = TargetingContext()
@@ -281,11 +271,10 @@ class FeatureManager:
 
     def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :param str feature_flag_id: Name of the feature flag
-        :paramtype feature_flag_id: str
-        :return: True if the feature flag is enabled for the given context
+        :param str feature_flag_id: Name of the feature flag.
+        :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
         evaluation_event = EvaluationEvent(enabled=False)
@@ -319,6 +308,6 @@ class FeatureManager:
 
     def list_feature_flag_names(self):
         """
-        List of all feature flag names
+        List of all feature flag names.
         """
         return _list_feature_flag_names(self._configuration)

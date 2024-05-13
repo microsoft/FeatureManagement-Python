@@ -15,7 +15,7 @@ from ._constants import (
 
 class FeatureConditions:
     """
-    Represents the conditions for a feature flag
+    Represents the conditions for a feature flag.
     """
 
     def __init__(self):
@@ -25,11 +25,10 @@ class FeatureConditions:
     @classmethod
     def convert_from_json(cls, feature_name, json_value):
         """
-        Convert a JSON object to FeatureConditions
+        Convert a JSON object to FeatureConditions.
 
-        :param json: JSON object
-        :type json: dict
-        :return: FeatureConditions
+        :param dict json: JSON object.
+        :return: FeatureConditions.
         :rtype: FeatureConditions
         """
         conditions = cls()
@@ -46,9 +45,9 @@ class FeatureConditions:
     @property
     def requirement_type(self):
         """
-        Get the requirement type for the feature flag
+        Get the requirement type for the feature flag.
 
-        :return: Requirement type
+        :return: Requirement type.
         :rtype: str
         """
         return self._requirement_type
@@ -56,9 +55,9 @@ class FeatureConditions:
     @property
     def client_filters(self):
         """
-        Get the client filters for the feature flag
+        Get the client filters for the feature flag.
 
-        :return: Client filters
+        :return: Client filters.
         :rtype: list[dict]
         """
         return self._client_filters

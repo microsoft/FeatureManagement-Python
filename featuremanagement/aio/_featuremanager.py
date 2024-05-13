@@ -22,14 +22,11 @@ from .._models import Variant, EvaluationEvent, VaraintAssignmentReason
 
 class FeatureManager:
     """
-    Feature Manager that determines if a feature flag is enabled for the given context
+    Feature Manager that determines if a feature flag is enabled for the given context.
 
-    :param configuration: Configuration object
-    :type configuration: Mapping
-    :keyword feature_filters: Custom filters to be used for evaluating feature flags
-    :paramtype feature_filters: list[FeatureFilter]
-    :keyword telemetry: Telemetry callback function
-    :paramtype telemetry: Callable[EvaluationEvent]
+    :param Mapping configuration: Configuration object.
+    :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags
+    :keyword Callable[EvaluationEvent] telemetry: Telemetry callback function
     """
 
     def __init__(self, configuration, **kwargs):
@@ -125,22 +122,20 @@ class FeatureManager:
 
     async def is_enabled(self, feature_flag_id, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :param str feature_flag_id: Name of the feature flag
-        :paramtype feature_flag_id: str
-        :return: True if the feature flag is enabled for the given context
+        :param str feature_flag_id: Name of the feature flag.
+        :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
         return (await self._check_feature(feature_flag_id, **kwargs)).enabled
 
     async def get_variant(self, feature_flag_id, **kwargs):
         """
-        Determine the variant for the given context
+        Determine the variant for the given context.
 
-        :param str feature_flag_id: Name of the feature flag
-        :paramtype feature_flag_id: str
-        :return: Name of the variant
+        :param str feature_flag_id: Name of the feature flag.
+        :return: Name of the variant.
         :rtype: str
         """
         result = await self._check_feature(feature_flag_id, **kwargs)
@@ -206,11 +201,10 @@ class FeatureManager:
 
     async def _check_feature(self, feature_flag_id, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :param str feature_flag_id: Name of the feature flag
-        :paramtype feature_flag_id: str
-        :return: True if the feature flag is enabled for the given context
+        :param str feature_flag_id: Name of the feature flag.
+        :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
         evaluation_event = EvaluationEvent(enabled=False)
@@ -243,6 +237,6 @@ class FeatureManager:
 
     def list_feature_flag_names(self):
         """
-        List of all feature flag names
+        List of all feature flag names.
         """
         return _list_feature_flag_names(self._configuration)

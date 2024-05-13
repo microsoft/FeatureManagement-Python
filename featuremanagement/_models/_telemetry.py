@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 @dataclass
 class Telemetry:
     """
-    Represents the telemetry configuration for a feature flag
+    Represents the telemetry configuration for a feature flag.
     """
 
     enabled: bool = False

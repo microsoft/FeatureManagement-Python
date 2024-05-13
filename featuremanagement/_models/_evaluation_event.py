@@ -9,12 +9,12 @@ from dataclasses import dataclass
 @dataclass
 class EvaluationEvent:
     """
-    Represents a feature flag evaluation event
+    Represents a feature flag evaluation event.
     """
 
     def __init__(self, *, enabled=False, feature_flag=None):
         """
-        Initialize the EvaluationEvent
+        Initialize the EvaluationEvent.
         """
         self.feature = feature_flag
         self.user = ""

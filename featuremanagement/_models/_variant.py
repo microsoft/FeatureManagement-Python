@@ -9,10 +9,8 @@ class Variant:
     """
     A class representing a variant configuration assigned by a feature flag.
 
-    :param name: The name of the variant
-    :type name: str
-    :param configuration: The configuration of the variant
-    :type configuration: dict
+    :param str name: The name of the variant
+    :param dict configuration: The configuration of the variant.
     """
 
     def __init__(self, name, configuration):
@@ -22,7 +20,7 @@ class Variant:
     @property
     def name(self):
         """
-        The name of the variant
+        The name of the variant.
         :rtype: str
         """
         return self._name
@@ -30,7 +28,7 @@ class Variant:
     @property
     def configuration(self):
         """
-        The configuration of the variant
+        The configuration of the variant.
         :rtype: dict
         """
         return self._configuration

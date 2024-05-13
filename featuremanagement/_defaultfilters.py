@@ -35,23 +35,22 @@ IGNORE_CASE_KEY = "ignore_case"
 
 class TargetingException(Exception):
     """
-    Exception raised when the targeting filter is not configured correctly
+    Exception raised when the targeting filter is not configured correctly.
     """
 
 
 @FeatureFilter.alias("Microsoft.TimeWindow")
 class TimeWindowFilter(FeatureFilter):
     """
-    Feature Filter that determines if the current time is within the time window
+    Feature Filter that determines if the current time is within the time window.
     """
 
     def evaluate(self, context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :keyword Mapping context: Mapping with the Start and End time for the feature flag
-        :paramtype context: Mapping
-        :return: True if the current time is within the time window
+        :keyword Mapping context: Mapping with the Start and End time for the feature flag.
+        :return: True if the current time is within the time window.
         :rtype: bool
         """
         start = context.get(PARAMETERS_KEY, {}).get(START_KEY)
@@ -72,7 +71,7 @@ class TimeWindowFilter(FeatureFilter):
 @FeatureFilter.alias("Microsoft.Targeting")
 class TargetingFilter(FeatureFilter):
     """
-    Feature Filter that determines if the user is targeted for the feature flag
+    Feature Filter that determines if the user is targeted for the feature flag.
     """
 
     @staticmethod
@@ -98,11 +97,10 @@ class TargetingFilter(FeatureFilter):
 
     def evaluate(self, context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :keyword Mapping context: Context for evaluating the user/group
-        :paramtype context: Mapping
-        :return: True if the user is targeted for the feature flag
+        :keyword Mapping context: Context for evaluating the user/group.
+        :return: True if the user is targeted for the feature flag.
         :rtype: bool
         """
         target_user = kwargs.get(TARGETED_USER_KEY, None)
