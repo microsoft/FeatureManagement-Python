@@ -26,7 +26,7 @@ class FeatureManager:
 
     :param Mapping configuration: Configuration object.
     :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags
-    :keyword Callable[EvaluationEvent] telemetry: Telemetry callback function
+    :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is evaluated.
     """
 
     def __init__(self, configuration, **kwargs):
@@ -36,7 +36,7 @@ class FeatureManager:
         self._configuration = configuration
         self._cache = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
-        self._telemetry = kwargs.pop("telemetry", None)
+        self._on_feature_evaluated = kwargs.pop("on_feature_evaluated", None)
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
         for feature_filter in filters:
@@ -139,12 +139,12 @@ class FeatureManager:
         :rtype: str
         """
         result = await self._check_feature(feature_flag_id, **kwargs)
-        if self._telemetry and result.feature.telemetry.enabled:
+        if self._on_feature_evaluated and result.feature.telemetry.enabled:
             result.user = kwargs.get("user", "")
-            if inspect.iscoroutinefunction(self._telemetry):
-                await self._telemetry(result)
+            if inspect.iscoroutinefunction(self._on_feature_evaluated):
+                await self._on_feature_evaluated(result)
             else:
-                self._telemetry(result)
+                self._on_feature_evaluated(result)
         return result.variant
 
     async def _check_feature_filters(self, feature_flag, evaluation_event, **kwargs):
