@@ -41,6 +41,6 @@ print("Sigma is ", feature_manager.is_enabled("Sigma"))
 # Is true Before 06-28-2023
 print("Epsilon is ", feature_manager.is_enabled("Epsilon"))
 # Target is true for Adam, group Stage 1, and 50% of users
-print("Target is ", feature_manager.is_enabled("Target", TargetingContext(user_id="Adam"))
-print("Target is ", feature_manager.is_enabled("Target", TargetingContext(user_id="Brian"))
+print("Target is ", feature_manager.is_enabled("Target", TargetingContext(user_id="Adam")))
+print("Target is ", feature_manager.is_enabled("Target", TargetingContext(user_id="Brian")))
 check_for_changes()
