@@ -82,19 +82,17 @@ class FeatureManager:
     def _check_default_disabled_variant(feature_flag):
         if not feature_flag.allocation:
             return EvaluationEvent(enabled=False)
-        evaluation_event = FeatureManager._check_variant_override(
+        return FeatureManager._check_variant_override(
             feature_flag.variants, feature_flag.allocation.default_when_disabled, False
         )
-        return evaluation_event
 
     @staticmethod
     def _check_default_enabled_variant(feature_flag):
         if not feature_flag.allocation:
             return EvaluationEvent(enabled=True)
-        evaluation_event = FeatureManager._check_variant_override(
+        return FeatureManager._check_variant_override(
             feature_flag.variants, feature_flag.allocation.default_when_enabled, True
         )
-        return evaluation_event
 
     @staticmethod
     def _check_variant_override(variants, default_variant_name, status):
