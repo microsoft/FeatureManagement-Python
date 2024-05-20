@@ -51,7 +51,7 @@ class TestDefaultfeatureFlags(IsolatedAsyncioTestCase):
         # Brian is enabled because all of Stage 1 is enabled
         assert await feature_manager.is_enabled("Target", TargetingContext(user_id="Belle", groups=["Stage1"]))
         # Brian is not enabled because he is not in Stage 2, group isn't looked at when user is targeted
-        assert not await feature_manager.is_enabled("Target",TargetingContext(user_id="Belle", groups=["Stage2"]))
+        assert not await feature_manager.is_enabled("Target", TargetingContext(user_id="Belle", groups=["Stage2"]))
 
     # method: feature_manager_creation
     @pytest.mark.asyncio

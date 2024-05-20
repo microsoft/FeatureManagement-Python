@@ -7,6 +7,7 @@ from unittest import IsolatedAsyncioTestCase
 from featuremanagement.aio import FeatureManager, FeatureFilter
 from featuremanagement import TargetingContext
 
+
 class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
     # method: is_enabled
     async def test_basic_feature_variant_override_enabled(self):
@@ -145,11 +146,17 @@ class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
         assert await feature_manager.is_enabled("Alpha")
         assert (await feature_manager.get_variant("Alpha")) is None
         assert not await feature_manager.is_enabled("Alpha", TargetingContext(user_id="Adam", groups=["Group1"]))
-        assert (await feature_manager.get_variant("Alpha", TargetingContext(user_id="Adam", groups=["Group1"]))).name == "On"
+        assert (
+            await feature_manager.get_variant("Alpha", TargetingContext(user_id="Adam", groups=["Group1"]))
+        ).name == "On"
         assert await feature_manager.is_enabled("Alpha", TargetingContext(user_id="Brittney", groups=["Group2"]))
-        assert (await feature_manager.get_variant("Alpha", TargetingContext(user_id="Brittney", groups=["Group2"]))).name == "Off"
+        assert (
+            await feature_manager.get_variant("Alpha", TargetingContext(user_id="Brittney", groups=["Group2"]))
+        ).name == "Off"
         assert await feature_manager.is_enabled("Alpha", TargetingContext(user_id="Charlie", groups=["Group3"]))
-        assert (await feature_manager.get_variant("Alpha", TargetingContext(user_id="Charlie", groups=["Group3"]))) is None
+        assert (
+            await feature_manager.get_variant("Alpha", TargetingContext(user_id="Charlie", groups=["Group3"]))
+        ) is None
 
     # method: is_enabled
     async def test_basic_feature_variant_allocation_percentile(self):
@@ -189,7 +196,9 @@ class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
         assert not await feature_manager.is_enabled("Alpha", "Brittney")
         assert (await feature_manager.get_variant("Alpha", "Brittney")).name == "On"
         assert not await feature_manager.is_enabled("Alpha", TargetingContext(user_id="Brittney", groups=["Group1"]))
-        assert (await feature_manager.get_variant("Alpha", TargetingContext(user_id="Brittney", groups=["Group1"]))).name == "On"
+        assert (
+            await feature_manager.get_variant("Alpha", TargetingContext(user_id="Brittney", groups=["Group1"]))
+        ).name == "On"
         assert await feature_manager.is_enabled("Alpha", "Cassidy")
         assert (await feature_manager.get_variant("Alpha", "Cassidy")).name == "Off"
 
@@ -232,7 +241,9 @@ class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
         assert await feature_manager.is_enabled("Alpha", "Bubbles")
         assert (await feature_manager.get_variant("Alpha", "Bubbles")).name == "Off"
         assert await feature_manager.is_enabled("Alpha", TargetingContext(user_id="Bubbles", groups=["Group1"]))
-        assert (await feature_manager.get_variant("Alpha", TargetingContext(user_id="Bubbles", groups=["Group1"]))).name == "Off"
+        assert (
+            await feature_manager.get_variant("Alpha", TargetingContext(user_id="Bubbles", groups=["Group1"]))
+        ).name == "Off"
         assert await feature_manager.is_enabled("Alpha", "Cassidy")
         assert (await feature_manager.get_variant("Alpha", "Cassidy")).name == "Off"
         assert not await feature_manager.is_enabled("Alpha", "Dan")
