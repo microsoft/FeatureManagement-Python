@@ -6,6 +6,7 @@
 from unittest import IsolatedAsyncioTestCase
 import pytest
 from featuremanagement.aio import FeatureManager
+from featuremanagement import TargetingContext
 
 
 class TestDefaultfeatureFlags(IsolatedAsyncioTestCase):
@@ -44,13 +45,13 @@ class TestDefaultfeatureFlags(IsolatedAsyncioTestCase):
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
         # Adam is in the user audience
-        assert await feature_manager.is_enabled("Target", user="Adam")
+        assert await feature_manager.is_enabled("Target", "Adam")
         # Brian is not part of the 50% or default 50% of users
-        assert not await feature_manager.is_enabled("Target", user="Belle")
+        assert not await feature_manager.is_enabled("Target", "Belle")
         # Brian is enabled because all of Stage 1 is enabled
-        assert await feature_manager.is_enabled("Target", user="Belle", groups=["Stage1"])
+        assert await feature_manager.is_enabled("Target", TargetingContext(user_id="Belle", groups=["Stage1"]))
         # Brian is not enabled because he is not in Stage 2, group isn't looked at when user is targeted
-        assert not await feature_manager.is_enabled("Target", user="Belle", groups=["Stage2"])
+        assert not await feature_manager.is_enabled("Target",TargetingContext(user_id="Belle", groups=["Stage2"]))
 
     # method: feature_manager_creation
     @pytest.mark.asyncio

@@ -6,6 +6,7 @@
 from collections.abc import Mapping
 import logging
 import hashlib
+from typing import overload
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from .._featuremanager import (
@@ -16,7 +17,7 @@ from .._featuremanager import (
     _get_feature_flag,
     _list_feature_flag_names,
 )
-from .._models import Variant, EvaluationEvent
+from .._models import Variant, EvaluationEvent, TargetingContext
 
 
 class FeatureManager:
@@ -77,31 +78,27 @@ class FeatureManager:
 
         return (context_marker / (2**32 - 1)) * 100
 
-    def _assign_variant(self, feature_flag, **kwargs):
-        user = kwargs.get("user", "")
-        groups = kwargs.get("groups", [])
-        evaluation_event = EvaluationEvent(feature_flag=feature_flag)
+    def _assign_variant(self, feature_flag, targeting_context):
         if not feature_flag.variants or not feature_flag.allocation:
             return None
-        if feature_flag.allocation.user and user:
+        if feature_flag.allocation.user and targeting_context.user_id:
             for user_allocation in feature_flag.allocation.user:
-                if user in user_allocation.users:
-                    return user_allocation.variant, evaluation_event
-        if feature_flag.allocation.group and groups:
+                if targeting_context.user_id in user_allocation.users:
+                    return user_allocation.variant
+        if feature_flag.allocation.group and len(targeting_context.groups) > 0:
             for group_allocation in feature_flag.allocation.group:
-                for group in groups:
+                for group in targeting_context.groups:
                     if group in group_allocation.groups:
-                        return group_allocation.variant, evaluation_event
+                        return group_allocation.variant
         if feature_flag.allocation.percentile:
-            user = kwargs.get("user", "")
-            context_id = user + "\n" + feature_flag.allocation.seed
+            context_id = targeting_context.user_id + "\n" + feature_flag.allocation.seed
             box = self._is_targeted(context_id)
             for percentile_allocation in feature_flag.allocation.percentile:
                 if box == 100 and percentile_allocation.percentile_to == 100:
                     return percentile_allocation.variant
                 if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
-                    return percentile_allocation.variant, evaluation_event
-        return None, evaluation_event
+                    return percentile_allocation.variant
+        return None
 
     def _variant_name_to_variant(self, feature_flag, variant_name):
         if not feature_flag.variants:
@@ -114,7 +111,25 @@ class FeatureManager:
                 return Variant(variant_reference.name, configuration)
         return None
 
-    async def is_enabled(self, feature_flag_id, **kwargs):
+    def _build_targeting_context(self, args):
+        if len(args) == 1 and isinstance(args[0], str):
+            return TargetingContext(user_id=args[0], groups=[])
+        if len(args) == 1 and isinstance(args[0], TargetingContext):
+            return args[0]
+        return TargetingContext()
+
+    @overload
+    async def is_enabled(self, feature_flag_id, user_id, **kwargs):
+        """
+        Determine if the feature flag is enabled for the given context.
+
+        :param str feature_flag_id: Name of the feature flag.
+        :param str user_id: User identifier.
+        :return: True if the feature flag is enabled for the given context.
+        :rtype: bool
+        """
+
+    async def is_enabled(self, feature_flag_id, *args, **kwargs):
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -122,9 +137,21 @@ class FeatureManager:
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
-        return (await self._check_feature(feature_flag_id, **kwargs)).enabled
+        targeting_context = self._build_targeting_context(args)
+        return (await self._check_feature(feature_flag_id, targeting_context, **kwargs)).enabled
 
-    async def get_variant(self, feature_flag_id, **kwargs):
+    @overload
+    async def get_variant(self, feature_flag_id, user_id, **kwargs):
+        """
+        Determine the variant for the given context.
+
+        :param str feature_flag_id: Name of the feature flag.
+        :param str user_id: User identifier.
+        :return: return: Variant instance.
+        :rtype: Variant
+        """
+
+    async def get_variant(self, feature_flag_id, *args, **kwargs):
         """
         Determine the variant for the given context.
 
@@ -132,10 +159,11 @@ class FeatureManager:
         :return: Name of the variant.
         :rtype: str
         """
-        result = await self._check_feature(feature_flag_id, **kwargs)
+        targeting_context = self._build_targeting_context(args)
+        result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
         return result.variant
 
-    async def _check_feature_filters(self, feature_flag, evaluation_event, **kwargs):
+    async def _check_feature_filters(self, feature_flag, evaluation_event, targeting_context, **kwargs):
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
 
@@ -149,6 +177,8 @@ class FeatureManager:
 
         for feature_filter in feature_filters:
             filter_name = feature_filter[FEATURE_FILTER_NAME]
+            kwargs["user"] = targeting_context.user_id
+            kwargs["groups"] = targeting_context.groups
             if filter_name not in self._filters:
                 raise ValueError(f"Feature flag {feature_flag.name} has unknown filter {filter_name}")
             if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
@@ -161,11 +191,9 @@ class FeatureManager:
                     break
         return evaluation_event
 
-    def _assign_allocation(self, feature_flag, evaluation_event, **kwargs):
+    def _assign_allocation(self, feature_flag, evaluation_event, targeting_context, **kwargs):
         if feature_flag.allocation and feature_flag.variants:
-            default_enabled = evaluation_event.enabled
-            variant_name, evaluation_event = self._assign_variant(feature_flag, **kwargs)
-            evaluation_event.enabled = default_enabled
+            variant_name = self._assign_variant(feature_flag, targeting_context, **kwargs)
             if variant_name:
                 evaluation_event = FeatureManager._check_variant_override(
                     feature_flag.variants, variant_name, evaluation_event.enabled
@@ -187,7 +215,7 @@ class FeatureManager:
         evaluation_event.feature = feature_flag
         return evaluation_event
 
-    async def _check_feature(self, feature_flag_id, **kwargs):
+    async def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -220,8 +248,10 @@ class FeatureManager:
             evaluation_event.feature = feature_flag
             return evaluation_event
 
-        evaluation_event = await self._check_feature_filters(feature_flag, evaluation_event, **kwargs)
-        return self._assign_allocation(feature_flag, evaluation_event, **kwargs)
+        evaluation_event = await self._check_feature_filters(
+            feature_flag, evaluation_event, targeting_context, **kwargs
+        )
+        return self._assign_allocation(feature_flag, evaluation_event, targeting_context, **kwargs)
 
     def list_feature_flag_names(self):
         """

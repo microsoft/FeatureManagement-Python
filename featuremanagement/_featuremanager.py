@@ -115,18 +115,17 @@ class FeatureManager:
         return (context_marker / (2**32 - 1)) * 100
 
     def _assign_variant(self, feature_flag, targeting_context):
-        evaluation_event = EvaluationEvent(feature_flag=feature_flag)
         if not feature_flag.variants or not feature_flag.allocation:
-            return None, evaluation_event
+            return None
         if feature_flag.allocation.user and targeting_context.user_id:
             for user_allocation in feature_flag.allocation.user:
                 if targeting_context.user_id in user_allocation.users:
-                    return user_allocation.variant, evaluation_event
+                    return user_allocation.variant
         if feature_flag.allocation.group and len(targeting_context.groups) > 0:
             for group_allocation in feature_flag.allocation.group:
                 for group in targeting_context.groups:
                     if group in group_allocation.groups:
-                        return group_allocation.variant, evaluation_event
+                        return group_allocation.variant
         if feature_flag.allocation.percentile:
             context_id = targeting_context.user_id + "\n" + feature_flag.allocation.seed
             box = self._is_targeted(context_id)
@@ -134,8 +133,8 @@ class FeatureManager:
                 if box == 100 and percentile_allocation.percentile_to == 100:
                     return percentile_allocation.variant
                 if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
-                    return percentile_allocation.variant, evaluation_event
-        return None, evaluation_event
+                    return percentile_allocation.variant
+        return None
 
     def _variant_name_to_variant(self, feature_flag, variant_name):
         if not feature_flag.variants:
@@ -147,6 +146,13 @@ class FeatureManager:
                     configuration = self._configuration.get(variant_reference.configuration_reference)
                 return Variant(variant_reference.name, configuration)
         return None
+
+    def _build_targeting_context(self, args):
+        if len(args) == 1 and isinstance(args[0], str):
+            return TargetingContext(user_id=args[0], groups=[])
+        if len(args) == 1 and isinstance(args[0], TargetingContext):
+            return args[0]
+        return TargetingContext()
 
     @overload
     def is_enabled(self, feature_flag_id, user_id, **kwargs):
@@ -167,11 +173,7 @@ class FeatureManager:
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
-        targeting_context = TargetingContext()
-        if len(args) == 1 and isinstance(args[0], str):
-            targeting_context = TargetingContext(user_id=args[0], groups=[])
-        elif len(args) == 1 and isinstance(args[0], TargetingContext):
-            targeting_context = args[0]
+        targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         return result.enabled
@@ -196,11 +198,7 @@ class FeatureManager:
         :return: Variant instance.
         :rtype: Variant
         """
-        targeting_context = TargetingContext()
-        if len(args) == 1 and isinstance(args[0], str):
-            targeting_context = TargetingContext(user_id=args[0], groups=[])
-        elif len(args) == 1 and isinstance(args[0], TargetingContext):
-            targeting_context = args[0]
+        targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         return result.variant
@@ -234,9 +232,7 @@ class FeatureManager:
 
     def _assign_allocation(self, feature_flag, evaluation_event, targeting_context):
         if feature_flag.allocation and feature_flag.variants:
-            default_enabled = evaluation_event.enabled
-            variant_name, evaluation_event = self._assign_variant(feature_flag, targeting_context)
-            evaluation_event.enabled = default_enabled
+            variant_name = self._assign_variant(feature_flag, targeting_context)
             if variant_name:
                 evaluation_event.enabled = FeatureManager._check_variant_override(
                     feature_flag.variants, variant_name, evaluation_event.enabled
