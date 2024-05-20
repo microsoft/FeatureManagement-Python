@@ -203,9 +203,10 @@ class FeatureManager:
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         return result.variant
 
-    def _check_feature_filters(self, feature_flag, evaluation_event, targeting_context, **kwargs):
+    def _check_feature_filters(self, feature_flag, targeting_context, **kwargs):
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
+        evaluation_event = EvaluationEvent(enabled=False)
 
         if len(feature_filters) == 0:
             # Feature flags without any filters return evaluate
@@ -262,7 +263,6 @@ class FeatureManager:
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
-        evaluation_event = EvaluationEvent(enabled=False)
         if self._copy is not self._configuration.get(FEATURE_MANAGEMENT_KEY):
             self._cache = {}
             self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
@@ -276,7 +276,7 @@ class FeatureManager:
         if not feature_flag:
             logging.warning("Feature flag %s not found", feature_flag_id)
             # Unknown feature flags are disabled by default
-            return evaluation_event
+            return EvaluationEvent(enabled=False)
 
         if not feature_flag.enabled:
             # Feature flags that are disabled are always disabled
@@ -287,7 +287,7 @@ class FeatureManager:
             evaluation_event.feature = feature_flag
             return evaluation_event
 
-        evaluation_event = self._check_feature_filters(feature_flag, evaluation_event, targeting_context, **kwargs)
+        evaluation_event = self._check_feature_filters(feature_flag, targeting_context, **kwargs)
 
         return self._assign_allocation(feature_flag, evaluation_event, targeting_context)
 
