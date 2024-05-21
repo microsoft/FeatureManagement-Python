@@ -13,7 +13,7 @@ from ._constants import (
 
 class FeatureFlag:
     """
-    Represents a feature flag
+    Represents a feature flag.
     """
 
     def __init__(self):
@@ -24,11 +24,10 @@ class FeatureFlag:
     @classmethod
     def convert_from_json(cls, json_value):
         """
-        Convert a JSON object to FeatureFlag
+        Convert a JSON object to FeatureFlag.
 
-        :param json_value: JSON object
-        :type json_value: dict
-        :return: FeatureFlag
+        :param dict json_value: JSON object
+        :return: FeatureFlag.
         :rtype: FeatureFlag
         """
         feature_flag = cls()
@@ -51,9 +50,9 @@ class FeatureFlag:
     @property
     def name(self):
         """
-        Get the name of the feature flag
+        Get the name of the feature flag.
 
-        :return: Name of the feature flag
+        :return: Name of the feature flag.
         :rtype: str
         """
         return self._id
@@ -61,9 +60,9 @@ class FeatureFlag:
     @property
     def enabled(self):
         """
-        Get the status of the feature flag
+        Get the status of the feature flag.
 
-        :return: Status of the feature flag
+        :return: Status of the feature flag.
         :rtype: bool
         """
         return self._enabled
@@ -71,9 +70,9 @@ class FeatureFlag:
     @property
     def conditions(self):
         """
-        Get the conditions for the feature flag
+        Get the conditions for the feature flag.
 
-        :return: Conditions for the feature flag
+        :return: Conditions for the feature flag.
         :rtype: FeatureConditions
         """
         return self._conditions
@@ -88,11 +87,10 @@ class FeatureFlag:
 
 def _convert_boolean_value(enabled):
     """
-    Convert the value to a boolean if it is a string
+    Convert the value to a boolean if it is a string.
 
-    :param enabled: Value to be converted
-    :type enabled: str or bool
-    :return: Converted value
+    :param Union[str, bool] enabled: Value to be converted.
+    :return: Converted value.
     :rtype: bool
     """
     if isinstance(enabled, bool):

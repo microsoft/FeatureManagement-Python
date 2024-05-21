@@ -6,8 +6,15 @@
 from ._featuremanager import FeatureManager
 from ._featurefilters import FeatureFilter
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
+from ._models import TargetingContext
 
 from ._version import VERSION
 
 __version__ = VERSION
-__all__ = ["FeatureManager", "TimeWindowFilter", "TargetingFilter", "FeatureFilter"]
+__all__ = [
+    "FeatureManager",
+    "TimeWindowFilter",
+    "TargetingFilter",
+    "FeatureFilter",
+    "TargetingContext",
+]

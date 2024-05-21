@@ -14,7 +14,7 @@ from .._defaultfilters import (
 @FeatureFilter.alias("Microsoft.TimeWindow")
 class TimeWindowFilter(FeatureFilter):
     """
-    Feature Filter that determines if the current time is within the time window
+    Feature Filter that determines if the current time is within the time window.
     """
 
     def __init__(self):
@@ -22,11 +22,10 @@ class TimeWindowFilter(FeatureFilter):
 
     async def evaluate(self, context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :keyword Mapping context: Mapping with the Start and End time for the feature flag
-        :paramtype context: Mapping
-        :return: True if the current time is within the time window
+        :keyword Mapping context: Mapping with the Start and End time for the feature flag.
+        :return: True if the current time is within the time window.
         :rtype: bool
         """
         return self._filter.evaluate(context, **kwargs)
@@ -35,7 +34,7 @@ class TimeWindowFilter(FeatureFilter):
 @FeatureFilter.alias("Microsoft.Targeting")
 class TargetingFilter(FeatureFilter):
     """
-    Feature Filter that determines if the user is targeted for the feature flag
+    Feature Filter that determines if the user is targeted for the feature flag.
     """
 
     def __init__(self):
@@ -43,11 +42,10 @@ class TargetingFilter(FeatureFilter):
 
     async def evaluate(self, context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :keyword Mapping context: Context for evaluating the user/group
-        :paramtype context: Mapping
-        :return: True if the user is targeted for the feature flag
+        :keyword Mapping context: Context for evaluating the user/group.
+        :return: True if the user is targeted for the feature flag.
         :rtype: bool
         """
         return self._filter.evaluate(context, **kwargs)
