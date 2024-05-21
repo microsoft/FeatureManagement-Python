@@ -128,6 +128,10 @@ class FeatureManager:
             logging.warning("Feature flag %s not found", feature_flag_id)
             # Unknown feature flags are disabled by default
             return EvaluationEvent(enabled=False)
+    
+        if not feature_flag.enabled:
+            # Feature flags that are disabled are always disabled
+            return EvaluationEvent(enabled=False)
 
         return await self._check_feature_filters(feature_flag, targeting_context, **kwargs)
 
