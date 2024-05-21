@@ -44,6 +44,13 @@ class FeatureManager:
 
     @staticmethod
     def _check_default_disabled_variant(feature_flag):
+        """
+        A method called when the feature flag is disabled, to determine what the default variant should be. If there is
+        no allocation, then None is set as the value of the variant in the EvaluationEvent.
+
+        :param FeatureFlag feature_flag: Feature flag object.
+        :return: EvaluationEvent
+        """
         if not feature_flag.allocation:
             return EvaluationEvent(enabled=False)
         return FeatureManager._check_variant_override(
@@ -52,6 +59,13 @@ class FeatureManager:
 
     @staticmethod
     def _check_default_enabled_variant(feature_flag):
+        """
+        A method called when the feature flag is enabled, to determine what the default variant should be. If there is
+        no allocation, then None is set as the value of the variant in the EvaluationEvent.
+
+        :param FeatureFlag feature_flag: Feature flag object.
+        :return: EvaluationEvent
+        """
         if not feature_flag.allocation:
             return EvaluationEvent(enabled=True)
         return FeatureManager._check_variant_override(
@@ -60,6 +74,14 @@ class FeatureManager:
 
     @staticmethod
     def _check_variant_override(variants, default_variant_name, status):
+        """
+        A method to check if a variant is overridden to be enabled or disabled by the variant.
+
+        :param list[Variant] variants: List of variants.
+        :param str default_variant_name: Name of the default variant.
+        :param bool status: Status of the feature flag.
+        :return: EvaluationEvent
+        """
         if not variants or not default_variant_name:
             return EvaluationEvent(enabled=status)
         for variant in variants:
@@ -79,6 +101,13 @@ class FeatureManager:
         return (context_marker / (2**32 - 1)) * 100
 
     def _assign_variant(self, feature_flag, targeting_context):
+        """
+        Assign a variant to the user based on the allocation.
+
+        :param FeatureFlag feature_flag: Feature flag object.
+        :param TargetingContext targeting_context: Targeting context.
+        :return: Variant name.
+        """
         if not feature_flag.variants or not feature_flag.allocation:
             return None
         if feature_flag.allocation.user and targeting_context.user_id:
@@ -101,6 +130,13 @@ class FeatureManager:
         return None
 
     def _variant_name_to_variant(self, feature_flag, variant_name):
+        """
+        Get the variant object from the variant name.
+
+        :param FeatureFlag feature_flag: Feature flag object.
+        :param str variant_name: Name of the variant.
+        :return: Variant object.
+        """
         if not feature_flag.variants:
             return None
         for variant_reference in feature_flag.variants:
@@ -112,6 +148,13 @@ class FeatureManager:
         return None
 
     def _build_targeting_context(self, args):
+        """
+        Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
+        returns an empty context.
+
+        :param args: Arguments to build the TargetingContext.
+        :return: TargetingContext
+        """
         if len(args) == 1 and isinstance(args[0], str):
             return TargetingContext(user_id=args[0], groups=[])
         if len(args) == 1 and isinstance(args[0], TargetingContext):
