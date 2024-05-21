@@ -8,24 +8,23 @@ from abc import ABC, abstractmethod
 
 class FeatureFilter(ABC):
     """
-    Parent class for all feature filters
+    Parent class for all feature filters.
     """
 
     @abstractmethod
     def evaluate(self, context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :param Mapping context: Context for the feature flag
-        :paramtype context: Mapping
+        :param Mapping context: Context for the feature flag.
         """
 
     @property
     def name(self):
         """
-        Get the name of the filter
+        Get the name of the filter.
 
-        :return: Name of the filter, or alias if it exists
+        :return: Name of the filter, or alias if it exists.
         :rtype: str
         """
         if hasattr(self, "_alias"):
@@ -35,10 +34,10 @@ class FeatureFilter(ABC):
     @staticmethod
     def alias(alias):
         """
-        Decorator to set the alias for the filter
+        Decorator to set the alias for the filter.
 
-        :param str alias: Alias for the filter
-        :return: Decorator
+        :param str alias: Alias for the filter.
+        :return: Decorator.
         :rtype: callable
         """
 

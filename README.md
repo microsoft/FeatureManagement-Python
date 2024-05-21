@@ -220,14 +220,16 @@ The Targeting Filter provides the capability to enable a feature for a target au
 You can provide the current user info through `kwargs` when calling `isEnabled`.
 
 ```python
+from featuremanagement import FeatureManager, TargetingContext
+
 # Returns true, because user1 is in the Users list
-feature_manager.is_enabled("Beta", user="user1", groups=["group1"])
+feature_manager.is_enabled("Beta", TargetingContext(user_id="user1", groups=["group1"]))
 
 # Returns false, because group2 is in the Exclusion.Groups list
-feature_manager.is_enabled("Beta", user="user1", groups=["group2"])
+feature_manager.is_enabled("Beta", TargetingContext(user_id="user1", groups=["group2"]))
 
 # Has a 50% chance of returning true, but will be conisistent for the same user
-feature_manager.is_enabled("Beta", user="user4")
+feature_manager.is_enabled("Beta", TargetingContext(user_id="user4"))
 ```
 
 #### Custom Filters
