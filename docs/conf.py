@@ -14,7 +14,13 @@ release = "1.0.0b1"
 
 # -- General configuration ---------------------------------------------------
 
-extensions = ["myst_parser", "sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.napoleon", "sphinx_toolbox.more_autodoc.autonamedtuple"]
+extensions = [
+    "myst_parser",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.coverage",
+    "sphinx.ext.napoleon",
+    "sphinx_toolbox.more_autodoc.autonamedtuple",
+]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
