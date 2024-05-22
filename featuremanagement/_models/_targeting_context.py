@@ -14,6 +14,17 @@ class TargetingContext(NamedTuple):
 
     # The user ID
     user_id: str = ""
+    """
+    The user ID.
+    
+    :type: str
+    """
+    
 
     # The users groups
-    groups: List[str] = []
+    groups: List[str] = [] 
+    """
+    The users groups.
+    
+    :type: List[str]
+    """
