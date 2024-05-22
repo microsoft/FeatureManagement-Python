@@ -14,7 +14,7 @@
   <![endif]-->
   
         <script src="_static/documentation_options.js?v=09d090fc"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -45,11 +45,14 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">featuremanagement.aio package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-featuremanagement.aio">Module contents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#featuremanagement.aio.FeatureFilter"><code class="docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.aio.FeatureFilter.alias"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.alias()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#featuremanagement.aio.FeatureFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.evaluate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.aio.FeatureFilter.name"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.name</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#featuremanagement.aio.FeatureManager"><code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#featuremanagement.aio.FeatureManager.is_enabled"><code class="docutils literal notranslate"><span class="pre">FeatureManager.is_enabled()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.aio.FeatureManager.list_feature_flag_names"><code class="docutils literal notranslate"><span class="pre">FeatureManager.list_feature_flag_names()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#featuremanagement.aio.TargetingFilter"><code class="docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a><ul>
@@ -97,14 +100,48 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="featuremanagement.aio.FeatureFilter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.aio.</span></span><span class="sig-name descname"><span class="pre">FeatureFilter</span></span><a class="headerlink" href="#featuremanagement.aio.FeatureFilter" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="index.html#featuremanagement.FeatureFilter" title="featuremanagement._featurefilters.FeatureFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a></p>
-<p>Parent class for all Async feature filters</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Parent class for all async feature filters.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="featuremanagement.aio.FeatureFilter.alias">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.aio.FeatureFilter.alias" title="Link to this definition">¶</a></dt>
+<dd><p>Decorator to set the alias for the filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>alias</strong> (<em>str</em>) – Alias for the filter.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Decorator</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="featuremanagement.aio.FeatureFilter.evaluate">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.aio.FeatureFilter.evaluate" title="Link to this definition">¶</a></dt>
-<dd><p>Determine if the feature flag is enabled for the given context
-:param Mapping context: Context for the feature flag
-:paramtype context: Mapping</p>
+<dd><p>Determine if the feature flag is enabled for the given context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>context</strong> (<em>Mapping</em>) – Context for the feature flag.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featuremanagement.aio.FeatureFilter.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#featuremanagement.aio.FeatureFilter.name" title="Link to this definition">¶</a></dt>
+<dd><p>Get the name of the filter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Name of the filter, or alias if it exists.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -112,26 +149,26 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="featuremanagement.aio.FeatureManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.aio.</span></span><span class="sig-name descname"><span class="pre">FeatureManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.aio.FeatureManager" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="index.html#featuremanagement.FeatureManager" title="featuremanagement._featuremanager.FeatureManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureManager</span></code></a></p>
-<p>Feature Manager that determines if a feature flag is enabled for the given context</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Feature Manager that determines if a feature flag is enabled for the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>configuration</strong> (<em>Mapping</em>) – Configuration object</p>
+<dd class="field-odd"><p><strong>configuration</strong> (<em>Mapping</em>) – Configuration object.</p>
 </dd>
 <dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>feature_filters</strong> (<em>list</em><em>[</em><a class="reference internal" href="#featuremanagement.aio.FeatureFilter" title="featuremanagement.aio.FeatureFilter"><em>FeatureFilter</em></a><em>]</em>) – Custom filters to be used for evaluating feature flags</p>
+<dd class="field-even"><p><strong>feature_filters</strong> (<em>list</em><em>[</em><a class="reference internal" href="#featuremanagement.aio.FeatureFilter" title="featuremanagement.aio.FeatureFilter"><em>FeatureFilter</em></a><em>]</em>) – Custom filters to be used for evaluating feature flags.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="featuremanagement.aio.FeatureManager.is_enabled">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_flag_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.aio.FeatureManager.is_enabled" title="Link to this definition">¶</a></dt>
-<dd><p>Determine if the feature flag is enabled for the given context</p>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_flag_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.aio.FeatureManager.is_enabled" title="Link to this definition">¶</a></dt>
+<dd><p>Determine if the feature flag is enabled for the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>feature_flag_id</strong> (<em>str</em>) – Name of the feature flag</p>
+<dd class="field-odd"><p><strong>feature_flag_id</strong> (<em>str</em>) – Name of the feature flag.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the feature flag is enabled for the given context</p>
+<dd class="field-even"><p>True if the feature flag is enabled for the given context.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
@@ -139,23 +176,29 @@
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="featuremanagement.aio.FeatureManager.list_feature_flag_names">
+<span class="sig-name descname"><span class="pre">list_feature_flag_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.aio.FeatureManager.list_feature_flag_names" title="Link to this definition">¶</a></dt>
+<dd><p>List of all feature flag names.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="featuremanagement.aio.TargetingFilter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.aio.</span></span><span class="sig-name descname"><span class="pre">TargetingFilter</span></span><a class="headerlink" href="#featuremanagement.aio.TargetingFilter" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="index.html#featuremanagement.TargetingFilter" title="featuremanagement._defaultfilters.TargetingFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a>, <a class="reference internal" href="#featuremanagement.aio.FeatureFilter" title="featuremanagement.aio._featurefilters.FeatureFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a></p>
-<p>Feature Filter that determines if the user is targeted for the feature flag</p>
+<dd><p>Bases: <a class="reference internal" href="#featuremanagement.aio.FeatureFilter" title="featuremanagement.aio._featurefilters.FeatureFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a></p>
+<p>Feature Filter that determines if the user is targeted for the feature flag.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="featuremanagement.aio.TargetingFilter.evaluate">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.aio.TargetingFilter.evaluate" title="Link to this definition">¶</a></dt>
-<dd><p>Determine if the feature flag is enabled for the given context</p>
+<dd><p>Determine if the feature flag is enabled for the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>context</strong> (<em>Mapping</em>) – Context for evaluating the user/group</p>
+<dd class="field-odd"><p><strong>context</strong> (<em>Mapping</em>) – Context for evaluating the user/group.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the user is targeted for the feature flag</p>
+<dd class="field-even"><p>True if the user is targeted for the feature flag.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
@@ -168,18 +211,18 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="featuremanagement.aio.TimeWindowFilter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.aio.</span></span><span class="sig-name descname"><span class="pre">TimeWindowFilter</span></span><a class="headerlink" href="#featuremanagement.aio.TimeWindowFilter" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="index.html#featuremanagement.TimeWindowFilter" title="featuremanagement._defaultfilters.TimeWindowFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeWindowFilter</span></code></a>, <a class="reference internal" href="#featuremanagement.aio.FeatureFilter" title="featuremanagement.aio._featurefilters.FeatureFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a></p>
-<p>Feature Filter that determines if the current time is within the time window</p>
+<dd><p>Bases: <a class="reference internal" href="#featuremanagement.aio.FeatureFilter" title="featuremanagement.aio._featurefilters.FeatureFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a></p>
+<p>Feature Filter that determines if the current time is within the time window.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="featuremanagement.aio.TimeWindowFilter.evaluate">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.aio.TimeWindowFilter.evaluate" title="Link to this definition">¶</a></dt>
-<dd><p>Determine if the feature flag is enabled for the given context</p>
+<dd><p>Determine if the feature flag is enabled for the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>context</strong> (<em>Mapping</em>) – Mapping with the Start and End time for the feature flag</p>
+<dd class="field-odd"><p><strong>context</strong> (<em>Mapping</em>) – Mapping with the Start and End time for the feature flag.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the current time is within the time window</p>
+<dd class="field-even"><p>True if the current time is within the time window.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
