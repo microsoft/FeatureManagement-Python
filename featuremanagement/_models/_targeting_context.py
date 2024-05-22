@@ -19,10 +19,9 @@ class TargetingContext(NamedTuple):
     
     :type: str
     """
-    
 
     # The users groups
-    groups: List[str] = [] 
+    groups: List[str] = []
     """
     The users groups.
     
