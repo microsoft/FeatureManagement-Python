@@ -4,12 +4,11 @@
 # license information.
 # -------------------------------------------------------------------------
 import logging
-import hashlib
 from collections.abc import Mapping
 from typing import overload
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from ._models import FeatureFlag, Variant, EvaluationEvent, TargetingContext
+from ._models import FeatureFlag, EvaluationEvent, TargetingContext
 
 
 FEATURE_MANAGEMENT_KEY = "feature_management"
@@ -89,111 +88,6 @@ class FeatureManager:
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
             self._filters[feature_filter.name] = feature_filter
 
-    @staticmethod
-    def _check_default_disabled_variant(feature_flag):
-        """
-        A method called when the feature flag is disabled, to determine what the default variant should be. If there is
-        no allocation, then None is set as the value of the variant in the EvaluationEvent.
-
-        :param FeatureFlag feature_flag: Feature flag object.
-        :return: EvaluationEvent
-        """
-        if not feature_flag.allocation:
-            return EvaluationEvent(enabled=False)
-        return FeatureManager._check_variant_override(
-            feature_flag.variants, feature_flag.allocation.default_when_disabled, False
-        )
-
-    @staticmethod
-    def _check_default_enabled_variant(feature_flag):
-        """
-        A method called when the feature flag is enabled, to determine what the default variant should be. If there is
-        no allocation, then None is set as the value of the variant in the EvaluationEvent.
-
-        :param FeatureFlag feature_flag: Feature flag object.
-        :return: EvaluationEvent
-        """
-        if not feature_flag.allocation:
-            return EvaluationEvent(enabled=True)
-        return FeatureManager._check_variant_override(
-            feature_flag.variants, feature_flag.allocation.default_when_enabled, True
-        )
-
-    @staticmethod
-    def _check_variant_override(variants, default_variant_name, status):
-        """
-        A method to check if a variant is overridden to be enabled or disabled by the variant.
-
-        :param list[Variant] variants: List of variants.
-        :param str default_variant_name: Name of the default variant.
-        :param bool status: Status of the feature flag.
-        :return: EvaluationEvent
-        """
-        if not variants or not default_variant_name:
-            return EvaluationEvent(enabled=status)
-        for variant in variants:
-            if variant.name == default_variant_name:
-                if variant.status_override == "Enabled":
-                    return EvaluationEvent(enabled=True)
-                if variant.status_override == "Disabled":
-                    return EvaluationEvent(enabled=False)
-        return EvaluationEvent(enabled=status)
-
-    @staticmethod
-    def _is_targeted(context_id):
-        """Determine if the user is targeted for the given context"""
-        hashed_context_id = hashlib.sha256(context_id.encode()).digest()
-        context_marker = int.from_bytes(hashed_context_id[:4], byteorder="little", signed=False)
-
-        return (context_marker / (2**32 - 1)) * 100
-
-    def _assign_variant(self, feature_flag, targeting_context):
-        """
-        Assign a variant to the user based on the allocation.
-
-        :param FeatureFlag feature_flag: Feature flag object.
-        :param TargetingContext targeting_context: Targeting context.
-        :return: Variant name.
-        """
-        if not feature_flag.variants or not feature_flag.allocation:
-            return None
-        if feature_flag.allocation.user and targeting_context.user_id:
-            for user_allocation in feature_flag.allocation.user:
-                if targeting_context.user_id in user_allocation.users:
-                    return user_allocation.variant
-        if feature_flag.allocation.group and len(targeting_context.groups) > 0:
-            for group_allocation in feature_flag.allocation.group:
-                for group in targeting_context.groups:
-                    if group in group_allocation.groups:
-                        return group_allocation.variant
-        if feature_flag.allocation.percentile:
-            context_id = targeting_context.user_id + "\n" + feature_flag.allocation.seed
-            box = self._is_targeted(context_id)
-            for percentile_allocation in feature_flag.allocation.percentile:
-                if box == 100 and percentile_allocation.percentile_to == 100:
-                    return percentile_allocation.variant
-                if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
-                    return percentile_allocation.variant
-        return None
-
-    def _variant_name_to_variant(self, feature_flag, variant_name):
-        """
-        Get the variant object from the variant name.
-
-        :param FeatureFlag feature_flag: Feature flag object.
-        :param str variant_name: Name of the variant.
-        :return: Variant object.
-        """
-        if not feature_flag.variants:
-            return None
-        for variant_reference in feature_flag.variants:
-            if variant_reference.name == variant_name:
-                configuration = variant_reference.configuration_value
-                if not configuration:
-                    configuration = self._configuration.get(variant_reference.configuration_reference)
-                return Variant(variant_reference.name, configuration)
-        return None
-
     def _build_targeting_context(self, args):
         """
         Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
@@ -232,31 +126,6 @@ class FeatureManager:
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         return result.enabled
 
-    @overload
-    def get_variant(self, feature_flag_id, user_id, **kwargs):
-        """
-        Determine the variant for the given context.
-
-        :param str feature_flag_id: Name of the feature flag.
-        :param str user_id: User identifier.
-        :return: return: Variant instance.
-        :rtype: Variant
-        """
-
-    def get_variant(self, feature_flag_id, *args, **kwargs):
-        """
-        Determine the variant for the given context.
-
-        :param str feature_flag_id: Name of the feature flag
-        :keyword TargetingContext targeting_context: Targeting context.
-        :return: Variant instance.
-        :rtype: Variant
-        """
-        targeting_context = self._build_targeting_context(args)
-
-        result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        return result.variant
-
     def _check_feature_filters(self, feature_flag, targeting_context, **kwargs):
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
@@ -285,30 +154,6 @@ class FeatureManager:
                 break
         return evaluation_event
 
-    def _assign_allocation(self, feature_flag, evaluation_event, targeting_context):
-        if feature_flag.allocation and feature_flag.variants:
-            variant_name = self._assign_variant(feature_flag, targeting_context)
-            if variant_name:
-                evaluation_event.enabled = FeatureManager._check_variant_override(
-                    feature_flag.variants, variant_name, evaluation_event.enabled
-                ).enabled
-                evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-                evaluation_event.feature = feature_flag
-                return evaluation_event
-
-        variant_name = None
-        if evaluation_event.enabled:
-            evaluation_event = FeatureManager._check_default_enabled_variant(feature_flag)
-            if feature_flag.allocation:
-                variant_name = feature_flag.allocation.default_when_enabled
-        else:
-            evaluation_event = FeatureManager._check_default_disabled_variant(feature_flag)
-            if feature_flag.allocation:
-                variant_name = feature_flag.allocation.default_when_disabled
-        evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-        evaluation_event.feature = feature_flag
-        return evaluation_event
-
     def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
         """
         Determine if the feature flag is enabled for the given context.
@@ -334,16 +179,9 @@ class FeatureManager:
 
         if not feature_flag.enabled:
             # Feature flags that are disabled are always disabled
-            evaluation_event = FeatureManager._check_default_disabled_variant(feature_flag)
-            if feature_flag.allocation:
-                variant_name = feature_flag.allocation.default_when_disabled
-                evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-            evaluation_event.feature = feature_flag
-            return evaluation_event
+            return EvaluationEvent(enabled=False)
 
-        evaluation_event = self._check_feature_filters(feature_flag, targeting_context, **kwargs)
-
-        return self._assign_allocation(feature_flag, evaluation_event, targeting_context)
+        return self._check_feature_filters(feature_flag, targeting_context, **kwargs)
 
     def list_feature_flag_names(self):
         """
