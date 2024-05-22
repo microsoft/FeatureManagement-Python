@@ -4,7 +4,7 @@
 
 New Feature Management library.
 
-Provides the ability to manage features in a project. Enables:
+Provides the ability to manage feature flags in a project. Enables:
 
 * Loading of feature flags from a file, see: https://github.com/Azure/AppConfiguration/blob/main/docs/FeatureManagement/FeatureManagement.v2.0.0.schema.json
 * Loading of feature flags from Azure App Configuration.
