@@ -3,62 +3,49 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-import logging
-
-from datetime import datetime, timezone
-from email.utils import parsedate_to_datetime
 
 from ._featurefilters import FeatureFilter
 from .._defaultfilters import (
     TargetingFilter as SyncTargetingFilter,
     TimeWindowFilter as SyncTimeWindowFilter,
-    FEATURE_FLAG_NAME_KEY,
-    DEFAULT_ROLLOUT_PERCENTAGE_KEY,
-    PARAMETERS_KEY,
-    START_KEY,
-    END_KEY,
-    TARGETED_USER_KEY,
-    TARGETED_GROUPS_KEY,
-    AUDIENCE_KEY,
-    USERS_KEY,
-    GROUPS_KEY,
-    EXCLUSION_KEY,
-    FEATURE_FILTER_NAME_KEY,
-    IGNORE_CASE_KEY,
 )
 
 
 @FeatureFilter.alias("Microsoft.TimeWindow")
-class TimeWindowFilter(SyncTimeWindowFilter, FeatureFilter):
+class TimeWindowFilter(FeatureFilter):
     """
-    Feature Filter that determines if the current time is within the time window
+    Feature Filter that determines if the current time is within the time window.
     """
+
+    def __init__(self):
+        self._filter = SyncTimeWindowFilter()
 
     async def evaluate(self, context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :keyword Mapping context: Mapping with the Start and End time for the feature flag
-        :paramtype context: Mapping
-        :return: True if the current time is within the time window
+        :keyword Mapping context: Mapping with the Start and End time for the feature flag.
+        :return: True if the current time is within the time window.
         :rtype: bool
         """
-        return super().evaluate(context, **kwargs)
+        return self._filter.evaluate(context, **kwargs)
 
 
 @FeatureFilter.alias("Microsoft.Targeting")
-class TargetingFilter(SyncTargetingFilter, FeatureFilter):
+class TargetingFilter(FeatureFilter):
     """
-    Feature Filter that determines if the user is targeted for the feature flag
+    Feature Filter that determines if the user is targeted for the feature flag.
     """
+
+    def __init__(self):
+        self._filter = SyncTargetingFilter()
 
     async def evaluate(self, context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :keyword Mapping context: Context for evaluating the user/group
-        :paramtype context: Mapping
-        :return: True if the user is targeted for the feature flag
+        :keyword Mapping context: Context for evaluating the user/group.
+        :return: True if the user is targeted for the feature flag.
         :rtype: bool
         """
-        return super().evaluate(context, **kwargs)
+        return self._filter.evaluate(context, **kwargs)

@@ -11,7 +11,7 @@ from email.utils import parsedate_to_datetime
 
 from ._featurefilters import FeatureFilter
 
-FEATURE_FLAG_NAME_KEY = "name"
+FEATURE_FLAG_NAME_KEY = "feature_name"
 ROLLOUT_PERCENTAGE_KEY = "RolloutPercentage"
 DEFAULT_ROLLOUT_PERCENTAGE_KEY = "DefaultRolloutPercentage"
 PARAMETERS_KEY = "parameters"
@@ -35,23 +35,22 @@ IGNORE_CASE_KEY = "ignore_case"
 
 class TargetingException(Exception):
     """
-    Exception raised when the targeting filter is not configured correctly
+    Exception raised when the targeting filter is not configured correctly.
     """
 
 
 @FeatureFilter.alias("Microsoft.TimeWindow")
 class TimeWindowFilter(FeatureFilter):
     """
-    Feature Filter that determines if the current time is within the time window
+    Feature Filter that determines if the current time is within the time window.
     """
 
     def evaluate(self, context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :keyword Mapping context: Mapping with the Start and End time for the feature flag
-        :paramtype context: Mapping
-        :return: True if the current time is within the time window
+        :keyword Mapping context: Mapping with the Start and End time for the feature flag.
+        :return: True if the current time is within the time window.
         :rtype: bool
         """
         start = context.get(PARAMETERS_KEY, {}).get(START_KEY)
@@ -72,7 +71,7 @@ class TimeWindowFilter(FeatureFilter):
 @FeatureFilter.alias("Microsoft.Targeting")
 class TargetingFilter(FeatureFilter):
     """
-    Feature Filter that determines if the user is targeted for the feature flag
+    Feature Filter that determines if the user is targeted for the feature flag.
     """
 
     @staticmethod
@@ -82,27 +81,26 @@ class TargetingFilter(FeatureFilter):
         if rollout_percentage == 100:
             return True
 
-        hashed_context_id = hashlib.sha256(context_id.encode()).hexdigest()
-        context_marker = abs(int(hashed_context_id, 16))
-        percentage = (context_marker / (2**256 - 1)) * 100
+        hashed_context_id = hashlib.sha256(context_id.encode()).digest()
+        context_marker = int.from_bytes(hashed_context_id[:4], byteorder="little", signed=False)
 
+        percentage = (context_marker / (2**32 - 1)) * 100
         return percentage < rollout_percentage
 
     def _target_group(self, target_user, target_group, group, feature_flag_name):
         group_rollout_percentage = group.get(ROLLOUT_PERCENTAGE_KEY, 0)
-        audience_context_id = (
-            target_user + "\n" + target_group + "\n" + feature_flag_name + "\n" + group.get(FEATURE_FILTER_NAME_KEY, "")
-        )
+        if not target_user:
+            target_user = ""
+        audience_context_id = target_user + "\n" + feature_flag_name + "\n" + target_group
 
         return self._is_targeted(audience_context_id, group_rollout_percentage)
 
     def evaluate(self, context, **kwargs):
         """
-        Determine if the feature flag is enabled for the given context
+        Determine if the feature flag is enabled for the given context.
 
-        :keyword Mapping context: Context for evaluating the user/group
-        :paramtype context: Mapping
-        :return: True if the user is targeted for the feature flag
+        :keyword Mapping context: Context for evaluating the user/group.
+        :return: True if the user is targeted for the feature flag.
         :rtype: bool
         """
         target_user = kwargs.get(TARGETED_USER_KEY, None)
@@ -129,7 +127,7 @@ class TargetingFilter(FeatureFilter):
 
         # Check if the user is in an excluded group
         for group in audience.get(EXCLUSION_KEY, {}).get(GROUPS_KEY, []):
-            if group.get(FEATURE_FILTER_NAME_KEY) in target_groups:
+            if group in target_groups:
                 return False
 
         # Check if the user is targeted
@@ -147,6 +145,8 @@ class TargetingFilter(FeatureFilter):
                     if self._target_group(target_user, target_group, group, feature_flag_name):
                         return True
 
+        if not target_user:
+            target_user = ""
         # Check if the user is in the default rollout
         context_id = target_user + "\n" + feature_flag_name
         return self._is_targeted(context_id, default_rollout_percentage)

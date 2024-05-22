@@ -21,10 +21,20 @@ class TestFeatureManagemerRefresh:
         feature_manager = FeatureManager(feature_flags)
         assert feature_manager is not None
         assert feature_manager.is_enabled("Alpha")
+        assert "Alpha" in feature_manager._cache  # pylint: disable=protected-access
+        assert feature_manager.is_enabled("Alpha")  # test cache
+        assert "Alpha" in feature_manager._cache  # pylint: disable=protected-access
 
-        feature_flags.get("feature_management").get("feature_flags")[0]["enabled"] = "false"
+        feature_flags["feature_management"] = {
+            "feature_flags": [
+                {"id": "Alpha", "description": "", "enabled": "false", "conditions": {"client_filters": []}},
+            ]
+        }
 
+        assert not feature_manager.is_enabled("Beta")  # resets cache
+        assert "Alpha" not in feature_manager._cache  # pylint: disable=protected-access
         assert not feature_manager.is_enabled("Alpha")
+        assert "Alpha" in feature_manager._cache  # pylint: disable=protected-access
 
     # method: feature_manager_creation
     @pytest.mark.asyncio
@@ -39,7 +49,17 @@ class TestFeatureManagemerRefresh:
         feature_manager = AsyncFeatureManager(feature_flags)
         assert feature_manager is not None
         assert await feature_manager.is_enabled("Alpha")
+        assert "Alpha" in feature_manager._cache  # pylint: disable=protected-access
+        assert await feature_manager.is_enabled("Alpha")  # test cache
+        assert "Alpha" in feature_manager._cache  # pylint: disable=protected-access
 
-        feature_flags.get("feature_management").get("feature_flags")[0]["enabled"] = "false"
+        feature_flags["feature_management"] = {
+            "feature_flags": [
+                {"id": "Alpha", "description": "", "enabled": "false", "conditions": {"client_filters": []}},
+            ]
+        }
 
+        assert not await feature_manager.is_enabled("Beta")  # resets cache
+        assert "Alpha" not in feature_manager._cache  # pylint: disable=protected-access
         assert not await feature_manager.is_enabled("Alpha")
+        assert "Alpha" in feature_manager._cache  # pylint: disable=protected-access

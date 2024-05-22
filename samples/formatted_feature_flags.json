@@ -123,7 +123,108 @@
                         }
                     ]
                 }
+            },
+            {
+                "id": "Override_True",
+                "description": "",
+                "enabled": "true",
+                "conditions": {
+                    "client_filters": []
+                },
+                "allocation": {
+                    "default_when_enabled": "True_Override"
+                },
+                "variants": [
+                    {
+                        "name": "True_Override",
+                        "status_override": "False"
+                    }
+                ]
+        
+            },
+            {
+                "id": "Override_False",
+                "description": "",
+                "enabled": "false",
+                "conditions": {
+                    "client_filters": []
+                },
+                "allocation": {
+                    "default_when_disabled": "False_Override"
+                },
+                "variants": [
+                    {
+                        "name": "False_Override",
+                        "status_override": "True"
+                    }
+                ]
+        
+            },
+            {
+                "id": "TestVariants",
+                "description": "",
+                "enabled": "true",
+                "telemetry": {
+                    "enabled": "true",
+                    "metadata": {
+                        "etag": "my-fake-etag"
+                    }
+                },
+                "conditions": {
+                    "client_filters": [
+                        {
+                            "name": "Microsoft.Targeting",
+                            "parameters": {
+                                "Audience": {
+                                    "Users": [],
+                                    "Groups": [],
+                                    "DefaultRolloutPercentage": 100,
+                                    "Exclusion": {
+                                        "Users": [],
+                                        "Groups": []
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                "allocation": {
+                    "users": [
+                        {
+                            "variant": "True_Override",
+                            "users": [
+                                "Adam"
+                            ]
+                        }
+                    ],
+                    "percentile": [
+                        {
+                            "variant": "True_Override",
+                            "from": 0,
+                            "to": 50
+                        },
+                        {
+                            "variant": "False_Override",
+                            "from": 50,
+                            "to": 100
+                        }
+                    ]
+                },
+                "variants": [
+                    {
+                        "name": "True_Override",
+                        "configuration_value": "The Variant True_Override overrides to False",
+                        "status_override": "False"
+                    },
+                    {
+                        "name": "False_Override",
+                        "configuration_reference": "false-override",
+                        "status_override": "True"
+                    }
+                ]
+        
             }
         ]
-    }
+    },
+    "false-override": "The Variant False_Override overrides to True"
 }
