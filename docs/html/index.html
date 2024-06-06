@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="featuremanagement.aio package" href="featuremanagement.aio.html" /> 
+    <link rel="next" title="Subpackages" href="featuremanagement.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,7 +42,8 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="featuremanagement.aio.html">featuremanagement.aio package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="featuremanagement.html">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="featuremanagement.html#module-featuremanagement">Module contents</a></li>
 </ul>
 
         </div>
@@ -82,8 +83,8 @@
 </section>
 <section id="install-the-package">
 <h3>Install the package<a class="headerlink" href="#install-the-package" title="Link to this heading">¶</a></h3>
-<p>Install the Python feature management client library for Python with [pip][pip]:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>microsoft-featuremanagement
+<p>Install the Python feature management client library for Python with <a class="reference external" href="https://pypi.org/project/FeatureManagement/">pip</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>featuremanagement
 </pre></div>
 </div>
 </section>
@@ -100,10 +101,7 @@
 
 <span class="n">endpoint</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;APPCONFIGURATION_ENDPOINT_STRING&quot;</span><span class="p">)</span>
 
-<span class="c1"># If no setting selector is set then feature flags with no label are loaded.</span>
-<span class="n">selects</span> <span class="o">=</span> <span class="p">{</span><span class="n">SettingSelector</span><span class="p">(</span><span class="n">key_filter</span><span class="o">=</span><span class="s2">&quot;.appconfig.featureflag*&quot;</span><span class="p">)}</span>
-
-<span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">credential</span><span class="o">=</span><span class="n">DefaultAzureCredential</span><span class="p">(),</span> <span class="n">selects</span><span class="o">=</span><span class="n">selects</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">credential</span><span class="o">=</span><span class="n">DefaultAzureCredential</span><span class="p">(),</span> <span class="n">feature_flag_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">feature_flag_refresh_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">feature_manager</span> <span class="o">=</span> <span class="n">FeatureManager</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
@@ -359,27 +357,42 @@ Any use of third-party trademarks or logos are subject to those third-party’s 
 <h1>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="featuremanagement.aio.html">featuremanagement.aio package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="featuremanagement.aio.html#module-featuremanagement.aio">Module contents</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureFilter"><code class="docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureFilter.alias"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.alias()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.evaluate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureFilter.name"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.name</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="featuremanagement.html">Subpackages</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="featuremanagement.aio.html">featuremanagement.aio package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.aio.html#module-featuremanagement.aio">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureFilter"><code class="docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureManager"><code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.TargetingFilter"><code class="docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.TimeWindowFilter"><code class="docutils literal notranslate"><span class="pre">TimeWindowFilter</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureManager"><code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureManager.is_enabled"><code class="docutils literal notranslate"><span class="pre">FeatureManager.is_enabled()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureManager.list_feature_flag_names"><code class="docutils literal notranslate"><span class="pre">FeatureManager.list_feature_flag_names()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.TargetingFilter"><code class="docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.TargetingFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TargetingFilter.evaluate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.TimeWindowFilter"><code class="docutils literal notranslate"><span class="pre">TimeWindowFilter</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.TimeWindowFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TimeWindowFilter.evaluate()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="featuremanagement.html#module-featuremanagement">Module contents</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="featuremanagement.html#featuremanagement.FeatureFilter"><code class="docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.FeatureFilter.alias"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.alias()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.FeatureFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.evaluate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.FeatureFilter.name"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.name</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="featuremanagement.html#featuremanagement.FeatureManager"><code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.FeatureManager.is_enabled"><code class="docutils literal notranslate"><span class="pre">FeatureManager.is_enabled()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.FeatureManager.list_feature_flag_names"><code class="docutils literal notranslate"><span class="pre">FeatureManager.list_feature_flag_names()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingContext"><code class="docutils literal notranslate"><span class="pre">TargetingContext</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingContext.groups"><code class="docutils literal notranslate"><span class="pre">TargetingContext.groups</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingContext.user_id"><code class="docutils literal notranslate"><span class="pre">TargetingContext.user_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingFilter"><code class="docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TargetingFilter.evaluate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="featuremanagement.html#featuremanagement.TimeWindowFilter"><code class="docutils literal notranslate"><span class="pre">TimeWindowFilter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.TimeWindowFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TimeWindowFilter.evaluate()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -387,160 +400,12 @@ Any use of third-party trademarks or logos are subject to those third-party’s 
 </ul>
 </div>
 </section>
-<section id="module-featuremanagement">
-<span id="module-contents"></span><h1>Module contents<a class="headerlink" href="#module-featuremanagement" title="Link to this heading">¶</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="featuremanagement.FeatureFilter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">FeatureFilter</span></span><a class="headerlink" href="#featuremanagement.FeatureFilter" title="Link to this definition">¶</a></dt>
-<dd><p>Parent class for all feature filters.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="featuremanagement.FeatureFilter.alias">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureFilter.alias" title="Link to this definition">¶</a></dt>
-<dd><p>Decorator to set the alias for the filter.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>alias</strong> (<em>str</em>) – Alias for the filter.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Decorator.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>callable</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="featuremanagement.FeatureFilter.evaluate">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureFilter.evaluate" title="Link to this definition">¶</a></dt>
-<dd><p>Determine if the feature flag is enabled for the given context.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>context</strong> (<em>Mapping</em>) – Context for the feature flag.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="featuremanagement.FeatureFilter.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#featuremanagement.FeatureFilter.name" title="Link to this definition">¶</a></dt>
-<dd><p>Get the name of the filter.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Name of the filter, or alias if it exists.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="featuremanagement.FeatureManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">FeatureManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureManager" title="Link to this definition">¶</a></dt>
-<dd><p>Feature Manager that determines if a feature flag is enabled for the given context.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>configuration</strong> (<em>Mapping</em>) – Configuration object.</p>
-</dd>
-<dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>feature_filters</strong> (<em>list</em><em>[</em><a class="reference internal" href="#featuremanagement.FeatureFilter" title="featuremanagement.FeatureFilter"><em>FeatureFilter</em></a><em>]</em>) – Custom filters to be used for evaluating feature flags.</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="featuremanagement.FeatureManager.is_enabled">
-<span class="sig-name descname"><span class="pre">is_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_flag_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureManager.is_enabled" title="Link to this definition">¶</a></dt>
-<dd><p>Determine if the feature flag is enabled for the given context.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>feature_flag_id</strong> (<em>str</em>) – Name of the feature flag.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the feature flag is enabled for the given context.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="featuremanagement.FeatureManager.list_feature_flag_names">
-<span class="sig-name descname"><span class="pre">list_feature_flag_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureManager.list_feature_flag_names" title="Link to this definition">¶</a></dt>
-<dd><p>List of all feature flag names.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class namedtuple">
-<dt class="sig sig-object py" id="featuremanagement.TargetingContext">
-<em class="property"><span class="pre">namedtuple</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TargetingContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.TargetingContext" title="Link to this definition">¶</a></dt>
-<dd><p>Represents the context for targeting a feature flag.</p>
-<dl class="field-list">
-<dt class="field-odd">Fields<span class="colon">:</span></dt>
-<dd class="field-odd"><span id="featuremanagement.TargetingContext.user_id"></span><ol class="arabic simple" id="featuremanagement.TargetingContext.groups" start="0">
-<li><p> <strong>user_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The user ID.  :type: str</p></li>
-<li><p> <strong>groups</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The users groups.  :type: List[str]</p></li>
-</ol>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="featuremanagement.TargetingFilter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TargetingFilter</span></span><a class="headerlink" href="#featuremanagement.TargetingFilter" title="Link to this definition">¶</a></dt>
-<dd><p>Feature Filter that determines if the user is targeted for the feature flag.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="featuremanagement.TargetingFilter.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.TargetingFilter.evaluate" title="Link to this definition">¶</a></dt>
-<dd><p>Determine if the feature flag is enabled for the given context.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>context</strong> (<em>Mapping</em>) – Context for evaluating the user/group.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the user is targeted for the feature flag.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="featuremanagement.TimeWindowFilter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TimeWindowFilter</span></span><a class="headerlink" href="#featuremanagement.TimeWindowFilter" title="Link to this definition">¶</a></dt>
-<dd><p>Feature Filter that determines if the current time is within the time window.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="featuremanagement.TimeWindowFilter.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.TimeWindowFilter.evaluate" title="Link to this definition">¶</a></dt>
-<dd><p>Determine if the feature flag is enabled for the given context.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>context</strong> (<em>Mapping</em>) – Mapping with the Start and End time for the feature flag.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the current time is within the time window.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="featuremanagement.aio.html" class="btn btn-neutral float-right" title="featuremanagement.aio package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="featuremanagement.html" class="btn btn-neutral float-right" title="Subpackages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
