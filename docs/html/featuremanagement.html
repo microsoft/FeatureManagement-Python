@@ -59,11 +59,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#featuremanagement.FeatureManager.list_feature_flag_names"><code class="docutils literal notranslate"><span class="pre">FeatureManager.list_feature_flag_names()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#featuremanagement.TargetingContext"><code class="docutils literal notranslate"><span class="pre">TargetingContext</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.TargetingContext.groups"><code class="docutils literal notranslate"><span class="pre">TargetingContext.groups</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.TargetingContext.user_id"><code class="docutils literal notranslate"><span class="pre">TargetingContext.user_id</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#featuremanagement.TargetingContext"><code class="docutils literal notranslate"><span class="pre">TargetingContext</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#featuremanagement.TargetingFilter"><code class="docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#featuremanagement.TargetingFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TargetingFilter.evaluate()</span></code></a></li>
 </ul>
@@ -219,22 +215,18 @@
 
 </dd></dl>
 
-<dl class="py class">
+<dl class="py class namedtuple">
 <dt class="sig sig-object py" id="featuremanagement.TargetingContext">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TargetingContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.TargetingContext" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">namedtuple</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TargetingContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.TargetingContext" title="Link to this definition">¶</a></dt>
 <dd><p>Represents the context for targeting a feature flag.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="featuremanagement.TargetingContext.groups">
-<span class="sig-name descname"><span class="pre">groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#featuremanagement.TargetingContext.groups" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 1</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="featuremanagement.TargetingContext.user_id">
-<span class="sig-name descname"><span class="pre">user_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#featuremanagement.TargetingContext.user_id" title="Link to this definition">¶</a></dt>
-<dd><p>Alias for field number 0</p>
-</dd></dl>
-
+<dl class="field-list">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><span id="featuremanagement.TargetingContext.user_id"></span><ol class="arabic simple" id="featuremanagement.TargetingContext.groups" start="0">
+<li><p> <strong>user_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The user ID.  :type: str</p></li>
+<li><p> <strong>groups</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The users groups.  :type: List[str]</p></li>
+</ol>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">

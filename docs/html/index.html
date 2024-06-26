@@ -72,265 +72,21 @@
              
   <section id="microsoft-feature-management-for-python">
 <h1>Microsoft Feature Management for Python<a class="headerlink" href="#microsoft-feature-management-for-python" title="Link to this heading">¶</a></h1>
-<p>Feature Management is a library for enabling/disabling features at runtime. Developers can use feature flags in simple use cases like conditional statement to more advanced scenarios like conditionally adding routes.</p>
-<section id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
-<section id="prerequisites">
-<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://pypi.org/project/FeatureManagement/"><img alt="FeatureManagement" src="https://img.shields.io/pypi/v/FeatureManagement?label=FeatureManagement" /></a></p>
+<p>Feature management provides a way to develop and expose application functionality based on features. Many applications have special requirements when a new feature is developed such as when the feature should be enabled and under what conditions. This library provides a way to define these relationships, and also integrates into common Python code patterns to make exposing these features possible.</p>
+<section id="get-started">
+<h2>Get Started<a class="headerlink" href="#get-started" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://learn.microsoft.com/azure/azure-app-configuration/quickstart-feature-flag-python">Quickstart</a>: A quickstart guide is available to learn how to integrate feature flags from Azure App Configuration into your Python applications.</p>
+<p><a class="reference external" href="https://microsoft.github.io/FeatureManagement-Python/">API Reference</a>: This API reference details the API surface of the libraries contained within this repository.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Python 3.7 or later is required to use this package.</p></li>
+<li><p><a class="reference external" href="https://github.com/microsoft/FeatureManagement-Python/blob/main/samples/feature_flag_sample.py">Python Application</a></p></li>
+<li><p><a class="reference external" href="https://github.com/microsoft/FeatureManagement-Python/blob/main/samples/feature_flag_with_azure_app_configuration_sample.py">Python Application with Azure App Configuration</a></p></li>
+<li><p><a class="reference external" href="https://github.com/Azure/AppConfiguration/tree/main/examples/Python/python-django-webapp-sample">Django Application</a></p></li>
+<li><p><a class="reference external" href="https://github.com/Azure/AppConfiguration/tree/main/examples/Python/python-flask-webapp-sample">Flask Application</a></p></li>
 </ul>
-</section>
-<section id="install-the-package">
-<h3>Install the package<a class="headerlink" href="#install-the-package" title="Link to this heading">¶</a></h3>
-<p>Install the Python feature management client library for Python with <a class="reference external" href="https://pypi.org/project/FeatureManagement/">pip</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>featuremanagement
-</pre></div>
-</div>
-</section>
-</section>
-<section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
-<p>You can use feature flags from the Azure App Configuration service, a json file, or a dictionary.</p>
-<section id="use-feature-flags-from-azure-app-configuration">
-<h3>Use feature flags from Azure App Configuration<a class="headerlink" href="#use-feature-flags-from-azure-app-configuration" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">featuremanagement</span> <span class="kn">import</span> <span class="n">FeatureManager</span>
-<span class="kn">from</span> <span class="nn">azure.appconfiguration.provider</span> <span class="kn">import</span> <span class="n">load</span>
-<span class="kn">from</span> <span class="nn">azure.identity</span> <span class="kn">import</span> <span class="n">DefaultAzureCredential</span>
-<span class="kn">import</span> <span class="nn">os</span>
-
-<span class="n">endpoint</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;APPCONFIGURATION_ENDPOINT_STRING&quot;</span><span class="p">)</span>
-
-<span class="n">config</span> <span class="o">=</span> <span class="n">load</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">credential</span><span class="o">=</span><span class="n">DefaultAzureCredential</span><span class="p">(),</span> <span class="n">feature_flag_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">feature_flag_refresh_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">feature_manager</span> <span class="o">=</span> <span class="n">FeatureManager</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-
-<span class="c1"># Prints the value of the feature flag Alpha</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Alpha is &quot;</span><span class="p">,</span> <span class="n">feature_manager</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">(</span><span class="s2">&quot;Alpha&quot;</span><span class="p">))</span>
-</pre></div>
-</div>
-</section>
-<section id="use-feature-flags-from-a-json-file">
-<h3>Use feature flags from a json file<a class="headerlink" href="#use-feature-flags-from-a-json-file" title="Link to this heading">¶</a></h3>
-<p>A Json file with the following format can be used to load feature flags.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;feature_management&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;feature_flags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Alpha&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;conditions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">&quot;client_filters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
-<span class="w">                </span><span class="p">}</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">]</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w"> </span><span class="p">}</span>
-</pre></div>
-</div>
-<p>Load feature flags from a json file.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">featuremanagement</span> <span class="kn">import</span> <span class="n">FeatureManager</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="n">script_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">script_directory</span> <span class="o">+</span> <span class="s2">&quot;/my_json_file.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
-
-<span class="n">feature_flags</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-
-<span class="n">feature_manager</span> <span class="o">=</span> <span class="n">FeatureManager</span><span class="p">(</span><span class="n">feature_flags</span><span class="p">)</span>
-
-<span class="c1"># Returns the value of Alpha, based on the result of the feature filter</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Alpha is &quot;</span><span class="p">,</span> <span class="n">feature_manager</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">(</span><span class="s2">&quot;Alpha&quot;</span><span class="p">))</span>
-</pre></div>
-</div>
-</section>
-<section id="use-feature-flags-from-a-dictionary">
-<h3>Use feature flags from a dictionary<a class="headerlink" href="#use-feature-flags-from-a-dictionary" title="Link to this heading">¶</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">featuremanagement</span> <span class="kn">import</span> <span class="n">FeatureManager</span>
-
-<span class="n">feature_flags</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;feature_management&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;feature_flags&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;Alpha&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="s2">&quot;client_filters&quot;</span><span class="p">:</span> <span class="p">[]</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="n">feature_manager</span> <span class="o">=</span> <span class="n">FeatureManager</span><span class="p">(</span><span class="n">feature_flags</span><span class="p">)</span>
-
-<span class="c1"># Is always true</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Alpha is &quot;</span><span class="p">,</span> <span class="n">feature_manager</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">(</span><span class="s2">&quot;Alpha&quot;</span><span class="p">))</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="key-concepts">
-<h2>Key concepts<a class="headerlink" href="#key-concepts" title="Link to this heading">¶</a></h2>
-<section id="featuremanager">
-<h3>FeatureManager<a class="headerlink" href="#featuremanager" title="Link to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code> is the main entry point for using feature flags. It is initialized with a dictionary of feature flags, and optional feature filters. The <code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code> can then be used to check if a feature is enabled or disabled.</p>
-</section>
-<section id="feature-flags">
-<h3>Feature Flags<a class="headerlink" href="#feature-flags" title="Link to this heading">¶</a></h3>
-<p>Feature Flags are objects that define how Feature Management enables/disables a feature. It contains an <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">enabled</span></code> property. The <code class="docutils literal notranslate"><span class="pre">id</span></code> is a string that uniquely identifies the feature flag. The <code class="docutils literal notranslate"><span class="pre">enabled</span></code> property is a boolean that indicates if the feature flag is enabled or disabled. The <code class="docutils literal notranslate"><span class="pre">conditions</span></code> object contains a property <code class="docutils literal notranslate"><span class="pre">client_filters</span></code> which is a list of <code class="docutils literal notranslate"><span class="pre">FeatureFilter</span></code> objects that are used to determine if the feature flag is enabled or disabled. The Feature Filters only run if the feature flag is enabled.</p>
-<p>The full schema for a feature Flag can be found <a class="reference external" href="https://github.com/Azure/AppConfiguration/blob/main/docs/FeatureManagement/FeatureFlag.v1.1.0.schema.json">here</a>.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Alpha&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;enabled&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;conditions&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="s2">&quot;client_filters&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="p">{</span>
-<span class="w">                </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;MyFilter&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="s2">&quot;parameters&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="p">...</span>
-<span class="w">                </span><span class="p">}</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">]</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>This object is passed into the <code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code> when it is initialized.</p>
-</section>
-<section id="feature-filters">
-<h3>Feature Filters<a class="headerlink" href="#feature-filters" title="Link to this heading">¶</a></h3>
-<p>Feature filters enable dynamic evaluation of feature flags. The Python feature management library includes two built-in filters:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Microsoft.TimeWindow</span></code> - Enables a feature flag based on a time window.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Microsoft.Targeting</span></code> - Enables a feature flag based on a list of users, groups, or rollout percentages.</p></li>
-</ul>
-<section id="time-window-filter">
-<h4>Time Window Filter<a class="headerlink" href="#time-window-filter" title="Link to this heading">¶</a></h4>
-<p>The Time Window Filter enables a feature flag based on a time window. It has two parameters:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Start</span></code> - The start time of the time window.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">End</span></code> - The end time of the time window.</p></li>
-</ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Microsoft.TimeWindow&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;Start&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2020-01-01T00:00:00Z&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;End&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2020-12-31T00:00:00Z&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>Both parameters are optional, but at least one is required. The time window filter is enabled after the start time and before the end time. If the start time is not specified, it is enabled immediately. If the end time is not specified, it will remain enabled after the start time.</p>
-</section>
-<section id="targeting-filter">
-<h4>Targeting Filter<a class="headerlink" href="#targeting-filter" title="Link to this heading">¶</a></h4>
-<p>Targeting is a feature management strategy that enables developers to progressively roll out new features to their user base. The strategy is built on the concept of targeting a set of users known as the target audience. An audience is made up of specific users, groups, excluded users/groups, and a designated percentage of the entire user base. The groups that are included in the audience can be broken down further into percentages of their total members.</p>
-<p>The following steps demonstrate an example of a progressive rollout for a new ‘Beta’ feature:</p>
-<ol class="arabic simple">
-<li><p>Individual users Jeff and Alicia are granted access to the Beta</p></li>
-<li><p>Another user, Mark, asks to opt-in and is included.</p></li>
-<li><p>Twenty percent of a group known as “Ring1” users are included in the Beta.</p></li>
-<li><p>The number of “Ring1” users included in the beta is bumped up to 100 percent.</p></li>
-<li><p>Five percent of the user base is included in the beta.</p></li>
-<li><p>The rollout percentage is bumped up to 100 percent and the feature is completely rolled out.</p></li>
-</ol>
-<p>This strategy for rolling out a feature is built in to the library through the included Microsoft.Targeting feature filter.</p>
-<section id="defining-a-targeting-feature-filter">
-<h5>Defining a Targeting Feature Filter<a class="headerlink" href="#defining-a-targeting-feature-filter" title="Link to this heading">¶</a></h5>
-<p>The Targeting Filter provides the capability to enable a feature for a target audience. The filter parameters include an <code class="docutils literal notranslate"><span class="pre">Audience</span></code> object which describes users, groups, excluded users/groups, and a default percentage of the user base that should have access to the feature. The <code class="docutils literal notranslate"><span class="pre">Audience</span></code> object contains the following fields:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Users</span></code> - A list of users that the feature flag is enabled for.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Groups</span></code> - A list of groups that the feature flag is enabled for and a rollout percentage for each group.</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">Name</span></code> - The name of the group.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">RolloutPercentage</span></code> - A percentage value that the feature flag is enabled for in the given group.</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">DefaultRolloutPercentage</span></code> - A percentage value that the feature flag is enabled for.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Exclusion</span></code> - An object that contains a list of users and groups that the feature flag is disabled for.</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">Users</span></code> - A list of users that the feature flag is disabled for.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Groups</span></code> - A list of groups that the feature flag is disabled for.</p></li>
-</ul>
-</li>
-</ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Microsoft.Targeting&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;Audience&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;Users&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;user1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;user2&quot;</span><span class="p">],</span>
-<span class="w">            </span><span class="nt">&quot;Groups&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;group1&quot;</span><span class="p">,</span>
-<span class="w">                    </span><span class="nt">&quot;RolloutPercentage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
-<span class="w">                </span><span class="p">}</span>
-<span class="w">            </span><span class="p">],</span>
-<span class="w">            </span><span class="nt">&quot;DefaultRolloutPercentage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;Exclusion&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;Users&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;user3&quot;</span><span class="p">],</span>
-<span class="w">                </span><span class="nt">&quot;Groups&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;group2&quot;</span><span class="p">]</span>
-<span class="w">            </span><span class="p">}</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</section>
-<section id="using-targeting-feature-filter">
-<h5>Using Targeting Feature Filter<a class="headerlink" href="#using-targeting-feature-filter" title="Link to this heading">¶</a></h5>
-<p>You can provide the current user info through <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> when calling <code class="docutils literal notranslate"><span class="pre">isEnabled</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">featuremanagement</span> <span class="kn">import</span> <span class="n">FeatureManager</span><span class="p">,</span> <span class="n">TargetingContext</span>
-
-<span class="c1"># Returns true, because user1 is in the Users list</span>
-<span class="n">feature_manager</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">(</span><span class="s2">&quot;Beta&quot;</span><span class="p">,</span> <span class="n">TargetingContext</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="s2">&quot;user1&quot;</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;group1&quot;</span><span class="p">]))</span>
-
-<span class="c1"># Returns false, because group2 is in the Exclusion.Groups list</span>
-<span class="n">feature_manager</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">(</span><span class="s2">&quot;Beta&quot;</span><span class="p">,</span> <span class="n">TargetingContext</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="s2">&quot;user1&quot;</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;group2&quot;</span><span class="p">]))</span>
-
-<span class="c1"># Has a 50% chance of returning true, but will be conisistent for the same user</span>
-<span class="n">feature_manager</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">(</span><span class="s2">&quot;Beta&quot;</span><span class="p">,</span> <span class="n">TargetingContext</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="s2">&quot;user4&quot;</span><span class="p">))</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="custom-filters">
-<h4>Custom Filters<a class="headerlink" href="#custom-filters" title="Link to this heading">¶</a></h4>
-<p>You can also create your own feature filters by implementing the <code class="docutils literal notranslate"><span class="pre">FeatureFilter</span></code> interface.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCustomFilter</span><span class="p">(</span><span class="n">FeatureFilter</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="o">...</span>
-        <span class="k">return</span> <span class="kc">True</span>
-</pre></div>
-</div>
-<p>They can then be passed into the <code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code> when it is initialized. By default, the name of a feature filter is the name of the class. You can override this by setting a class attribute <code class="docutils literal notranslate"><span class="pre">alias</span></code> to the modified class name.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-<span class="n">feature_manager</span> <span class="o">=</span> <span class="n">FeatureManager</span><span class="p">(</span><span class="n">feature_flags</span><span class="p">,</span> <span class="n">feature_filters</span><span class="o">=</span><span class="p">{</span><span class="n">MyCustomFilter</span><span class="p">(),</span> <span class="n">MyOtherFilter</span><span class="p">()})</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> method is called when checking if a feature flag is enabled. The <code class="docutils literal notranslate"><span class="pre">context</span></code> parameter contains information about the feature filter from the <code class="docutils literal notranslate"><span class="pre">parameters</span></code> field of the feature filter. Any additional parameters can be passed in as keyword arguments when calling <code class="docutils literal notranslate"><span class="pre">is_enabled</span></code>.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;CustomFilter&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;parameters&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="p">...</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>You can modify the name of a feature flag by using the <code class="docutils literal notranslate"><span class="pre">&#64;FeatureFilter.alias</span></code> decorator. The alias overrides the name of the feature filter and needs to match the name of the feature filter in the feature flag json.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@FeatureFilter</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;AliasFilter&quot;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">MyCustomFilter</span><span class="p">(</span><span class="n">FeatureFilter</span><span class="p">):</span>
-    <span class="o">...</span>
-</pre></div>
-</div>
-</section>
-</section>
 </section>
 <section id="contributing">
 <h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h2>
@@ -382,11 +138,7 @@ Any use of third-party trademarks or logos are subject to those third-party’s 
 <li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.FeatureManager.list_feature_flag_names"><code class="docutils literal notranslate"><span class="pre">FeatureManager.list_feature_flag_names()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingContext"><code class="docutils literal notranslate"><span class="pre">TargetingContext</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingContext.groups"><code class="docutils literal notranslate"><span class="pre">TargetingContext.groups</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingContext.user_id"><code class="docutils literal notranslate"><span class="pre">TargetingContext.user_id</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingContext"><code class="docutils literal notranslate"><span class="pre">TargetingContext</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingFilter"><code class="docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="featuremanagement.html#featuremanagement.TargetingFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TargetingFilter.evaluate()</span></code></a></li>
 </ul>
