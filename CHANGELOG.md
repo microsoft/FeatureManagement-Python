@@ -1,5 +1,9 @@
 # Release History
 
+## 1.0.0 (06/26/2024)
+
+Updated version to 1.0.0.
+
 ## 1.0.0b1 (05/22/2024)
 
 New Feature Management library.
