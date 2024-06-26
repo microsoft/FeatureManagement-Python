@@ -12,8 +12,16 @@ class TargetingContext(NamedTuple):
     Represents the context for targeting a feature flag.
     """
 
-    # The user ID
     user_id: str = ""
+    """
+    The user ID.
+    
+    :type: str
+    """
 
-    # The users groups
     groups: List[str] = []
+    """
+    The users groups.
+    
+    :type: List[str]
+    """
