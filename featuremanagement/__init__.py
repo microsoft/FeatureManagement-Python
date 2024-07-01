@@ -6,7 +6,7 @@
 from ._featuremanager import FeatureManager
 from ._featurefilters import FeatureFilter
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
-from ._models import FeatureFlag, Variant, TargetingContext
+from ._models import FeatureFlag, Variant, EvaluationEvent, VariantAssignmentReason, TargetingContext
 
 from ._version import VERSION
 
@@ -18,5 +18,7 @@ __all__ = [
     "FeatureFilter",
     "FeatureFlag",
     "Variant",
+    "EvaluationEvent",
+    "VariantAssignmentReason",
     "TargetingContext",
 ]
