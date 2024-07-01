@@ -8,7 +8,7 @@ import json
 import os
 import sys
 from random_filter import RandomFilter
-from featuremanagement import FeatureManager
+from featuremanagement import FeatureManager, TargetingContext
 
 script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
 
@@ -30,5 +30,5 @@ print("Sigma is ", feature_manager.is_enabled("Sigma"))
 # Is true Before 06-28-2023
 print("Epsilon is ", feature_manager.is_enabled("Epsilon"))
 # Target is true for Adam, group Stage 1, and 50% of users
-print("Target is ", feature_manager.is_enabled("Target", "Adam"))
-print("Target is ", feature_manager.is_enabled("Target", "Brian"))
+print("Target is ", feature_manager.is_enabled("Target", TargetingContext(user_id="Adam")))
+print("Target is ", feature_manager.is_enabled("Target", TargetingContext(user_id="Brian")))

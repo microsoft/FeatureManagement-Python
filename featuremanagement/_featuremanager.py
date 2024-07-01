@@ -24,6 +24,14 @@ FEATURE_FILTER_PARAMETERS = "parameters"
 
 
 def _get_feature_flag(configuration, feature_flag_name):
+    """
+    Gets the FeatureFlag json from the configuration, if it exists it gets converted to a FeatureFlag object.
+
+    :param Mapping configuration: Configuration object.
+    :param str feature_flag_name: Name of the feature flag.
+    :return: FeatureFlag
+    :rtype: FeatureFlag
+    """
     feature_management = configuration.get(FEATURE_MANAGEMENT_KEY)
     if not feature_management or not isinstance(feature_management, Mapping):
         return None
@@ -41,6 +49,9 @@ def _get_feature_flag(configuration, feature_flag_name):
 def _list_feature_flag_names(configuration):
     """
     List of all feature flag names.
+
+    :param Mapping configuration: Configuration object.
+    :return: List of feature flag names.
     """
     feature_flag_names = []
     feature_management = configuration.get(FEATURE_MANAGEMENT_KEY)
@@ -83,6 +94,13 @@ class FeatureManager:
 
     @staticmethod
     def _check_default_disabled_variant(feature_flag):
+        """
+        A method called when the feature flag is disabled, to determine what the default variant should be. If there is
+        no allocation, then None is set as the value of the variant in the EvaluationEvent.
+
+        :param FeatureFlag feature_flag: Feature flag object.
+        :return: EvaluationEvent
+        """
         if not feature_flag.allocation:
             return EvaluationEvent(enabled=False)
         evaluation_event = FeatureManager._check_variant_override(
@@ -93,6 +111,13 @@ class FeatureManager:
 
     @staticmethod
     def _check_default_enabled_variant(feature_flag):
+        """
+        A method called when the feature flag is enabled, to determine what the default variant should be. If there is
+        no allocation, then None is set as the value of the variant in the EvaluationEvent.
+
+        :param FeatureFlag feature_flag: Feature flag object.
+        :return: EvaluationEvent
+        """
         if not feature_flag.allocation:
             return EvaluationEvent(enabled=True)
         evaluation_event = FeatureManager._check_variant_override(
@@ -103,6 +128,14 @@ class FeatureManager:
 
     @staticmethod
     def _check_variant_override(variants, default_variant_name, status):
+        """
+        A method to check if a variant is overridden to be enabled or disabled by the variant.
+
+        :param list[Variant] variants: List of variants.
+        :param str default_variant_name: Name of the default variant.
+        :param bool status: Status of the feature flag.
+        :return: EvaluationEvent
+        """
         if not variants or not default_variant_name:
             return EvaluationEvent(enabled=status)
         for variant in variants:
@@ -148,6 +181,13 @@ class FeatureManager:
         return None, evaluation_event
 
     def _variant_name_to_variant(self, feature_flag, variant_name):
+        """
+        Get the variant object from the variant name.
+
+        :param FeatureFlag feature_flag: Feature flag object.
+        :param str variant_name: Name of the variant.
+        :return: Variant object.
+        """
         if not feature_flag.variants:
             return None
         for variant_reference in feature_flag.variants:
