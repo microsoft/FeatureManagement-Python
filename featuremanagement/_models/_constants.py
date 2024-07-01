@@ -8,6 +8,8 @@
 FEATURE_FLAG_ID = "id"
 FEATURE_FLAG_ENABLED = "enabled"
 FEATURE_FLAG_CONDITIONS = "conditions"
+FEATURE_FLAG_ALLOCATION = "allocation"
+FEATURE_FLAG_VARIANTS = "variants"
 
 
 # Conditions
@@ -16,3 +18,17 @@ REQUIREMENT_TYPE_ALL = "All"
 REQUIREMENT_TYPE_ANY = "Any"
 FEATURE_FLAG_CLIENT_FILTERS = "client_filters"
 FEATURE_FILTER_NAME = "name"
+
+# Allocation
+DEFAULT_WHEN_ENABLED = "default_when_enabled"
+DEFAULT_WHEN_DISABLED = "default_when_disabled"
+USER = "user"
+GROUP = "group"
+PERCENTILE = "percentile"
+SEED = "seed"
+
+# Variant Reference
+VARIANT_REFERENCE_NAME = "name"
+CONFIGURATION_VALUE = "configuration_value"
+CONFIGURATION_REFERENCE = "configuration_reference"
+STATUS_OVERRIDE = "status_override"

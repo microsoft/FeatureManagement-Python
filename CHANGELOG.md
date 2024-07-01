@@ -1,5 +1,9 @@
 # Release History
 
+## 2.0.0b1 (Unreleased)
+
+* Adds support for Feature Variants.
+
 ## 1.0.0 (06/26/2024)
 
 Updated version to 1.0.0.
