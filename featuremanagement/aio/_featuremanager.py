@@ -157,22 +157,24 @@ class FeatureManager:
         return None
 
     def _build_targeting_context(self, args):
-         """
-         Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
-         returns an empty context.
-         :param args: Arguments to build the TargetingContext.
-         :return: TargetingContext
-         """
-         if len(args) == 1 and isinstance(args[0], str):
-             return TargetingContext(user_id=args[0], groups=[])
-         if len(args) == 1 and isinstance(args[0], TargetingContext):
-             return args[0]
-         return TargetingContext()
+        """
+        Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
+        returns an empty context.
+        
+        :param args: Arguments to build the TargetingContext.
+        :return: TargetingContext
+        """
+        if len(args) == 1 and isinstance(args[0], str):
+            return TargetingContext(user_id=args[0], groups=[])
+        if len(args) == 1 and isinstance(args[0], TargetingContext):
+            return args[0]
+        return TargetingContext()
 
     @overload
     async def is_enabled(self, feature_flag_id, user_id, **kwargs):
         """
         Determine if the feature flag is enabled for the given context.
+        
         :param str feature_flag_id: Name of the feature flag.
         :param str user_id: User identifier.
         :return: True if the feature flag is enabled for the given context.
@@ -181,11 +183,10 @@ class FeatureManager:
 
     async def is_enabled(self, feature_flag_id, *args, **kwargs):
         """
-        Determine the variant for the given context.
+        Determine if the feature flag is enabled for the given context.
 
-        :param str feature_flag_id: Name of the feature flag.
-        :return: Name of the variant.
-        :rtype: str
+        :return: True if the feature flag is enabled for the given context.
+        :rtype: bool
         """
         result = await self._check_feature(feature_flag_id, **kwargs)
         if self._on_feature_evaluated and result.feature.telemetry.enabled:
@@ -195,11 +196,12 @@ class FeatureManager:
             else:
                 self._on_feature_evaluated(result)
         return result.variant
-    
+
     @overload
     async def get_variant(self, feature_flag_id, user_id, **kwargs):
         """
         Determine the variant for the given context.
+
         :param str feature_flag_id: Name of the feature flag.
         :param str user_id: User identifier.
         :return: return: Variant instance.
@@ -209,6 +211,7 @@ class FeatureManager:
     async def get_variant(self, feature_flag_id, *args, **kwargs):
         """
         Determine the variant for the given context.
+        
         :param str feature_flag_id: Name of the feature flag.
         :return: Name of the variant.
         :rtype: str
@@ -216,58 +219,6 @@ class FeatureManager:
         targeting_context = self._build_targeting_context(args)
         result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
         return result.variant
-
-    async def _check_feature_filters(self, feature_flag, evaluation_event, **kwargs):
-        feature_conditions = feature_flag.conditions
-        feature_filters = feature_conditions.client_filters
-
-        if len(feature_filters) == 0:
-            # Feature flags without any filters return evaluate
-            evaluation_event.enabled = True
-        else:
-            # The assumed value is no filters is based on the requirement type.
-            # Requirement type Any assumes false until proven true, All assumes true until proven false
-            evaluation_event.enabled = feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL
-
-        for feature_filter in feature_filters:
-            filter_name = feature_filter[FEATURE_FILTER_NAME]
-            if filter_name not in self._filters:
-                raise ValueError(f"Feature flag {feature_flag.name} has unknown filter {filter_name}")
-            if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
-                if not await self._filters[filter_name].evaluate(feature_filter, **kwargs):
-                    evaluation_event.enabled = False
-                    break
-            else:
-                if await self._filters[filter_name].evaluate(feature_filter, **kwargs):
-                    evaluation_event.enabled = True
-                    break
-        return evaluation_event
-
-    def _assign_allocation(self, feature_flag, evaluation_event, **kwargs):
-        if feature_flag.allocation and feature_flag.variants:
-            default_enabled = evaluation_event.enabled
-            variant_name, evaluation_event = self._assign_variant(feature_flag, **kwargs)
-            evaluation_event.enabled = default_enabled
-            if variant_name:
-                evaluation_event = FeatureManager._check_variant_override(
-                    feature_flag.variants, variant_name, evaluation_event.enabled
-                )
-                evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-                evaluation_event.feature = feature_flag
-                return evaluation_event
-
-        variant_name = None
-        if evaluation_event.enabled:
-            evaluation_event = FeatureManager._check_default_enabled_variant(feature_flag)
-            if feature_flag.allocation:
-                variant_name = feature_flag.allocation.default_when_enabled
-        else:
-            evaluation_event = FeatureManager._check_default_disabled_variant(feature_flag)
-            if feature_flag.allocation:
-                variant_name = feature_flag.allocation.default_when_disabled
-        evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-        evaluation_event.feature = feature_flag
-        return evaluation_event
 
     async def _check_feature_filters(self, feature_flag, targeting_context, **kwargs):
         feature_conditions = feature_flag.conditions

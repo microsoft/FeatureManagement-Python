@@ -156,11 +156,11 @@ class FeatureManager:
 
     def _assign_variant(self, feature_flag, targeting_context):
         """
-         Assign a variant to the user based on the allocation.
-         :param FeatureFlag feature_flag: Feature flag object.
-         :param TargetingContext targeting_context: Targeting context.
-         :return: Variant name.
-         """
+        Assign a variant to the user based on the allocation.
+        :param FeatureFlag feature_flag: Feature flag object.
+        :param TargetingContext targeting_context: Targeting context.
+        :return: Variant name.
+        """
         evaluation_event = EvaluationEvent(feature_flag=feature_flag)
         if not feature_flag.variants or not feature_flag.allocation:
             return None, evaluation_event
@@ -203,8 +203,7 @@ class FeatureManager:
                     configuration = self._configuration.get(variant_reference.configuration_reference)
                 return Variant(variant_reference.name, configuration)
         return None
-    
-    
+
     def _build_targeting_context(self, args):
         """
         Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
