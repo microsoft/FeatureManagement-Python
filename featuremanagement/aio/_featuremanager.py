@@ -26,7 +26,7 @@ class FeatureManager:
     Feature Manager that determines if a feature flag is enabled for the given context.
 
     :param Mapping configuration: Configuration object.
-    :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags
+    :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags.
     :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is
     evaluated.
     """
@@ -105,6 +105,12 @@ class FeatureManager:
         return (context_marker / (2**32 - 1)) * 100
 
     def _assign_variant(self, feature_flag, **kwargs):
+        """
+        Assign a variant to the user based on the allocation.
+        :param FeatureFlag feature_flag: Feature flag object.
+        :param TargetingContext targeting_context: Targeting context.
+        :return: Variant name.
+        """
         user = kwargs.get("user", "")
         groups = kwargs.get("groups", [])
         evaluation_event = EvaluationEvent(feature_flag=feature_flag)
@@ -150,15 +156,28 @@ class FeatureManager:
                 return Variant(variant_reference.name, configuration)
         return None
 
-    async def _build_targeting_context(self, args):
+    def _build_targeting_context(self, args):
+         """
+         Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
+         returns an empty context.
+         :param args: Arguments to build the TargetingContext.
+         :return: TargetingContext
+         """
+         if len(args) == 1 and isinstance(args[0], str):
+             return TargetingContext(user_id=args[0], groups=[])
+         if len(args) == 1 and isinstance(args[0], TargetingContext):
+             return args[0]
+         return TargetingContext()
+
+    @overload
+    async def is_enabled(self, feature_flag_id, user_id, **kwargs):
         """
         Determine if the feature flag is enabled for the given context.
-
         :param str feature_flag_id: Name of the feature flag.
+        :param str user_id: User identifier.
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
-        return (await self._check_feature(feature_flag_id, **kwargs)).enabled
 
     async def is_enabled(self, feature_flag_id, *args, **kwargs):
         """
@@ -175,6 +194,27 @@ class FeatureManager:
                 await self._on_feature_evaluated(result)
             else:
                 self._on_feature_evaluated(result)
+        return result.variant
+    
+    @overload
+    async def get_variant(self, feature_flag_id, user_id, **kwargs):
+        """
+        Determine the variant for the given context.
+        :param str feature_flag_id: Name of the feature flag.
+        :param str user_id: User identifier.
+        :return: return: Variant instance.
+        :rtype: Variant
+        """
+
+    async def get_variant(self, feature_flag_id, *args, **kwargs):
+        """
+        Determine the variant for the given context.
+        :param str feature_flag_id: Name of the feature flag.
+        :return: Name of the variant.
+        :rtype: str
+        """
+        targeting_context = self._build_targeting_context(args)
+        result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
         return result.variant
 
     async def _check_feature_filters(self, feature_flag, evaluation_event, **kwargs):

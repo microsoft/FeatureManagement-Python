@@ -155,6 +155,12 @@ class FeatureManager:
         return (context_marker / (2**32 - 1)) * 100
 
     def _assign_variant(self, feature_flag, targeting_context):
+        """
+         Assign a variant to the user based on the allocation.
+         :param FeatureFlag feature_flag: Feature flag object.
+         :param TargetingContext targeting_context: Targeting context.
+         :return: Variant name.
+         """
         evaluation_event = EvaluationEvent(feature_flag=feature_flag)
         if not feature_flag.variants or not feature_flag.allocation:
             return None, evaluation_event
@@ -197,6 +203,20 @@ class FeatureManager:
                     configuration = self._configuration.get(variant_reference.configuration_reference)
                 return Variant(variant_reference.name, configuration)
         return None
+    
+    
+    def _build_targeting_context(self, args):
+        """
+        Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
+        returns an empty context.
+        :param args: Arguments to build the TargetingContext.
+        :return: TargetingContext
+        """
+        if len(args) == 1 and isinstance(args[0], str):
+            return TargetingContext(user_id=args[0], groups=[])
+        if len(args) == 1 and isinstance(args[0], TargetingContext):
+            return args[0]
+        return TargetingContext()
 
     @overload
     def is_enabled(self, feature_flag_id, user_id, **kwargs):
@@ -217,11 +237,7 @@ class FeatureManager:
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
-        targeting_context = TargetingContext()
-        if len(args) == 1 and isinstance(args[0], str):
-            targeting_context = TargetingContext(user_id=args[0], groups=[])
-        elif len(args) == 1 and isinstance(args[0], TargetingContext):
-            targeting_context = args[0]
+        targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if self._on_feature_evaluated and result.feature.telemetry.enabled:
@@ -249,11 +265,7 @@ class FeatureManager:
         :return: Variant instance.
         :rtype: Variant
         """
-        targeting_context = TargetingContext()
-        if len(args) == 1 and isinstance(args[0], str):
-            targeting_context = TargetingContext(user_id=args[0], groups=[])
-        elif len(args) == 1 and isinstance(args[0], TargetingContext):
-            targeting_context = args[0]
+        targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if self._on_feature_evaluated and result.feature.telemetry.enabled:
