@@ -84,7 +84,7 @@ class FeatureManager:
         self._configuration = configuration
         self._cache = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
-        self._on_feature_evaluated = kwargs.get("on_feature_evaluated", None)
+        self._on_feature_evaluated = kwargs.pop("on_feature_evaluated", None)
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
         for feature_filter in filters:
@@ -157,6 +157,7 @@ class FeatureManager:
     def _assign_variant(self, feature_flag, targeting_context):
         """
         Assign a variant to the user based on the allocation.
+
         :param FeatureFlag feature_flag: Feature flag object.
         :param TargetingContext targeting_context: Targeting context.
         :return: Variant name.
@@ -208,6 +209,7 @@ class FeatureManager:
         """
         Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
         returns an empty context.
+
         :param args: Arguments to build the TargetingContext.
         :return: TargetingContext
         """

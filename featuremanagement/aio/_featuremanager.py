@@ -104,26 +104,25 @@ class FeatureManager:
 
         return (context_marker / (2**32 - 1)) * 100
 
-    def _assign_variant(self, feature_flag, **kwargs):
+    def _assign_variant(self, feature_flag, targeting_context):
         """
         Assign a variant to the user based on the allocation.
+
         :param FeatureFlag feature_flag: Feature flag object.
         :param TargetingContext targeting_context: Targeting context.
         :return: Variant name.
         """
-        user = kwargs.get("user", "")
-        groups = kwargs.get("groups", [])
         evaluation_event = EvaluationEvent(feature_flag=feature_flag)
         if not feature_flag.variants or not feature_flag.allocation:
             return None
-        if feature_flag.allocation.user and user:
+        if feature_flag.allocation.user and targeting_context.user_id:
             for user_allocation in feature_flag.allocation.user:
-                if user in user_allocation.users:
+                if targeting_context.user_id in user_allocation.users:
                     evaluation_event.reason = VariantAssignmentReason.USER
                     return user_allocation.variant, evaluation_event
-        if feature_flag.allocation.group and groups:
+        if feature_flag.allocation.group and targeting_context.groups:
             for group_allocation in feature_flag.allocation.group:
-                for group in groups:
+                for group in targeting_context.groups:
                     if group in group_allocation.groups:
                         evaluation_event.reason = VariantAssignmentReason.GROUP
                         return group_allocation.variant, evaluation_event
@@ -160,7 +159,7 @@ class FeatureManager:
         """
         Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
         returns an empty context.
-        
+
         :param args: Arguments to build the TargetingContext.
         :return: TargetingContext
         """
@@ -174,7 +173,7 @@ class FeatureManager:
     async def is_enabled(self, feature_flag_id, user_id, **kwargs):
         """
         Determine if the feature flag is enabled for the given context.
-        
+
         :param str feature_flag_id: Name of the feature flag.
         :param str user_id: User identifier.
         :return: True if the feature flag is enabled for the given context.
@@ -185,17 +184,19 @@ class FeatureManager:
         """
         Determine if the feature flag is enabled for the given context.
 
+        :param str feature_flag_id: Name of the feature flag.
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
-        result = await self._check_feature(feature_flag_id, **kwargs)
+        targeting_context = self._build_targeting_context(args)
+        result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if self._on_feature_evaluated and result.feature.telemetry.enabled:
             result.user = kwargs.get("user", "")
             if inspect.iscoroutinefunction(self._on_feature_evaluated):
                 await self._on_feature_evaluated(result)
             else:
                 self._on_feature_evaluated(result)
-        return result.variant
+        return result.enabled
 
     @overload
     async def get_variant(self, feature_flag_id, user_id, **kwargs):
@@ -211,7 +212,7 @@ class FeatureManager:
     async def get_variant(self, feature_flag_id, *args, **kwargs):
         """
         Determine the variant for the given context.
-        
+
         :param str feature_flag_id: Name of the feature flag.
         :return: Name of the variant.
         :rtype: str
@@ -220,10 +221,9 @@ class FeatureManager:
         result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
         return result.variant
 
-    async def _check_feature_filters(self, feature_flag, targeting_context, **kwargs):
+    async def _check_feature_filters(self, feature_flag, evaluation_event, targeting_context, **kwargs):
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
-        evaluation_event = EvaluationEvent(enabled=False)
 
         if len(feature_filters) == 0:
             # Feature flags without any filters return evaluate
@@ -243,15 +243,16 @@ class FeatureManager:
                 if not await self._filters[filter_name].evaluate(feature_filter, **kwargs):
                     evaluation_event.enabled = False
                     break
-            else:
-                if await self._filters[filter_name].evaluate(feature_filter, **kwargs):
-                    evaluation_event.enabled = True
-                    break
+            elif await self._filters[filter_name].evaluate(feature_filter, **kwargs):
+                evaluation_event.enabled = True
+                break
         return evaluation_event
 
     def _assign_allocation(self, feature_flag, evaluation_event, targeting_context, **kwargs):
         if feature_flag.allocation and feature_flag.variants:
-            variant_name = self._assign_variant(feature_flag, targeting_context, **kwargs)
+            default_enabled = evaluation_event.enabled
+            variant_name, evaluation_event = self._assign_variant(feature_flag, targeting_context, **kwargs)
+            evaluation_event.enabled = default_enabled
             if variant_name:
                 evaluation_event = FeatureManager._check_variant_override(
                     feature_flag.variants, variant_name, evaluation_event.enabled
@@ -306,8 +307,10 @@ class FeatureManager:
             evaluation_event.feature = feature_flag
             return evaluation_event
 
-        evaluation_event = await self._check_feature_filters(feature_flag, evaluation_event, **kwargs)
-        return self._assign_allocation(feature_flag, evaluation_event, **kwargs)
+        evaluation_event = await self._check_feature_filters(
+            feature_flag, evaluation_event, targeting_context, **kwargs
+        )
+        return self._assign_allocation(feature_flag, evaluation_event, targeting_context, **kwargs)
 
     def list_feature_flag_names(self):
         """
