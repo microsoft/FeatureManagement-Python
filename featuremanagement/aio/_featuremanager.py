@@ -189,9 +189,10 @@ class FeatureManager:
         :rtype: bool
         """
         targeting_context = self._build_targeting_context(args)
+
         result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if self._on_feature_evaluated and result.feature.telemetry.enabled:
-            result.user = kwargs.get("user", "")
+            result.user = targeting_context.user_id
             if inspect.iscoroutinefunction(self._on_feature_evaluated):
                 await self._on_feature_evaluated(result)
             else:

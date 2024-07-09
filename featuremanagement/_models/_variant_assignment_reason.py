@@ -11,7 +11,7 @@ class VariantAssignmentReason(Enum):
     Represents an assignment reason.
     """
 
-    NONE = "NONE"
+    NONE = "None"
     DEFAULT_WHEN_DISABLED = "DefaultWhenDisabled"
     DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
     USER = "User"
