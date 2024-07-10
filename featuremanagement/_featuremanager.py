@@ -318,13 +318,17 @@ class FeatureManager:
                 return
             if not evaluation_event.enabled:
                 FeatureManager._check_default_disabled_variant(evaluation_event)
-                evaluation_event.variant = self._variant_name_to_variant(feature_flag, feature_flag.allocation.default_when_enabled)
+                evaluation_event.variant = self._variant_name_to_variant(
+                    feature_flag, feature_flag.allocation.default_when_enabled
+                )
                 return
-            
+
             variant_name = self._assign_variant(targeting_context, evaluation_event)
             if not variant_name:
                 FeatureManager._check_default_enabled_variant(evaluation_event)
-                evaluation_event.variant = self._variant_name_to_variant(feature_flag, feature_flag.allocation.default_when_enabled)
+                evaluation_event.variant = self._variant_name_to_variant(
+                    feature_flag, feature_flag.allocation.default_when_enabled
+                )
                 return
             evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
             FeatureManager._check_variant_override(feature_flag.variants, variant_name, True, evaluation_event)
