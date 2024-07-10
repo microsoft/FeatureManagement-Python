@@ -17,8 +17,8 @@ import featuremanagement.azuremonitor._send_telemetry
 class TestSendTelemetryAppinsights:
 
     def test_send_telemetry_appinsights(self):
-        evaluation_event = EvaluationEvent()
         feature_flag = FeatureFlag.convert_from_json({"id": "TestFeature"})
+        evaluation_event = EvaluationEvent(feature_flag)
         variant = Variant("TestVariant", None)
         evaluation_event.feature = feature_flag
         evaluation_event.enabled = True
@@ -40,8 +40,8 @@ class TestSendTelemetryAppinsights:
             assert mock_track_event.call_args[0][1]["VariantAssignmentReason"] == "DefaultWhenDisabled"
 
     def test_send_telemetry_appinsights_no_user(self):
-        evaluation_event = EvaluationEvent()
         feature_flag = FeatureFlag.convert_from_json({"id": "TestFeature"})
+        evaluation_event = EvaluationEvent(feature_flag)
         variant = Variant("TestVariant", None)
         evaluation_event.feature = feature_flag
         evaluation_event.enabled = False
@@ -62,8 +62,8 @@ class TestSendTelemetryAppinsights:
             assert mock_track_event.call_args[0][1]["VariantAssignmentReason"] == "DefaultWhenDisabled"
 
     def test_send_telemetry_appinsights_no_variant(self):
-        evaluation_event = EvaluationEvent()
         feature_flag = FeatureFlag.convert_from_json({"id": "TestFeature"})
+        evaluation_event = EvaluationEvent(feature_flag)
         evaluation_event.feature = feature_flag
         evaluation_event.enabled = True
         evaluation_event.user = "test_user"
@@ -82,8 +82,8 @@ class TestSendTelemetryAppinsights:
             assert "Reason" not in mock_track_event.call_args[0][1]
 
     def test_send_telemetry_appinsights_no_import(self, caplog):
-        evaluation_event = EvaluationEvent()
         feature_flag = FeatureFlag.convert_from_json({"id": "TestFeature"})
+        evaluation_event = EvaluationEvent(feature_flag)
         evaluation_event.feature = feature_flag
         evaluation_event.enabled = True
 
