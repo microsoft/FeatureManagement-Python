@@ -257,31 +257,27 @@ class FeatureManager:
                 evaluation_event.enabled = True
                 break
 
-    def _assign_allocation(self, evaluation_event, targeting_context, **kwargs):
+    def _assign_allocation(self, evaluation_event, targeting_context):
         feature_flag = evaluation_event.feature
-        if feature_flag.allocation and feature_flag.variants:
-            default_enabled = evaluation_event.enabled
-            variant_name = self._assign_variant(targeting_context, evaluation_event, **kwargs)
-            evaluation_event.enabled = default_enabled
-            if variant_name:
-                FeatureManager._check_variant_override(
-                    feature_flag.variants, variant_name, evaluation_event.enabled, evaluation_event
-                )
-                evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-                evaluation_event.feature = feature_flag
+        if feature_flag.variants:
+            if not feature_flag.allocation:
+                if evaluation_event.enabled:
+                    evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_ENABLED
+                    return
+                evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
                 return
-
-        variant_name = None
-        if evaluation_event.enabled:
-            FeatureManager._check_default_enabled_variant(evaluation_event)
-            if feature_flag.allocation:
-                variant_name = feature_flag.allocation.default_when_enabled
-        else:
-            FeatureManager._check_default_disabled_variant(evaluation_event)
-            if feature_flag.allocation:
-                variant_name = feature_flag.allocation.default_when_disabled
-        evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-        evaluation_event.feature = feature_flag
+            if not evaluation_event.enabled:
+                FeatureManager._check_default_disabled_variant(evaluation_event)
+                evaluation_event.variant = self._variant_name_to_variant(feature_flag, feature_flag.allocation.default_when_enabled)
+                return
+            
+            variant_name = self._assign_variant(targeting_context, evaluation_event)
+            if not variant_name:
+                FeatureManager._check_default_enabled_variant(evaluation_event)
+                evaluation_event.variant = self._variant_name_to_variant(feature_flag, feature_flag.allocation.default_when_enabled)
+                return
+            evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
+            FeatureManager._check_variant_override(feature_flag.variants, variant_name, True, evaluation_event)
 
     async def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
         """
@@ -318,7 +314,7 @@ class FeatureManager:
 
         await self._check_feature_filters(evaluation_event, targeting_context, **kwargs)
 
-        self._assign_allocation(evaluation_event, targeting_context, **kwargs)
+        self._assign_allocation(evaluation_event, targeting_context)
         return evaluation_event
 
     def list_feature_flag_names(self):
