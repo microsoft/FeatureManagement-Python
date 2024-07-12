@@ -11,12 +11,11 @@ _event_logger = getLogger(__name__)
 
 try:
     from opentelemetry.sdk._logs import LoggingHandler
+
     HAS_OPENTELEMETRY_SDK = True
 except ImportError:
     HAS_OPENTELEMETRY_SDK = False
-    _event_logger.warning(
-        "opentelemetry-sdk is not installed. Telemetry will not be sent to Open Telemetry."
-    )
+    _event_logger.warning("opentelemetry-sdk is not installed. Telemetry will not be sent to Open Telemetry.")
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event
@@ -35,14 +34,20 @@ EVENT_NAME = "FeatureEvaluation"
 
 _event_logger.propagate = False
 
+
 class _FeatureMnagementEventsExtension:
     _initialized = False
 
-    def _initialize():
+    @staticmethod
+    def initialize():
+        """
+        Initializes the logger to use an OpenTelemetry logging handler, if not already initialized.
+        """
         if not _FeatureMnagementEventsExtension._initialized:
             _event_logger.addHandler(LoggingHandler())
             _event_logger.setLevel(INFO)
             _FeatureMnagementEventsExtension._initialized = True
+
 
 def track_event(event_name, user, event_properties=None):
     """
@@ -60,7 +65,7 @@ def track_event(event_name, user, event_properties=None):
     if HAS_AZURE_MONITOR_EVENTS_EXTENSION:
         azure_monitor_track_event(event_name, event_properties)
         return
-    _FeatureMnagementEventsExtension._initialize()
+    _FeatureMnagementEventsExtension.initialize()
     _event_logger.info(event_name, extra=event_properties)
 
 
