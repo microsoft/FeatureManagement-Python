@@ -6,7 +6,6 @@
 
 import sys
 import logging
-from unittest import mock
 from importlib import reload
 from unittest.mock import patch
 import pytest
