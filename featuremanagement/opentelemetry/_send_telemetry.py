@@ -3,11 +3,11 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from logging import getLogger, INFO
+from logging import getLogger as get_logger, INFO
 from .._models import VariantAssignmentReason
 
 
-_event_logger = getLogger(__name__)
+_event_logger = get_logger(__name__)
 
 try:
     from opentelemetry.sdk._logs import LoggingHandler
@@ -35,7 +35,7 @@ EVENT_NAME = "FeatureEvaluation"
 _event_logger.propagate = False
 
 
-class _FeatureMnagementEventsExtension:
+class _FeatureManagementEventsExtension:
     _initialized = False
 
     @staticmethod
@@ -43,10 +43,10 @@ class _FeatureMnagementEventsExtension:
         """
         Initializes the logger to use an OpenTelemetry logging handler, if not already initialized.
         """
-        if not _FeatureMnagementEventsExtension._initialized:
+        if not _FeatureManagementEventsExtension._initialized:
             _event_logger.addHandler(LoggingHandler())
             _event_logger.setLevel(INFO)
-            _FeatureMnagementEventsExtension._initialized = True
+            _FeatureManagementEventsExtension._initialized = True
 
 
 def track_event(event_name, user, event_properties=None):
@@ -61,11 +61,12 @@ def track_event(event_name, user, event_properties=None):
         return
     if event_properties is None:
         event_properties = {}
-    event_properties[TARGETING_ID] = user
+    if user:
+        event_properties[TARGETING_ID] = user
     if HAS_AZURE_MONITOR_EVENTS_EXTENSION:
         azure_monitor_track_event(event_name, event_properties)
         return
-    _FeatureMnagementEventsExtension.initialize()
+    _FeatureManagementEventsExtension.initialize()
     _event_logger.info(event_name, extra=event_properties)
 
 

@@ -6,11 +6,12 @@
 
 import sys
 import logging
+from unittest import mock
 from importlib import reload
 from unittest.mock import patch
 import pytest
 from featuremanagement import EvaluationEvent, FeatureFlag, Variant, VariantAssignmentReason
-import featuremanagement.azuremonitor._send_telemetry
+import featuremanagement.opentelemetry._send_telemetry
 
 
 @pytest.mark.usefixtures("caplog")
@@ -26,9 +27,9 @@ class TestSendTelemetryAppinsights:
         evaluation_event.variant = variant
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
+        with patch("featuremanagement.opentelemetry._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
-            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
+            featuremanagement.opentelemetry._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
             mock_track_event.assert_called_once()
@@ -48,9 +49,9 @@ class TestSendTelemetryAppinsights:
         evaluation_event.variant = variant
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
+        with patch("featuremanagement.opentelemetry._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
-            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
+            featuremanagement.opentelemetry._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
             mock_track_event.assert_called_once()
@@ -68,9 +69,9 @@ class TestSendTelemetryAppinsights:
         evaluation_event.enabled = True
         evaluation_event.user = "test_user"
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
+        with patch("featuremanagement.opentelemetry._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
-            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
+            featuremanagement.opentelemetry._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
             mock_track_event.assert_called_once()
@@ -81,16 +82,22 @@ class TestSendTelemetryAppinsights:
             assert "Variant" not in mock_track_event.call_args[0][1]
             assert "Reason" not in mock_track_event.call_args[0][1]
 
-    def test_send_telemetry_appinsights_no_import(self, caplog):
+    def test_send_telemetry_open_telemetry(self, caplog):
         feature_flag = FeatureFlag.convert_from_json({"id": "TestFeature"})
         evaluation_event = EvaluationEvent(feature_flag)
         evaluation_event.feature = feature_flag
         evaluation_event.enabled = True
-
         with patch.dict("sys.modules", {"azure.monitor.events.extension": None}):
-            reload(sys.modules["featuremanagement.azuremonitor._send_telemetry"])
-            caplog.set_level(logging.WARNING)
-            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
-                evaluation_event
-            )
-            assert "Telemetry will not be sent to Application Insights." in caplog.text
+            reload(sys.modules["featuremanagement.opentelemetry._send_telemetry"])
+            with patch("featuremanagement.opentelemetry._send_telemetry._event_logger.info") as get_logger_mock:
+                caplog.set_level(logging.WARNING)
+                featuremanagement.opentelemetry._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
+                    evaluation_event
+                )
+                get_logger_mock.assert_called_once()
+                assert get_logger_mock.call_args[0][0] == "FeatureEvaluation"
+                assert get_logger_mock.call_args[1]["extra"]["FeatureName"] == "TestFeature"
+                assert get_logger_mock.call_args[1]["extra"]["Enabled"] == "True"
+                assert "TargetingId" not in get_logger_mock.call_args[1]["extra"]
+                assert "Variant" not in get_logger_mock.call_args[1]["extra"]
+                assert "VariantAssignmentReason" not in get_logger_mock.call_args[1]["extra"]

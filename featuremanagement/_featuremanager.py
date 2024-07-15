@@ -160,38 +160,45 @@ class FeatureManager:
 
         return (context_marker / (2**32 - 1)) * 100
 
-    def _assign_variant(self, targeting_context, evaluation_event):
+    def _assign_variant(self, feature_flag, targeting_context, evaluation_event):
         """
         Assign a variant to the user based on the allocation.
 
         :param TargetingContext targeting_context: Targeting context.
         :param EvaluationEvent evaluation_event: Evaluation event object.
-        :return: Variant name.
         """
         feature = evaluation_event.feature
+        variant_name = None
         if not feature.variants or not feature.allocation:
-            return None
+            return
         if feature.allocation.user and targeting_context.user_id:
             for user_allocation in feature.allocation.user:
                 if targeting_context.user_id in user_allocation.users:
                     evaluation_event.reason = VariantAssignmentReason.USER
-                    return user_allocation.variant
-        if feature.allocation.group and len(targeting_context.groups) > 0:
+                    variant_name = user_allocation.variant
+        elif feature.allocation.group and len(targeting_context.groups) > 0:
             for group_allocation in feature.allocation.group:
                 for group in targeting_context.groups:
                     if group in group_allocation.groups:
                         evaluation_event.reason = VariantAssignmentReason.GROUP
-                        return group_allocation.variant
-        if feature.allocation.percentile:
+                        variant_name = group_allocation.variant
+        elif feature.allocation.percentile:
             context_id = targeting_context.user_id + "\n" + feature.allocation.seed
             box = self._is_targeted(context_id)
             for percentile_allocation in feature.allocation.percentile:
                 if box == 100 and percentile_allocation.percentile_to == 100:
-                    return percentile_allocation.variant
+                    variant_name = percentile_allocation.variant
                 if percentile_allocation.percentile_from <= box < percentile_allocation.percentile_to:
                     evaluation_event.reason = VariantAssignmentReason.PERCENTILE
-                    return percentile_allocation.variant
-        return None
+                    variant_name = percentile_allocation.variant
+        if not variant_name:
+            FeatureManager._check_default_enabled_variant(evaluation_event)
+            evaluation_event.variant = self._variant_name_to_variant(
+                feature_flag, feature_flag.allocation.default_when_enabled
+            )
+            return
+        evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
+        FeatureManager._check_variant_override(feature_flag.variants, variant_name, True, evaluation_event)
 
     def _variant_name_to_variant(self, feature_flag, variant_name):
         """
@@ -202,6 +209,8 @@ class FeatureManager:
         :return: Variant object.
         """
         if not feature_flag.variants:
+            return None
+        if not variant_name:
             return None
         for variant_reference in feature_flag.variants:
             if variant_reference.name == variant_name:
@@ -323,15 +332,7 @@ class FeatureManager:
                 )
                 return
 
-            variant_name = self._assign_variant(targeting_context, evaluation_event)
-            if not variant_name:
-                FeatureManager._check_default_enabled_variant(evaluation_event)
-                evaluation_event.variant = self._variant_name_to_variant(
-                    feature_flag, feature_flag.allocation.default_when_enabled
-                )
-                return
-            evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-            FeatureManager._check_variant_override(feature_flag.variants, variant_name, True, evaluation_event)
+            self._assign_variant(feature_flag, targeting_context, evaluation_event)
 
     def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
         """
