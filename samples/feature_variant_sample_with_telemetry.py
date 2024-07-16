@@ -3,13 +3,13 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-
 import json
 import os
 import sys
 from random_filter import RandomFilter
 from featuremanagement import FeatureManager
 from featuremanagement.opentelemetry import publish_telemetry
+
 
 try:
     from azure.monitor.opentelemetry import configure_azure_monitor

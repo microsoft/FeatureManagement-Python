@@ -142,6 +142,7 @@ class FeatureManager:
         """
         if not variants or not default_variant_name:
             evaluation_event.enabled = status
+            return
         for variant in variants:
             if variant.name == default_variant_name:
                 if variant.status_override == "Enabled":

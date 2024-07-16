@@ -8,6 +8,7 @@ from .._models import VariantAssignmentReason
 
 
 _event_logger = get_logger(__name__)
+_event_logger.propagate = False
 
 try:
     from opentelemetry.sdk._logs import LoggingHandler
@@ -32,8 +33,6 @@ REASON = "VariantAssignmentReason"
 
 EVENT_NAME = "FeatureEvaluation"
 
-_event_logger.propagate = False
-
 
 class _FeatureManagementEventsExtension:
     _initialized = False
@@ -51,7 +50,7 @@ class _FeatureManagementEventsExtension:
 
 def track_event(event_name, user, event_properties=None):
     """
-    Track an event with the specified name and properties.
+    Tracks an event with the specified name and properties.
 
     :param str event_name: The name of the event.
     :param str user: The user ID to associate with the event.
