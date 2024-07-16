@@ -286,10 +286,9 @@ class FeatureManager:
             if not evaluation_event.enabled:
                 FeatureManager._check_default_disabled_variant(evaluation_event)
                 evaluation_event.variant = self._variant_name_to_variant(
-                    feature_flag, feature_flag.allocation.default_when_enabled
+                    feature_flag, feature_flag.allocation.default_when_disabled
                 )
                 return
-
             self._assign_variant(feature_flag, targeting_context, evaluation_event)
 
     async def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
