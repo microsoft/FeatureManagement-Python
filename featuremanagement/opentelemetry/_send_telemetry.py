@@ -3,20 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-from logging import getLogger as get_logger, INFO
+import logging
 from .._models import VariantAssignmentReason
-
-
-_event_logger = get_logger(__name__)
-_event_logger.propagate = False
-
-try:
-    from opentelemetry.sdk._logs import LoggingHandler
-
-    HAS_OPENTELEMETRY_SDK = True
-except ImportError:
-    HAS_OPENTELEMETRY_SDK = False
-    _event_logger.warning("opentelemetry-sdk is not installed. Telemetry will not be sent to Open Telemetry.")
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event
@@ -24,6 +12,9 @@ try:
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = True
 except ImportError:
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = False
+    logging.warning(
+        "azure-monitor-events-extension is not installed. Telemetry will not be sent to Application Insights."
+    )
 
 FEATURE_NAME = "FeatureName"
 ENABLED = "Enabled"
@@ -34,20 +25,6 @@ REASON = "VariantAssignmentReason"
 EVENT_NAME = "FeatureEvaluation"
 
 
-class _FeatureManagementEventsExtension:
-    _initialized = False
-
-    @staticmethod
-    def initialize():
-        """
-        Initializes the logger to use an OpenTelemetry logging handler, if not already initialized.
-        """
-        if not _FeatureManagementEventsExtension._initialized:
-            _event_logger.addHandler(LoggingHandler())
-            _event_logger.setLevel(INFO)
-            _FeatureManagementEventsExtension._initialized = True
-
-
 def track_event(event_name, user, event_properties=None):
     """
     Tracks an event with the specified name and properties.
@@ -56,17 +33,13 @@ def track_event(event_name, user, event_properties=None):
     :param str user: The user ID to associate with the event.
     :param dict[str, str] event_properties: A dictionary of named string properties.
     """
-    if not HAS_OPENTELEMETRY_SDK:
+    if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
         return
     if event_properties is None:
         event_properties = {}
     if user:
         event_properties[TARGETING_ID] = user
-    if HAS_AZURE_MONITOR_EVENTS_EXTENSION:
-        azure_monitor_track_event(event_name, event_properties)
-        return
-    _FeatureManagementEventsExtension.initialize()
-    _event_logger.info(event_name, extra=event_properties)
+    azure_monitor_track_event(event_name, event_properties)
 
 
 def publish_telemetry(evaluation_event):
@@ -75,7 +48,7 @@ def publish_telemetry(evaluation_event):
 
     :param EvaluationEvent evaluation_event: The evaluation event to publish telemetry for.
     """
-    if not HAS_OPENTELEMETRY_SDK:
+    if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
         return
     event = {}
     event[FEATURE_NAME] = evaluation_event.feature.name
