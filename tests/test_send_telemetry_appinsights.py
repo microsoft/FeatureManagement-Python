@@ -22,7 +22,7 @@ class TestSendTelemetryAppinsights:
         evaluation_event.variant = variant
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
 
-        with patch("featuremanagement.opentelemetry._send_telemetry.azure_monitor_track_event") as mock_track_event:
+        with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
@@ -44,7 +44,7 @@ class TestSendTelemetryAppinsights:
         evaluation_event.variant = variant
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
 
-        with patch("featuremanagement.opentelemetry._send_telemetry.azure_monitor_track_event") as mock_track_event:
+        with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
@@ -64,7 +64,7 @@ class TestSendTelemetryAppinsights:
         evaluation_event.enabled = True
         evaluation_event.user = "test_user"
 
-        with patch("featuremanagement.opentelemetry._send_telemetry.azure_monitor_track_event") as mock_track_event:
+        with patch("featuremanagement.azuremonitor._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
