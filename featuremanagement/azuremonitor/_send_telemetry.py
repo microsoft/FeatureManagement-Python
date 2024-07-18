@@ -58,7 +58,7 @@ def publish_telemetry(evaluation_event):
         event[VARIANT] = evaluation_event.variant.name
         event[REASON] = evaluation_event.reason.value
 
-    event["ETag"] = evaluation_event.feature.telemetry.metadata.get("etag", "")
-    event["FeatureFlagReference"] = evaluation_event.feature.telemetry.metadata.get("feature_flag_reference", "")
-    event["FeatureFlagId"] = evaluation_event.feature.telemetry.metadata.get("feature_flag_id", "")
-    track_event(EVENT_NAME, evaluation_event.user, event)
+    for metadata_key, metadata_value in evaluation_event.feature.telemetry.metadata.items():
+        if metadata_key not in event:
+            event[metadata_key] = metadata_value
+    track_event(EVENT_NAME, evaluation_event.user, event_properties=event)

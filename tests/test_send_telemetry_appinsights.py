@@ -6,7 +6,7 @@
 from unittest.mock import patch
 import pytest
 from featuremanagement import EvaluationEvent, FeatureFlag, Variant, VariantAssignmentReason
-import featuremanagement.opentelemetry._send_telemetry
+import featuremanagement.azuremonitor._send_telemetry
 
 
 @pytest.mark.usefixtures("caplog")
@@ -24,7 +24,7 @@ class TestSendTelemetryAppinsights:
 
         with patch("featuremanagement.opentelemetry._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
-            featuremanagement.opentelemetry._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
+            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
             mock_track_event.assert_called_once()
@@ -46,7 +46,7 @@ class TestSendTelemetryAppinsights:
 
         with patch("featuremanagement.opentelemetry._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
-            featuremanagement.opentelemetry._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
+            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
             mock_track_event.assert_called_once()
@@ -66,7 +66,7 @@ class TestSendTelemetryAppinsights:
 
         with patch("featuremanagement.opentelemetry._send_telemetry.azure_monitor_track_event") as mock_track_event:
             # This is called like this so we can override the track_event function
-            featuremanagement.opentelemetry._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
+            featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
             mock_track_event.assert_called_once()

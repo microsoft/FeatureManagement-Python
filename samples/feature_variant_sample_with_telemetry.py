@@ -8,7 +8,7 @@ import os
 import sys
 from random_filter import RandomFilter
 from featuremanagement import FeatureManager
-from featuremanagement.opentelemetry import publish_telemetry
+from featuremanagement.azuremonitor import publish_telemetry
 
 
 try:
