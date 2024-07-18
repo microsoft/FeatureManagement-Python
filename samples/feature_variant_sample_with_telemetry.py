@@ -8,7 +8,7 @@ import os
 import sys
 from random_filter import RandomFilter
 from featuremanagement import FeatureManager
-from featuremanagement.azuremonitor import publish_telemetry
+from featuremanagement.azuremonitor import publish_telemetry, track_event
 
 
 try:
@@ -31,3 +31,6 @@ feature_manager = FeatureManager(
 
 # Evaluate the feature flag for the user
 print(feature_manager.get_variant("TestVariants", "Adam").configuration)
+
+# Track an event
+track_event("TestEvent", "Adam")
