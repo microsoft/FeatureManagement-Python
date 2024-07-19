@@ -322,6 +322,9 @@ class FeatureManager:
                 variant_name = feature_flag.allocation.default_when_disabled
                 evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
             evaluation_event.feature = feature_flag
+
+            # If a feature flag is disabled and override can't enable it
+            evaluation_event.enabled = False
             return evaluation_event
 
         await self._check_feature_filters(evaluation_event, targeting_context, **kwargs)

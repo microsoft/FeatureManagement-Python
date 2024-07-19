@@ -50,7 +50,9 @@ class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
             }
         }
         feature_manager = FeatureManager(feature_flags)
-        assert await feature_manager.is_enabled("Alpha")
+
+        # Enabled = False takes precedence over status_override
+        assert not await feature_manager.is_enabled("Alpha")
         assert (await feature_manager.get_variant("Alpha")).name == "Off"
 
     # method: is_enabled
