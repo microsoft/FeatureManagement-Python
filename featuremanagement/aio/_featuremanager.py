@@ -56,7 +56,6 @@ class FeatureManager:
         """
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
         if not evaluation_event.feature.allocation:
-            evaluation_event.enabled = False
             return
         FeatureManager._check_variant_override(
             evaluation_event.feature.variants,
@@ -289,6 +288,7 @@ class FeatureManager:
                     feature_flag, feature_flag.allocation.default_when_disabled
                 )
                 return
+
             self._assign_variant(feature_flag, targeting_context, evaluation_event)
 
     async def _check_feature(self, feature_flag_id, targeting_context, **kwargs):

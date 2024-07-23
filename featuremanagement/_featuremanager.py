@@ -102,7 +102,6 @@ class FeatureManager:
         """
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
         if not evaluation_event.feature.allocation:
-            evaluation_event.enabled = False
             return
         FeatureManager._check_variant_override(
             evaluation_event.feature.variants,
