@@ -9,3 +9,5 @@ sphinx_rtd_theme
 sphinx-toolbox
 myst_parser
 azure-appconfiguration-provider
+azure-monitor-opentelemetry
+azure-monitor-events-extension

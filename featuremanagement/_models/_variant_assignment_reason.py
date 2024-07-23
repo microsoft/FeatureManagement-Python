@@ -3,5 +3,17 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+from enum import Enum
 
-VERSION = "2.0.0b1"
+
+class VariantAssignmentReason(Enum):
+    """
+    Represents an assignment reason.
+    """
+
+    NONE = "None"
+    DEFAULT_WHEN_DISABLED = "DefaultWhenDisabled"
+    DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
+    USER = "User"
+    GROUP = "Group"
+    PERCENTILE = "Percentile"

@@ -12,12 +12,12 @@ class EvaluationEvent:
     Represents a feature flag evaluation event.
     """
 
-    def __init__(self, *, enabled=False, feature_flag=None):
+    def __init__(self, feature_flag):
         """
         Initialize the EvaluationEvent.
         """
         self.feature = feature_flag
         self.user = ""
-        self.enabled = enabled
+        self.enabled = False
         self.variant = None
         self.reason = None

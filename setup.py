@@ -59,6 +59,6 @@ setup(
     python_requires=">=3.6",
     install_requires=[],
     extras_require={
-        "AppInsights": ["azure-monitor-opentelemetry<2.0.0,>=1.3.0", "azure-monitor-events-extension<2.0.0"],
+        "AzureMonitor": ["azure-monitor-events-extension<2.0.0"],
     },
 )
