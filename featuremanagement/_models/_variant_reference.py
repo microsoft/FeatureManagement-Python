@@ -4,6 +4,8 @@
 # license information.
 # -------------------------------------------------------------------------
 from dataclasses import dataclass
+from typing import Optional, Mapping
+from typing_extensions import Self
 from ._constants import VARIANT_REFERENCE_NAME, CONFIGURATION_VALUE, CONFIGURATION_REFERENCE, STATUS_OVERRIDE
 
 
@@ -13,14 +15,14 @@ class VariantReference:
     Represents a variant reference.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._name = None
         self._configuration_value = None
         self._configuration_reference = None
         self._status_override = None
 
     @classmethod
-    def convert_from_json(cls, json):
+    def convert_from_json(cls, json: Mapping) -> Self:
         """
         Convert a JSON object to VariantReference.
 
@@ -28,8 +30,6 @@ class VariantReference:
         :return: VariantReference
         :rtype: VariantReference
         """
-        if not json:
-            return None
         variant_reference = cls()
         variant_reference._name = json.get(VARIANT_REFERENCE_NAME)
         variant_reference._configuration_value = json.get(CONFIGURATION_VALUE)
@@ -38,7 +38,7 @@ class VariantReference:
         return variant_reference
 
     @property
-    def name(self):
+    def name(self) -> Optional[str]:
         """
         Get the name of the variant.
 
@@ -48,7 +48,7 @@ class VariantReference:
         return self._name
 
     @property
-    def configuration_value(self):
+    def configuration_value(self) -> Optional[str]:
         """
         Get the configuration value for the variant.
 
@@ -58,7 +58,7 @@ class VariantReference:
         return self._configuration_value
 
     @property
-    def configuration_reference(self):
+    def configuration_reference(self) -> Optional[str]:
         """
         Get the configuration reference for the variant.
 
@@ -68,7 +68,7 @@ class VariantReference:
         return self._configuration_reference
 
     @property
-    def status_override(self):
+    def status_override(self) -> Optional[str]:
         """
         Get the status override for the variant.
 

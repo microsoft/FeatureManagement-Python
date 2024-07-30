@@ -4,6 +4,17 @@
 # license information.
 # -------------------------------------------------------------------------
 from abc import ABC, abstractmethod
+from typing import Mapping, Callable, TypedDict, Any
+from typing_extensions import Unpack
+
+
+class RequestParams(TypedDict):
+    """
+    Type for request parameters.
+    """
+
+    key: str
+    value: Any
 
 
 class FeatureFilter(ABC):
@@ -12,7 +23,7 @@ class FeatureFilter(ABC):
     """
 
     @abstractmethod
-    def evaluate(self, context, **kwargs):
+    def evaluate(self, context: Mapping, **kwargs: Unpack[RequestParams]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -20,7 +31,7 @@ class FeatureFilter(ABC):
         """
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         Get the name of the filter.
 
@@ -32,7 +43,7 @@ class FeatureFilter(ABC):
         return self.__class__.__name__
 
     @staticmethod
-    def alias(alias):
+    def alias(alias: str) -> Callable:
         """
         Decorator to set the alias for the filter.
 

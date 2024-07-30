@@ -37,7 +37,7 @@ class FeatureManager(FeatureManagerBase):
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
             self._filters[feature_filter.name] = feature_filter
 
-    @overload
+    @overload  # type: ignore
     def is_enabled(self, feature_flag_id, user_id, **kwargs):
         """
         Determine if the feature flag is enabled for the given context.
@@ -61,10 +61,10 @@ class FeatureManager(FeatureManagerBase):
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if self._on_feature_evaluated and result.feature.telemetry.enabled:
             result.user = targeting_context.user_id
-            self._on_feature_evaluated(result)
+            self._on_feature_evaluated(result)  # type: ignore
         return result.enabled
 
-    @overload
+    @overload  # type: ignore
     def get_variant(self, feature_flag_id, user_id, **kwargs):
         """
         Determine the variant for the given context.
@@ -89,7 +89,7 @@ class FeatureManager(FeatureManagerBase):
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if self._on_feature_evaluated and result.feature.telemetry.enabled:
             result.user = targeting_context.user_id
-            self._on_feature_evaluated(result)
+            self._on_feature_evaluated(result)  # type: ignore
         return result.variant
 
     def _check_feature_filters(self, evaluation_event, targeting_context, **kwargs):

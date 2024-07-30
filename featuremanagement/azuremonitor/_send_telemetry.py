@@ -7,7 +7,7 @@ import logging
 from .._models import VariantAssignmentReason
 
 try:
-    from azure.monitor.events.extension import track_event as azure_monitor_track_event
+    from azure.monitor.events.extension import track_event as azure_monitor_track_event  # type: ignore
 
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = True
 except ImportError:

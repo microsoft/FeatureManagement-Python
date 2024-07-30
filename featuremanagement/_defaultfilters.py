@@ -5,11 +5,11 @@
 # -------------------------------------------------------------------------
 import logging
 import hashlib
-
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-
-from ._featurefilters import FeatureFilter
+from typing import cast, List, Mapping, Optional
+from typing_extensions import Unpack
+from ._featurefilters import FeatureFilter, RequestParams
 
 FEATURE_FLAG_NAME_KEY = "feature_name"
 ROLLOUT_PERCENTAGE_KEY = "RolloutPercentage"
@@ -45,7 +45,7 @@ class TimeWindowFilter(FeatureFilter):
     Feature Filter that determines if the current time is within the time window.
     """
 
-    def evaluate(self, context, **kwargs):
+    def evaluate(self, context: Mapping, **kwargs: Unpack[RequestParams]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -75,7 +75,7 @@ class TargetingFilter(FeatureFilter):
     """
 
     @staticmethod
-    def _is_targeted(context_id, rollout_percentage):
+    def _is_targeted(context_id: str, rollout_percentage: int) -> bool:
         """Determine if the user is targeted for the given context"""
         # Always return true if rollout percentage is 100
         if rollout_percentage == 100:
@@ -87,7 +87,9 @@ class TargetingFilter(FeatureFilter):
         percentage = (context_marker / (2**32 - 1)) * 100
         return percentage < rollout_percentage
 
-    def _target_group(self, target_user, target_group, group, feature_flag_name):
+    def _target_group(
+        self, target_user: Optional[str], target_group: str, group: Mapping, feature_flag_name: str
+    ) -> bool:
         group_rollout_percentage = group.get(ROLLOUT_PERCENTAGE_KEY, 0)
         if not target_user:
             target_user = ""
@@ -95,7 +97,7 @@ class TargetingFilter(FeatureFilter):
 
         return self._is_targeted(audience_context_id, group_rollout_percentage)
 
-    def evaluate(self, context, **kwargs):
+    def evaluate(self, context: Mapping, **kwargs: Unpack[RequestParams]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -103,8 +105,11 @@ class TargetingFilter(FeatureFilter):
         :return: True if the user is targeted for the feature flag.
         :rtype: bool
         """
-        target_user = kwargs.get(TARGETED_USER_KEY, None)
-        target_groups = kwargs.get(TARGETED_GROUPS_KEY, [])
+        target_user: Optional[str] = cast(
+            str,
+            kwargs.get(TARGETED_USER_KEY, None),
+        )
+        target_groups: List[str] = kwargs.get(TARGETED_GROUPS_KEY, [])  # type: ignore
 
         if not target_user and not (target_groups and len(target_groups) > 0):
             logging.warning("%s: Name or Groups are required parameters", TargetingFilter.__name__)
@@ -152,7 +157,7 @@ class TargetingFilter(FeatureFilter):
         return self._is_targeted(context_id, default_rollout_percentage)
 
     @staticmethod
-    def _validate(groups, default_rollout_percentage):
+    def _validate(groups: List, default_rollout_percentage: int) -> None:
         # Validate the audience settings
         if default_rollout_percentage < 0 or default_rollout_percentage > 100:
             raise TargetingException("DefaultRolloutPercentage must be between 0 and 100")

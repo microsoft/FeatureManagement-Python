@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+from typing import List, Union, Optional, Mapping
+from typing_extensions import Self
 from ._feature_conditions import FeatureConditions
 from ._allocation import Allocation
 from ._variant_reference import VariantReference
@@ -21,16 +23,16 @@ class FeatureFlag:
     Represents a feature flag.
     """
 
-    def __init__(self):
-        self._id = None
+    def __init__(self) -> None:
+        self._id: str = ""
         self._enabled = False
-        self._conditions = FeatureConditions()
-        self._allocation = None
-        self._variants = None
-        self._telemetry = Telemetry()
+        self._conditions: FeatureConditions = FeatureConditions()
+        self._allocation: Optional[Allocation] = None
+        self._variants: Optional[List[VariantReference]] = None
+        self._telemetry: Telemetry = Telemetry()
 
     @classmethod
-    def convert_from_json(cls, json_value):
+    def convert_from_json(cls, json_value: Mapping) -> Self:
         """
         Convert a JSON object to FeatureFlag.
 
@@ -39,10 +41,8 @@ class FeatureFlag:
         :rtype: FeatureFlag
         """
         feature_flag = cls()
-        if not isinstance(json_value, dict):
-            raise ValueError("Feature flag must be a dictionary.")
-        feature_flag._id = json_value.get(FEATURE_FLAG_ID)
-        feature_flag._enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, False))
+        feature_flag._id = json_value.get(FEATURE_FLAG_ID, "")
+        feature_flag._enabled = _convert_boolean_value(json_value.get(FEATURE_FLAG_ENABLED, False), feature_flag._id)
         feature_flag._conditions = FeatureConditions.convert_from_json(
             feature_flag._id, json_value.get(FEATURE_FLAG_CONDITIONS, {})
         )
@@ -55,19 +55,19 @@ class FeatureFlag:
         feature_flag._allocation = Allocation.convert_from_json(
             json_value.get(FEATURE_FLAG_ALLOCATION, None), feature_flag._id
         )
-        feature_flag._variants = None
         if FEATURE_FLAG_VARIANTS in json_value:
-            variants = json_value.get(FEATURE_FLAG_VARIANTS)
+            variants: List[Mapping] = json_value.get(FEATURE_FLAG_VARIANTS, [])
             feature_flag._variants = []
             for variant in variants:
-                feature_flag._variants.append(VariantReference.convert_from_json(variant))
+                if variant:
+                    feature_flag._variants.append(VariantReference.convert_from_json(variant))
         if "telemetry" in json_value:
-            feature_flag._telemetry = Telemetry(**json_value.get("telemetry"))
+            feature_flag._telemetry = Telemetry(**json_value.get("telemetry"))  # type: ignore
         feature_flag._validate()
         return feature_flag
 
     @property
-    def name(self):
+    def name(self) -> Optional[str]:
         """
         Get the name of the feature flag.
 
@@ -77,7 +77,7 @@ class FeatureFlag:
         return self._id
 
     @property
-    def enabled(self):
+    def enabled(self) -> bool:
         """
         Get the status of the feature flag.
 
@@ -87,7 +87,7 @@ class FeatureFlag:
         return self._enabled
 
     @property
-    def conditions(self):
+    def conditions(self) -> FeatureConditions:
         """
         Get the conditions for the feature flag.
 
@@ -97,7 +97,7 @@ class FeatureFlag:
         return self._conditions
 
     @property
-    def allocation(self):
+    def allocation(self) -> Optional[Allocation]:
         """
         Get the allocation for the feature flag.
 
@@ -107,7 +107,7 @@ class FeatureFlag:
         return self._allocation
 
     @property
-    def variants(self):
+    def variants(self) -> Optional[List[VariantReference]]:
         """
         Get the variants for the feature flag.
 
@@ -117,7 +117,7 @@ class FeatureFlag:
         return self._variants
 
     @property
-    def telemetry(self):
+    def telemetry(self) -> Telemetry:
         """
         Get the telemetry configuration for the feature flag.
 
@@ -126,7 +126,7 @@ class FeatureFlag:
         """
         return self._telemetry
 
-    def _validate(self):
+    def _validate(self) -> None:
         if not isinstance(self._id, str):
             raise ValueError(f"Invalid setting 'id' with value '{self._id}' for feature '{self._id}'.")
         if not isinstance(self._enabled, bool):
@@ -134,7 +134,7 @@ class FeatureFlag:
         self.conditions._validate(self._id)  # pylint: disable=protected-access
 
 
-def _convert_boolean_value(enabled):
+def _convert_boolean_value(enabled: Union[str, bool], feature_name: str) -> bool:
     """
     Convert the value to a boolean if it is a string.
 
@@ -148,4 +148,4 @@ def _convert_boolean_value(enabled):
         return True
     if enabled.lower() == "false":
         return False
-    return enabled
+    raise ValueError(f"Invalid setting 'enabled' with value '{enabled}' for feature '{feature_name}'.")

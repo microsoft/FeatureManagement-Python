@@ -5,10 +5,10 @@
 # -------------------------------------------------------------------------
 import inspect
 import logging
-from typing import overload
+from typing import overload, Mapping, Dict
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from .._models import EvaluationEvent
+from .._models import EvaluationEvent, TargetingContext, Variant
 from .._featuremanagerbase import (
     _get_feature_flag,
     FeatureManagerBase,
@@ -38,8 +38,8 @@ class FeatureManager(FeatureManagerBase):
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
             self._filters[feature_filter.name] = feature_filter
 
-    @overload
-    async def is_enabled(self, feature_flag_id, user_id, **kwargs):
+    @overload  # type: ignore
+    async def is_enabled(self, feature_flag_id: str, user_id: str, **kwargs: Mapping) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -49,7 +49,7 @@ class FeatureManager(FeatureManagerBase):
         :rtype: bool
         """
 
-    async def is_enabled(self, feature_flag_id, *args, **kwargs):
+    async def is_enabled(self, feature_flag_id: str, *args: Mapping, **kwargs: Dict) -> bool:  # type: ignore
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -65,11 +65,11 @@ class FeatureManager(FeatureManagerBase):
             if inspect.iscoroutinefunction(self._on_feature_evaluated):
                 await self._on_feature_evaluated(result)
             else:
-                self._on_feature_evaluated(result)
+                self._on_feature_evaluated(result)  # type: ignore
         return result.enabled
 
-    @overload
-    async def get_variant(self, feature_flag_id, user_id, **kwargs):
+    @overload  # type: ignore
+    async def get_variant(self, feature_flag_id: str, user_id: str, **kwargs: Dict):
         """
         Determine the variant for the given context.
 
@@ -79,7 +79,7 @@ class FeatureManager(FeatureManagerBase):
         :rtype: Variant
         """
 
-    async def get_variant(self, feature_flag_id, *args, **kwargs):
+    async def get_variant(self, feature_flag_id: str, *args: Mapping, **kwargs: Dict) -> Variant:  # type: ignore
         """
         Determine the variant for the given context.
 
@@ -93,7 +93,7 @@ class FeatureManager(FeatureManagerBase):
         result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if self._on_feature_evaluated and result.feature.telemetry.enabled:
             result.user = targeting_context.user_id
-            self._on_feature_evaluated(result)
+            self._on_feature_evaluated(result)  # type: ignore
         return result.variant
 
     async def _check_feature_filters(self, evaluation_event, targeting_context, **kwargs):
@@ -123,11 +123,12 @@ class FeatureManager(FeatureManagerBase):
                 evaluation_event.enabled = True
                 break
 
-    async def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
+    async def _check_feature(self, feature_flag_id: str, targeting_context: TargetingContext, **kwargs: Mapping):
         """
         Determine if the feature flag is enabled for the given context.
 
         :param str feature_flag_id: Name of the feature flag.
+        :param TargetingContext targeting_context: Targeting context.
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """

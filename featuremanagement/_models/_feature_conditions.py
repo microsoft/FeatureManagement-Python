@@ -4,6 +4,8 @@
 # license information.
 # -------------------------------------------------------------------------
 from collections.abc import Mapping
+from typing import List
+from typing_extensions import Self
 from ._constants import (
     FEATURE_FLAG_CLIENT_FILTERS,
     FEATURE_FILTER_NAME,
@@ -18,12 +20,12 @@ class FeatureConditions:
     Represents the conditions for a feature flag.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._requirement_type = REQUIREMENT_TYPE_ANY
-        self._client_filters = []
+        self._client_filters: List[dict] = []
 
     @classmethod
-    def convert_from_json(cls, feature_name, json_value):
+    def convert_from_json(cls, feature_name: str, json_value: str) -> Self:
         """
         Convert a JSON object to FeatureConditions.
 
@@ -43,7 +45,7 @@ class FeatureConditions:
         return conditions
 
     @property
-    def requirement_type(self):
+    def requirement_type(self) -> str:
         """
         Get the requirement type for the feature flag.
 
@@ -53,7 +55,7 @@ class FeatureConditions:
         return self._requirement_type
 
     @property
-    def client_filters(self):
+    def client_filters(self) -> List[dict]:
         """
         Get the client filters for the feature flag.
 
@@ -62,7 +64,7 @@ class FeatureConditions:
         """
         return self._client_filters
 
-    def _validate(self, feature_flag_id):
+    def _validate(self, feature_flag_id: str) -> None:
         if self._requirement_type not in [REQUIREMENT_TYPE_ALL, REQUIREMENT_TYPE_ANY]:
             raise ValueError(f"Feature flag {feature_flag_id} has invalid requirement type.")
         for feature_filter in self._client_filters:
