@@ -4,7 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 import logging
-from typing import overload, Any, Optional, Dict
+from typing import overload, Any, Optional, Dict, Mapping
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from ._models import EvaluationEvent, Variant, TargetingContext
@@ -28,7 +28,7 @@ class FeatureManager(FeatureManagerBase):
     evaluated.
     """
 
-    def __init__(self, configuration, **kwargs):
+    def __init__(self, configuration: Mapping, **kwargs: Any):
         super().__init__(configuration, **kwargs)
         filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
 
@@ -102,8 +102,12 @@ class FeatureManager(FeatureManagerBase):
             self._on_feature_evaluated(result)
         return result.variant
 
-    def _check_feature_filters(self, evaluation_event, targeting_context, **kwargs):
+    def _check_feature_filters(
+        self, evaluation_event: EvaluationEvent, targeting_context: TargetingContext, **kwargs: Dict
+    ) -> None:
         feature_flag = evaluation_event.feature
+        if not feature_flag:
+            return
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
 
@@ -117,8 +121,8 @@ class FeatureManager(FeatureManagerBase):
 
         for feature_filter in feature_filters:
             filter_name = feature_filter[FEATURE_FILTER_NAME]
-            kwargs["user"] = targeting_context.user_id
-            kwargs["groups"] = targeting_context.groups
+            kwargs["user"] = targeting_context.user_id  # type: ignore
+            kwargs["groups"] = targeting_context.groups  # type: ignore
             if filter_name not in self._filters:
                 raise ValueError(f"Feature flag {feature_flag.name} has unknown filter {filter_name}")
             if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
