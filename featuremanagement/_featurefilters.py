@@ -39,7 +39,7 @@ class FeatureFilter(ABC):
         :rtype: str
         """
         if hasattr(self, "_alias"):
-            return self._alias
+            return self._alias # type: ignore
         return self.__class__.__name__
 
     @staticmethod
@@ -49,10 +49,10 @@ class FeatureFilter(ABC):
 
         :param str alias: Alias for the filter.
         :return: Decorator.
-        :rtype: callable
+        :rtype: Callable
         """
 
-        def wrapper(cls) -> Callable:  # type: ignore
+        def wrapper(cls) -> Any:  # type: ignore
             cls._alias = alias  # pylint: disable=protected-access
             return cls
 
