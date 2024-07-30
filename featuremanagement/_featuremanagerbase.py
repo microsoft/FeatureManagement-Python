@@ -6,7 +6,7 @@
 from collections.abc import Mapping
 import hashlib
 from abc import ABC
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple, Any
 from ._models import FeatureFlag, Variant, VariantAssignmentReason, TargetingContext, EvaluationEvent, VariantReference
 
 
@@ -219,7 +219,7 @@ class FeatureManagerBase(ABC):
                 return Variant(variant_reference.name, configuration)
         return None
 
-    def _build_targeting_context(self, args) -> TargetingContext:
+    def _build_targeting_context(self, args: Tuple[Any]) -> TargetingContext:
         """
         Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
         returns an empty context.

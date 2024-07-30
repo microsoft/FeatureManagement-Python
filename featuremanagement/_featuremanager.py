@@ -4,10 +4,10 @@
 # license information.
 # -------------------------------------------------------------------------
 import logging
-from typing import overload
+from typing import overload, Any, Optional, Dict
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from ._models import EvaluationEvent
+from ._models import EvaluationEvent, Variant, TargetingContext
 from ._featuremanagerbase import (
     _get_feature_flag,
     FeatureManagerBase,
@@ -38,7 +38,7 @@ class FeatureManager(FeatureManagerBase):
             self._filters[feature_filter.name] = feature_filter
 
     @overload  # type: ignore
-    def is_enabled(self, feature_flag_id, user_id, **kwargs):
+    def is_enabled(self, feature_flag_id: str, user_id: str, **kwargs: Dict) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -48,7 +48,7 @@ class FeatureManager(FeatureManagerBase):
         :rtype: bool
         """
 
-    def is_enabled(self, feature_flag_id, *args, **kwargs):
+    def is_enabled(self, feature_flag_id: str, *args: Any, **kwargs: Dict) -> bool:  # type: ignore
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -59,13 +59,18 @@ class FeatureManager(FeatureManagerBase):
         targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature.telemetry.enabled and callable(self._on_feature_evaluated):
+        if (
+            self._on_feature_evaluated
+            and result.feature
+            and result.feature.telemetry.enabled
+            and callable(self._on_feature_evaluated)
+        ):
             result.user = targeting_context.user_id
             self._on_feature_evaluated(result)
         return result.enabled
 
     @overload  # type: ignore
-    def get_variant(self, feature_flag_id, user_id, **kwargs):
+    def get_variant(self, feature_flag_id: str, user_id: str, **kwargs: Dict) -> Optional[Variant]:
         """
         Determine the variant for the given context.
 
@@ -75,7 +80,7 @@ class FeatureManager(FeatureManagerBase):
         :rtype: Variant
         """
 
-    def get_variant(self, feature_flag_id, *args, **kwargs):
+    def get_variant(self, feature_flag_id: str, *args: Any, **kwargs: Dict) -> Optional[Variant]:  # type: ignore
         """
         Determine the variant for the given context.
 
@@ -87,7 +92,12 @@ class FeatureManager(FeatureManagerBase):
         targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature.telemetry.enabled and callable(self._on_feature_evaluated):
+        if (
+            self._on_feature_evaluated
+            and result.feature
+            and result.feature.telemetry.enabled
+            and callable(self._on_feature_evaluated)
+        ):
             result.user = targeting_context.user_id
             self._on_feature_evaluated(result)
         return result.variant
@@ -119,7 +129,9 @@ class FeatureManager(FeatureManagerBase):
                 evaluation_event.enabled = True
                 break
 
-    def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
+    def _check_feature(
+        self, feature_flag_id: str, targeting_context: TargetingContext, **kwargs: Dict
+    ) -> EvaluationEvent:
         """
         Determine if the feature flag is enabled for the given context.
 
