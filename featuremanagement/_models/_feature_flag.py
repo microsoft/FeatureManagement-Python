@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from typing import List, Union, Optional, Mapping
+from typing import cast, List, Union, Optional, Mapping, Any
 from typing_extensions import Self
 from ._feature_conditions import FeatureConditions
 from ._allocation import Allocation
@@ -62,7 +62,7 @@ class FeatureFlag:
                 if variant:
                     feature_flag._variants.append(VariantReference.convert_from_json(variant))
         if "telemetry" in json_value:
-            feature_flag._telemetry = Telemetry(**json_value.get("telemetry"))  # type: ignore
+            feature_flag._telemetry = Telemetry(**cast(Any, json_value.get("telemetry")))
         feature_flag._validate()
         return feature_flag
 

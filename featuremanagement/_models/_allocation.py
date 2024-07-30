@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from typing import List, Optional, Mapping, Dict
+from typing import cast, List, Optional, Mapping, Dict, Any
 from dataclasses import dataclass
 from typing_extensions import Self
 from ._constants import DEFAULT_WHEN_ENABLED, DEFAULT_WHEN_DISABLED, USER, GROUP, PERCENTILE, SEED
@@ -36,7 +36,7 @@ class PercentileAllocation:
 
     def __init__(self) -> None:
         self._variant = None
-        self._percentile_from: int= 0
+        self._percentile_from: int = 0
         self._percentile_to: Optional[int] = None
 
     @classmethod
@@ -118,17 +118,19 @@ class Allocation:
         allocation._user = []
         allocation._group = []
         allocation._percentile = []
+
+        allocations: List[Any] = []
         if USER in json:
-            allocations = json.get(USER)
-            for user_allocation in allocations:  # type: ignore
+            allocations = cast(List[Any], json.get(USER, []))
+            for user_allocation in allocations:
                 allocation._user.append(UserAllocation(**user_allocation))
         if GROUP in json:
-            allocations = json.get(GROUP)
-            for group_allocation in allocations:  # type: ignore
+            allocations = cast(List[Any], json.get(GROUP, []))
+            for group_allocation in allocations:
                 allocation._group.append(GroupAllocation(**group_allocation))
         if PERCENTILE in json:
-            allocations = json.get(PERCENTILE)
-            for percentile_allocation in allocations:  # type: ignore
+            allocations = cast(List[Any], json.get(PERCENTILE, []))
+            for percentile_allocation in allocations:
                 allocation._percentile.append(PercentileAllocation.convert_from_json(percentile_allocation))
         allocation._seed = json.get(SEED, allocation._seed)
         return allocation

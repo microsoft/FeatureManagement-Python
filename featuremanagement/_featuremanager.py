@@ -59,9 +59,9 @@ class FeatureManager(FeatureManagerBase):
         targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature.telemetry.enabled:
+        if self._on_feature_evaluated and result.feature.telemetry.enabled and callable(self._on_feature_evaluated):
             result.user = targeting_context.user_id
-            self._on_feature_evaluated(result)  # type: ignore
+            self._on_feature_evaluated(result)
         return result.enabled
 
     @overload  # type: ignore
@@ -87,9 +87,9 @@ class FeatureManager(FeatureManagerBase):
         targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature.telemetry.enabled:
+        if self._on_feature_evaluated and result.feature.telemetry.enabled and callable(self._on_feature_evaluated):
             result.user = targeting_context.user_id
-            self._on_feature_evaluated(result)  # type: ignore
+            self._on_feature_evaluated(result)
         return result.variant
 
     def _check_feature_filters(self, evaluation_event, targeting_context, **kwargs):

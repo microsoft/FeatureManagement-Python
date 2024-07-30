@@ -64,8 +64,8 @@ class FeatureManager(FeatureManagerBase):
             result.user = targeting_context.user_id
             if inspect.iscoroutinefunction(self._on_feature_evaluated):
                 await self._on_feature_evaluated(result)
-            else:
-                self._on_feature_evaluated(result)  # type: ignore
+            elif callable(self._on_feature_evaluated):
+                self._on_feature_evaluated(result)
         return result.enabled
 
     @overload  # type: ignore
@@ -93,7 +93,10 @@ class FeatureManager(FeatureManagerBase):
         result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if self._on_feature_evaluated and result.feature.telemetry.enabled:
             result.user = targeting_context.user_id
-            self._on_feature_evaluated(result)  # type: ignore
+            if inspect.iscoroutinefunction(self._on_feature_evaluated):
+                await self._on_feature_evaluated(result)
+            elif callable(self._on_feature_evaluated):
+                self._on_feature_evaluated(result)
         return result.variant
 
     async def _check_feature_filters(self, evaluation_event, targeting_context, **kwargs):
