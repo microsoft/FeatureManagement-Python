@@ -4,7 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 from abc import ABC, abstractmethod
-from typing import Mapping, Callable
+from typing import Mapping, Callable, Any
 from typing_extensions import Unpack
 from .._featurefilters import RequestParams
 
