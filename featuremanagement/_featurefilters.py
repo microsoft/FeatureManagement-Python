@@ -39,7 +39,7 @@ class FeatureFilter(ABC):
         :rtype: str
         """
         if hasattr(self, "_alias"):
-            return self._alias # type: ignore
+            return self._alias  # type: ignore
         return self.__class__.__name__
 
     @staticmethod
