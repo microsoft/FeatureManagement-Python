@@ -26,7 +26,7 @@ REASON = "VariantAssignmentReason"
 EVENT_NAME = "FeatureEvaluation"
 
 
-def track_event(event_name: str, user: str, event_properties: Optional[Dict[str, Optional[str]]]) -> None:
+def track_event(event_name: str, user: str, event_properties: Optional[Dict[str, Optional[str]]] = None) -> None:
     """
     Tracks an event with the specified name and properties.
 
