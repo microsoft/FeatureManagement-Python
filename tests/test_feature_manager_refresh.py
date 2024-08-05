@@ -8,7 +8,7 @@ from featuremanagement import FeatureManager
 from featuremanagement.aio import FeatureManager as AsyncFeatureManager
 
 
-class TestFeatureManagemerRefresh:
+class TestFeatureManagerRefresh:
     # method: feature_manager_creation
     def test_refresh(self):
         feature_flags = {

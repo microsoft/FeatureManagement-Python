@@ -9,7 +9,7 @@ from featuremanagement.aio import FeatureManager
 from featuremanagement import TargetingContext
 
 
-class TestDefaultfeatureFlags(IsolatedAsyncioTestCase):
+class TestDefaultFeatureFlags(IsolatedAsyncioTestCase):
     def test_invalid_feature_flags(self):
         with self.assertRaises(AttributeError):
             FeatureManager("")

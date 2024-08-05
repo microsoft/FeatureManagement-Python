@@ -9,3 +9,12 @@ dictionaries:
   - project-words
 ignorePaths:
   - 'env'
+  - '.*'
+  - 'build'
+  - 'docs'
+  - 'dev_requirements.txt'
+  - '*.egg-info'
+  - '*.ini'
+  - '*.toml'
+  - 'SECURITY.md'
+  - 'SUPPORT.md'
