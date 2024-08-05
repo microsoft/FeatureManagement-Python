@@ -14,7 +14,7 @@ class Variant:
     :param dict configuration: The configuration of the variant.
     """
 
-    def __init__(self, name: str, configuration: Union[Any, Dict]) -> None:
+    def __init__(self, name: str, configuration: Any) -> None:
         self._name = name
         self._configuration = configuration
 
@@ -27,9 +27,9 @@ class Variant:
         return self._name
 
     @property
-    def configuration(self) -> Union[Any, Dict]:
+    def configuration(self) -> Any:
         """
         The configuration of the variant.
-        :rtype: Union[Any, Dict]
+        :rtype: Any
         """
         return self._configuration
