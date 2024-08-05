@@ -70,7 +70,7 @@ class FeatureManagerBase(ABC):
     Base class for Feature Manager. This class is responsible for all shared logic between the sync and async.
     """
 
-    def __init__(self, configuration: Mapping, **kwargs: Mapping):
+    def __init__(self, configuration: Mapping, **kwargs: Dict[str, Any]):
         self._filters: Dict = {}
         if configuration is None or not isinstance(configuration, Mapping):
             raise AttributeError("Configuration must be a non-empty dictionary")

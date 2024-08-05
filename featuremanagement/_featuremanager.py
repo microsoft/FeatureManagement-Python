@@ -4,7 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 import logging
-from typing import overload, Any, Optional, Dict, Mapping
+from typing import cast, overload, Any, Optional, Dict, Mapping, List
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from ._models import EvaluationEvent, Variant, TargetingContext
@@ -28,9 +28,9 @@ class FeatureManager(FeatureManagerBase):
     evaluated.
     """
 
-    def __init__(self, configuration: Mapping, **kwargs: Any):
+    def __init__(self, configuration: Mapping, **kwargs: Dict[str, Any]):
         super().__init__(configuration, **kwargs)
-        filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
+        filters = [TimeWindowFilter(), TargetingFilter()] + cast(List, kwargs.pop(PROVIDED_FEATURE_FILTERS, []))
 
         for feature_filter in filters:
             if not isinstance(feature_filter, FeatureFilter):
@@ -38,7 +38,7 @@ class FeatureManager(FeatureManagerBase):
             self._filters[feature_filter.name] = feature_filter
 
     @overload  # type: ignore
-    def is_enabled(self, feature_flag_id: str, user_id: str, **kwargs: Dict) -> bool:
+    def is_enabled(self, feature_flag_id: str, user_id: str, **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -48,7 +48,7 @@ class FeatureManager(FeatureManagerBase):
         :rtype: bool
         """
 
-    def is_enabled(self, feature_flag_id: str, *args: Any, **kwargs: Dict) -> bool:  # type: ignore
+    def is_enabled(self, feature_flag_id: str, *args: Any, **kwargs: Dict[str, Any]) -> bool:  # type: ignore
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -70,7 +70,7 @@ class FeatureManager(FeatureManagerBase):
         return result.enabled
 
     @overload  # type: ignore
-    def get_variant(self, feature_flag_id: str, user_id: str, **kwargs: Dict) -> Optional[Variant]:
+    def get_variant(self, feature_flag_id: str, user_id: str, **kwargs: Dict[str, Any]) -> Optional[Variant]:
         """
         Determine the variant for the given context.
 
@@ -80,7 +80,9 @@ class FeatureManager(FeatureManagerBase):
         :rtype: Variant
         """
 
-    def get_variant(self, feature_flag_id: str, *args: Any, **kwargs: Dict) -> Optional[Variant]:  # type: ignore
+    def get_variant(  # type: ignore
+        self, feature_flag_id: str, *args: Any, **kwargs: Dict[str, Any]
+    ) -> Optional[Variant]:
         """
         Determine the variant for the given context.
 
@@ -134,7 +136,7 @@ class FeatureManager(FeatureManagerBase):
                 break
 
     def _check_feature(
-        self, feature_flag_id: str, targeting_context: TargetingContext, **kwargs: Dict
+        self, feature_flag_id: str, targeting_context: TargetingContext, **kwargs: Dict[str, Any]
     ) -> EvaluationEvent:
         """
         Determine if the feature flag is enabled for the given context.

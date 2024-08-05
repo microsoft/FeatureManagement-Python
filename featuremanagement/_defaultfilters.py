@@ -7,9 +7,8 @@ import logging
 import hashlib
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-from typing import cast, List, Mapping, Optional
-from typing_extensions import Unpack
-from ._featurefilters import FeatureFilter, RequestParams
+from typing import cast, List, Mapping, Optional, Dict, Any
+from ._featurefilters import FeatureFilter
 
 FEATURE_FLAG_NAME_KEY = "feature_name"
 ROLLOUT_PERCENTAGE_KEY = "RolloutPercentage"
@@ -45,7 +44,7 @@ class TimeWindowFilter(FeatureFilter):
     Feature Filter that determines if the current time is within the time window.
     """
 
-    def evaluate(self, context: Mapping, **kwargs: Unpack[RequestParams]) -> bool:
+    def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -97,7 +96,7 @@ class TargetingFilter(FeatureFilter):
 
         return self._is_targeted(audience_context_id, group_rollout_percentage)
 
-    def evaluate(self, context: Mapping, **kwargs: Unpack[RequestParams]) -> bool:
+    def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 

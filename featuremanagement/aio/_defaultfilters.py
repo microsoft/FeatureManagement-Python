@@ -3,10 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from typing import Mapping, Any
-from typing_extensions import Unpack
+from typing import Mapping, Any, Dict
 from ._featurefilters import FeatureFilter
-from .._featurefilters import RequestParams
 from .._defaultfilters import (
     TargetingFilter as SyncTargetingFilter,
     TimeWindowFilter as SyncTimeWindowFilter,
@@ -22,7 +20,7 @@ class TimeWindowFilter(FeatureFilter):
     def __init__(self) -> None:
         self._filter = SyncTimeWindowFilter()
 
-    async def evaluate(self, context: Mapping, **kwargs: Unpack[RequestParams]) -> bool:
+    async def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -42,7 +40,7 @@ class TargetingFilter(FeatureFilter):
     def __init__(self) -> None:
         self._filter = SyncTargetingFilter()
 
-    async def evaluate(self, context: Mapping[str, Any], **kwargs: Unpack[RequestParams]) -> bool:
+    async def evaluate(self, context: Mapping[str, Any], **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 

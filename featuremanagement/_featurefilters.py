@@ -4,17 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 from abc import ABC, abstractmethod
-from typing import Mapping, Callable, TypedDict, Any
-from typing_extensions import Unpack
-
-
-class RequestParams(TypedDict):
-    """
-    Type for request parameters.
-    """
-
-    key: str
-    value: Any
+from typing import Mapping, Callable, Dict, Any
 
 
 class FeatureFilter(ABC):
@@ -23,7 +13,7 @@ class FeatureFilter(ABC):
     """
 
     @abstractmethod
-    def evaluate(self, context: Mapping, **kwargs: Unpack[RequestParams]) -> bool:
+    def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
