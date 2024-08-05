@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+from typing import Any
 
 
 class Variant:
@@ -13,12 +14,12 @@ class Variant:
     :param dict configuration: The configuration of the variant.
     """
 
-    def __init__(self, name, configuration):
+    def __init__(self, name: str, configuration: Any) -> None:
         self._name = name
         self._configuration = configuration
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         The name of the variant.
         :rtype: str
@@ -26,9 +27,9 @@ class Variant:
         return self._name
 
     @property
-    def configuration(self):
+    def configuration(self) -> Any:
         """
         The configuration of the variant.
-        :rtype: dict
+        :rtype: Any
         """
         return self._configuration

@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 from abc import ABC, abstractmethod
+from typing import Mapping, Callable, Any, Dict
 
 
 class FeatureFilter(ABC):
@@ -12,7 +13,7 @@ class FeatureFilter(ABC):
     """
 
     @abstractmethod
-    async def evaluate(self, context, **kwargs):
+    async def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -20,7 +21,7 @@ class FeatureFilter(ABC):
         """
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         Get the name of the filter.
 
@@ -28,20 +29,20 @@ class FeatureFilter(ABC):
         :rtype: str
         """
         if hasattr(self, "_alias"):
-            return self._alias
+            return self._alias  # type: ignore
         return self.__class__.__name__
 
     @staticmethod
-    def alias(alias):
+    def alias(alias: str) -> Callable:
         """
         Decorator to set the alias for the filter.
 
         :param str alias: Alias for the filter.
         :return: Decorator
-        :rtype: callable
+        :rtype: Callable
         """
 
-        def wrapper(cls):
+        def wrapper(cls) -> Any:  # type: ignore
             cls._alias = alias  # pylint: disable=protected-access
             return cls
 

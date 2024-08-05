@@ -4,10 +4,10 @@
 # license information.
 # -------------------------------------------------------------------------
 import logging
-from typing import overload
+from typing import cast, overload, Any, Optional, Dict, Mapping, List
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from ._models import EvaluationEvent
+from ._models import EvaluationEvent, Variant, TargetingContext
 from ._featuremanagerbase import (
     _get_feature_flag,
     FeatureManagerBase,
@@ -28,17 +28,17 @@ class FeatureManager(FeatureManagerBase):
     evaluated.
     """
 
-    def __init__(self, configuration, **kwargs):
+    def __init__(self, configuration: Mapping, **kwargs: Dict[str, Any]):
         super().__init__(configuration, **kwargs)
-        filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
+        filters = [TimeWindowFilter(), TargetingFilter()] + cast(List, kwargs.pop(PROVIDED_FEATURE_FILTERS, []))
 
         for feature_filter in filters:
             if not isinstance(feature_filter, FeatureFilter):
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
             self._filters[feature_filter.name] = feature_filter
 
-    @overload
-    def is_enabled(self, feature_flag_id, user_id, **kwargs):
+    @overload  # type: ignore
+    def is_enabled(self, feature_flag_id: str, user_id: str, **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -48,7 +48,7 @@ class FeatureManager(FeatureManagerBase):
         :rtype: bool
         """
 
-    def is_enabled(self, feature_flag_id, *args, **kwargs):
+    def is_enabled(self, feature_flag_id: str, *args: Any, **kwargs: Dict[str, Any]) -> bool:  # type: ignore
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -59,13 +59,18 @@ class FeatureManager(FeatureManagerBase):
         targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature.telemetry.enabled:
+        if (
+            self._on_feature_evaluated
+            and result.feature
+            and result.feature.telemetry.enabled
+            and callable(self._on_feature_evaluated)
+        ):
             result.user = targeting_context.user_id
             self._on_feature_evaluated(result)
         return result.enabled
 
-    @overload
-    def get_variant(self, feature_flag_id, user_id, **kwargs):
+    @overload  # type: ignore
+    def get_variant(self, feature_flag_id: str, user_id: str, **kwargs: Dict[str, Any]) -> Optional[Variant]:
         """
         Determine the variant for the given context.
 
@@ -75,7 +80,9 @@ class FeatureManager(FeatureManagerBase):
         :rtype: Variant
         """
 
-    def get_variant(self, feature_flag_id, *args, **kwargs):
+    def get_variant(  # type: ignore
+        self, feature_flag_id: str, *args: Any, **kwargs: Dict[str, Any]
+    ) -> Optional[Variant]:
         """
         Determine the variant for the given context.
 
@@ -87,13 +94,22 @@ class FeatureManager(FeatureManagerBase):
         targeting_context = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature.telemetry.enabled:
+        if (
+            self._on_feature_evaluated
+            and result.feature
+            and result.feature.telemetry.enabled
+            and callable(self._on_feature_evaluated)
+        ):
             result.user = targeting_context.user_id
             self._on_feature_evaluated(result)
         return result.variant
 
-    def _check_feature_filters(self, evaluation_event, targeting_context, **kwargs):
+    def _check_feature_filters(
+        self, evaluation_event: EvaluationEvent, targeting_context: TargetingContext, **kwargs: Dict
+    ) -> None:
         feature_flag = evaluation_event.feature
+        if not feature_flag:
+            return
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
 
@@ -107,8 +123,8 @@ class FeatureManager(FeatureManagerBase):
 
         for feature_filter in feature_filters:
             filter_name = feature_filter[FEATURE_FILTER_NAME]
-            kwargs["user"] = targeting_context.user_id
-            kwargs["groups"] = targeting_context.groups
+            kwargs["user"] = targeting_context.user_id  # type: ignore
+            kwargs["groups"] = targeting_context.groups  # type: ignore
             if filter_name not in self._filters:
                 raise ValueError(f"Feature flag {feature_flag.name} has unknown filter {filter_name}")
             if feature_conditions.requirement_type == REQUIREMENT_TYPE_ALL:
@@ -119,7 +135,9 @@ class FeatureManager(FeatureManagerBase):
                 evaluation_event.enabled = True
                 break
 
-    def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
+    def _check_feature(
+        self, feature_flag_id: str, targeting_context: TargetingContext, **kwargs: Dict[str, Any]
+    ) -> EvaluationEvent:
         """
         Determine if the feature flag is enabled for the given context.
 

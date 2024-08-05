@@ -3,115 +3,10 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+from typing import cast, List, Optional, Mapping, Dict, Any
 from dataclasses import dataclass
+from typing_extensions import Self
 from ._constants import DEFAULT_WHEN_ENABLED, DEFAULT_WHEN_DISABLED, USER, GROUP, PERCENTILE, SEED
-
-
-class Allocation:
-    """
-    Represents an allocation configuration for a feature flag.
-    """
-
-    def __init__(self, feature_name):
-        self._default_when_enabled = None
-        self._default_when_disabled = None
-        self._user = []
-        self._group = []
-        self._percentile = []
-        self._seed = "allocation\n" + feature_name
-
-    @classmethod
-    def convert_from_json(cls, json, feature_name):
-        """
-        Convert a JSON object to Allocation.
-
-        :param json: JSON object
-        :type json: dict
-        :return: Allocation
-        :rtype: Allocation
-        """
-        if not json:
-            return None
-        allocation = cls(feature_name)
-        allocation._default_when_enabled = json.get(DEFAULT_WHEN_ENABLED)
-        allocation._default_when_disabled = json.get(DEFAULT_WHEN_DISABLED)
-        allocation._user = []
-        allocation._group = []
-        allocation._percentile = []
-        if USER in json:
-            allocations = json.get(USER)
-            for user_allocation in allocations:
-                allocation._user.append(UserAllocation(**user_allocation))
-        if GROUP in json:
-            allocations = json.get(GROUP)
-            for group_allocation in allocations:
-                allocation._group.append(GroupAllocation(**group_allocation))
-        if PERCENTILE in json:
-            allocations = json.get(PERCENTILE)
-            for percentile_allocation in allocations:
-                allocation._percentile.append(PercentileAllocation.convert_from_json(percentile_allocation))
-        allocation._seed = json.get(SEED, allocation._seed)
-        return allocation
-
-    @property
-    def default_when_enabled(self):
-        """
-        Get the default variant when the feature flag is enabled.
-
-        :return: Default variant when the feature flag is enabled.
-        :rtype: str
-        """
-        return self._default_when_enabled
-
-    @property
-    def default_when_disabled(self):
-        """
-        Get the default variant when the feature flag is disabled.
-
-        :return: Default variant when the feature flag is disabled.
-        :rtype: str
-        """
-        return self._default_when_disabled
-
-    @property
-    def user(self):
-        """
-        Get the user allocations.
-
-        :return: User allocations.
-        :rtype: list[UserAllocation]
-        """
-        return self._user
-
-    @property
-    def group(self):
-        """
-        Get the group allocations.
-
-        :return: Group allocations.
-        :rtype: list[GroupAllocation]
-        """
-        return self._group
-
-    @property
-    def percentile(self):
-        """
-        Get the percentile allocations.
-
-        :return: Percentile allocations.
-        :rtype: list[PercentileAllocation]
-        """
-        return self._percentile
-
-    @property
-    def seed(self):
-        """
-        Get the seed for the allocation.
-
-        :return: Seed for the allocation.
-        :rtype: str
-        """
-        return self._seed
 
 
 @dataclass
@@ -139,13 +34,13 @@ class PercentileAllocation:
     Represents a percentile allocation.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._variant = None
-        self._percentile_from = None
-        self._percentile_to = None
+        self._percentile_from: int = 0
+        self._percentile_to: Optional[int] = None
 
     @classmethod
-    def convert_from_json(cls, json):
+    def convert_from_json(cls, json: Mapping) -> Self:
         """
         Convert a JSON object to PercentileAllocation.
 
@@ -154,15 +49,15 @@ class PercentileAllocation:
         :rtype: PercentileAllocation
         """
         if not json:
-            return None
+            raise ValueError("Percentile allocation is not valid.")
         user_allocation = cls()
         user_allocation._variant = json.get("variant")
-        user_allocation._percentile_from = json.get("from")
+        user_allocation._percentile_from = json.get("from", 0)
         user_allocation._percentile_to = json.get("to")
         return user_allocation
 
     @property
-    def variant(self):
+    def variant(self) -> Optional[str]:
         """
         Get the variant for the allocation.
 
@@ -172,7 +67,7 @@ class PercentileAllocation:
         return self._variant
 
     @property
-    def percentile_from(self):
+    def percentile_from(self) -> int:
         """
         Get the starting percentile for the allocation.
 
@@ -182,7 +77,7 @@ class PercentileAllocation:
         return self._percentile_from
 
     @property
-    def percentile_to(self):
+    def percentile_to(self) -> Optional[int]:
         """
         Get the ending percentile for the allocation.
 
@@ -190,3 +85,112 @@ class PercentileAllocation:
         :rtype: int
         """
         return self._percentile_to
+
+
+class Allocation:
+    """
+    Represents an allocation configuration for a feature flag.
+    """
+
+    def __init__(self, feature_name: str) -> None:
+        self._default_when_enabled = None
+        self._default_when_disabled = None
+        self._user: List[UserAllocation] = []
+        self._group: List[GroupAllocation] = []
+        self._percentile: List[PercentileAllocation] = []
+        self._seed = "allocation\n" + feature_name
+
+    @classmethod
+    def convert_from_json(cls, json: Dict, feature_name: str) -> Optional[Self]:
+        """
+        Convert a JSON object to Allocation.
+
+        :param json: JSON object
+        :type json: dict
+        :return: Allocation
+        :rtype: Allocation
+        """
+        if not json:
+            return None
+        allocation = cls(feature_name)
+        allocation._default_when_enabled = json.get(DEFAULT_WHEN_ENABLED)
+        allocation._default_when_disabled = json.get(DEFAULT_WHEN_DISABLED)
+        allocation._user = []
+        allocation._group = []
+        allocation._percentile = []
+
+        allocations: List[Any] = []
+        if USER in json:
+            allocations = cast(List[Any], json.get(USER, []))
+            for user_allocation in allocations:
+                allocation._user.append(UserAllocation(**user_allocation))
+        if GROUP in json:
+            allocations = cast(List[Any], json.get(GROUP, []))
+            for group_allocation in allocations:
+                allocation._group.append(GroupAllocation(**group_allocation))
+        if PERCENTILE in json:
+            allocations = cast(List[Any], json.get(PERCENTILE, []))
+            for percentile_allocation in allocations:
+                allocation._percentile.append(PercentileAllocation.convert_from_json(percentile_allocation))
+        allocation._seed = json.get(SEED, allocation._seed)
+        return allocation
+
+    @property
+    def default_when_enabled(self) -> Optional[str]:
+        """
+        Get the default variant when the feature flag is enabled.
+
+        :return: Default variant when the feature flag is enabled.
+        :rtype: str
+        """
+        return self._default_when_enabled
+
+    @property
+    def default_when_disabled(self) -> Optional[str]:
+        """
+        Get the default variant when the feature flag is disabled.
+
+        :return: Default variant when the feature flag is disabled.
+        :rtype: str
+        """
+        return self._default_when_disabled
+
+    @property
+    def user(self) -> List[UserAllocation]:
+        """
+        Get the user allocations.
+
+        :return: User allocations.
+        :rtype: list[UserAllocation]
+        """
+        return self._user
+
+    @property
+    def group(self) -> List[GroupAllocation]:
+        """
+        Get the group allocations.
+
+        :return: Group allocations.
+        :rtype: list[GroupAllocation]
+        """
+        return self._group
+
+    @property
+    def percentile(self) -> List[PercentileAllocation]:
+        """
+        Get the percentile allocations.
+
+        :return: Percentile allocations.
+        :rtype: list[PercentileAllocation]
+        """
+        return self._percentile
+
+    @property
+    def seed(self) -> str:
+        """
+        Get the seed for the allocation.
+
+        :return: Seed for the allocation.
+        :rtype: str
+        """
+        return self._seed

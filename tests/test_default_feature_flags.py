@@ -8,7 +8,7 @@ import pytest
 from featuremanagement import FeatureManager, TargetingContext
 
 
-class TestDefaultfeatureFlags(unittest.TestCase):
+class TestDefaultFeatureFlags(unittest.TestCase):
     def test_invalid_feature_flags(self):
         with self.assertRaises(AttributeError):
             FeatureManager("")

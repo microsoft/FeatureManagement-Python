@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-
+from typing import Mapping, Any, Dict
 from ._featurefilters import FeatureFilter
 from .._defaultfilters import (
     TargetingFilter as SyncTargetingFilter,
@@ -17,10 +17,10 @@ class TimeWindowFilter(FeatureFilter):
     Feature Filter that determines if the current time is within the time window.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._filter = SyncTimeWindowFilter()
 
-    async def evaluate(self, context, **kwargs):
+    async def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -37,10 +37,10 @@ class TargetingFilter(FeatureFilter):
     Feature Filter that determines if the user is targeted for the feature flag.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._filter = SyncTargetingFilter()
 
-    async def evaluate(self, context, **kwargs):
+    async def evaluate(self, context: Mapping[str, Any], **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
