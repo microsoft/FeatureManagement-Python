@@ -13,7 +13,7 @@ class FeatureFilter(ABC):
     """
 
     @abstractmethod
-    def evaluate(self, context: Mapping[Any, Any], **kwargs: Dict[str, Any]) -> bool:
+    def evaluate(self, context: Mapping[Any, Any], **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 

@@ -44,7 +44,7 @@ class TimeWindowFilter(FeatureFilter):
     Feature Filter that determines if the current time is within the time window.
     """
 
-    def evaluate(self, context: Mapping[Any, Any], **kwargs: Dict[str, Any]) -> bool:
+    def evaluate(self, context: Mapping[Any, Any], **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -96,7 +96,7 @@ class TargetingFilter(FeatureFilter):
 
         return self._is_targeted(audience_context_id, group_rollout_percentage)
 
-    def evaluate(self, context: Mapping[Any, Any], **kwargs: Dict[str, Any]) -> bool:
+    def evaluate(self, context: Mapping[Any, Any], **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -162,5 +162,5 @@ class TargetingFilter(FeatureFilter):
             raise TargetingException("DefaultRolloutPercentage must be between 0 and 100")
 
         for group in groups:
-            if group.get(ROLLOUT_PERCENTAGE_KEY) < 0 or group.get(ROLLOUT_PERCENTAGE_KEY) > 100:  # type: ignore
+            if group.get(ROLLOUT_PERCENTAGE_KEY, 0) < 0 or group.get(ROLLOUT_PERCENTAGE_KEY, 100) > 100:
                 raise TargetingException("RolloutPercentage must be between 0 and 100")
