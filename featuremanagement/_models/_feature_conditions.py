@@ -4,7 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 from collections.abc import Mapping
-from typing import List
+from typing import Any, Dict, List
 from typing_extensions import Self
 from ._constants import (
     FEATURE_FLAG_CLIENT_FILTERS,
@@ -22,7 +22,7 @@ class FeatureConditions:
 
     def __init__(self) -> None:
         self._requirement_type = REQUIREMENT_TYPE_ANY
-        self._client_filters: List[dict] = []
+        self._client_filters: List[Dict[str, Any]] = []
 
     @classmethod
     def convert_from_json(cls, feature_name: str, json_value: str) -> Self:
@@ -55,7 +55,7 @@ class FeatureConditions:
         return self._requirement_type
 
     @property
-    def client_filters(self) -> List[dict]:
+    def client_filters(self) -> List[Dict[str, Any]]:
         """
         Get the client filters for the feature flag.
 

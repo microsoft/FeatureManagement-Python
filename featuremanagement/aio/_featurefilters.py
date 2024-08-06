@@ -13,7 +13,7 @@ class FeatureFilter(ABC):
     """
 
     @abstractmethod
-    async def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
+    async def evaluate(self, context: Mapping[Any, Any], **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -33,7 +33,7 @@ class FeatureFilter(ABC):
         return self.__class__.__name__
 
     @staticmethod
-    def alias(alias: str) -> Callable:
+    def alias(alias: str) -> Callable[..., Any]:
         """
         Decorator to set the alias for the filter.
 

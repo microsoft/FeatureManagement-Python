@@ -21,7 +21,7 @@ REQUIREMENT_TYPE_ANY = "Any"
 FEATURE_FILTER_PARAMETERS = "parameters"
 
 
-def _get_feature_flag(configuration: Mapping, feature_flag_name: str) -> Optional[FeatureFlag]:
+def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) -> Optional[FeatureFlag]:
     """
     Gets the FeatureFlag json from the configuration, if it exists it gets converted to a FeatureFlag object.
 
@@ -44,7 +44,7 @@ def _get_feature_flag(configuration: Mapping, feature_flag_name: str) -> Optiona
     return None
 
 
-def _list_feature_flag_names(configuration: Mapping) -> List[str]:
+def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
     """
     List of all feature flag names.
 
@@ -70,12 +70,11 @@ class FeatureManagerBase(ABC):
     Base class for Feature Manager. This class is responsible for all shared logic between the sync and async.
     """
 
-    def __init__(self, configuration: Mapping, **kwargs: Dict[str, Any]):
-        self._filters: Dict = {}
+    def __init__(self, configuration: Mapping[str, Any], **kwargs: Dict[str, Any]):
         if configuration is None or not isinstance(configuration, Mapping):
             raise AttributeError("Configuration must be a non-empty dictionary")
         self._configuration = configuration
-        self._cache: Dict = {}
+        self._cache: Dict[str, Optional[FeatureFlag]] = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
         self._on_feature_evaluated = kwargs.pop("on_feature_evaluated", None)
 
@@ -214,7 +213,7 @@ class FeatureManagerBase(ABC):
         for variant_reference in feature_flag.variants:
             if variant_reference.name == variant_name:
                 configuration = variant_reference.configuration_value
-                if not configuration:
+                if not configuration and variant_reference.configuration_reference:
                     configuration = self._configuration.get(variant_reference.configuration_reference)
                 return Variant(variant_reference.name, configuration)
         return None

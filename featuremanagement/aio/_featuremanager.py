@@ -29,9 +29,12 @@ class FeatureManager(FeatureManagerBase):
     evaluated.
     """
 
-    def __init__(self, configuration: Mapping, **kwargs: Dict[str, Any]):
+    def __init__(self, configuration: Mapping[str, Any], **kwargs: Dict[str, Any]):
         super().__init__(configuration, **kwargs)
-        filters = [TimeWindowFilter(), TargetingFilter()] + cast(List, kwargs.pop(PROVIDED_FEATURE_FILTERS, []))
+        self._filters: Dict[str, FeatureFilter] = {}
+        filters = [TimeWindowFilter(), TargetingFilter()] + cast(
+            List[FeatureFilter], kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
+        )
 
         for feature_filter in filters:
             if not isinstance(feature_filter, FeatureFilter):

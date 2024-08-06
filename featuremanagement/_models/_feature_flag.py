@@ -32,7 +32,7 @@ class FeatureFlag:
         self._telemetry: Telemetry = Telemetry()
 
     @classmethod
-    def convert_from_json(cls, json_value: Mapping) -> Self:
+    def convert_from_json(cls, json_value: Mapping[str, Any]) -> Self:
         """
         Convert a JSON object to FeatureFlag.
 
@@ -56,7 +56,7 @@ class FeatureFlag:
             json_value.get(FEATURE_FLAG_ALLOCATION, None), feature_flag._id
         )
         if FEATURE_FLAG_VARIANTS in json_value:
-            variants: List[Mapping] = json_value.get(FEATURE_FLAG_VARIANTS, [])
+            variants: List[Mapping[str, Any]] = json_value.get(FEATURE_FLAG_VARIANTS, [])
             feature_flag._variants = []
             for variant in variants:
                 if variant:

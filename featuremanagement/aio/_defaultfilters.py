@@ -20,7 +20,7 @@ class TimeWindowFilter(FeatureFilter):
     def __init__(self) -> None:
         self._filter = SyncTimeWindowFilter()
 
-    async def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
+    async def evaluate(self, context: Mapping[Any, Any], **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -40,7 +40,7 @@ class TargetingFilter(FeatureFilter):
     def __init__(self) -> None:
         self._filter = SyncTargetingFilter()
 
-    async def evaluate(self, context: Mapping[str, Any], **kwargs: Dict[str, Any]) -> bool:
+    async def evaluate(self, context: Mapping[Any, Any], **kwargs: Dict[str, Any]) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 

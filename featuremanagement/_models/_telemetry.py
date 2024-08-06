@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+from typing import Dict
 from dataclasses import dataclass, field
 
 
@@ -13,4 +14,4 @@ class Telemetry:
     """
 
     enabled: bool = False
-    metadata: dict = field(default_factory=dict)
+    metadata: Dict[str, str] = field(default_factory=dict)
