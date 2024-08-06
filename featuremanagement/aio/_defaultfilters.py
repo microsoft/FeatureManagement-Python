@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from typing import Mapping, Any, Dict
+from typing import Mapping, Any
 from ._featurefilters import FeatureFilter
 from .._defaultfilters import (
     TargetingFilter as SyncTargetingFilter,
