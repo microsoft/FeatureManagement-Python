@@ -44,7 +44,7 @@ class TimeWindowFilter(FeatureFilter):
     Feature Filter that determines if the current time is within the time window.
     """
 
-    def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
+    def evaluate(self, context: Mapping[Any, Any], **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -87,7 +87,7 @@ class TargetingFilter(FeatureFilter):
         return percentage < rollout_percentage
 
     def _target_group(
-        self, target_user: Optional[str], target_group: str, group: Mapping, feature_flag_name: str
+        self, target_user: Optional[str], target_group: str, group: Mapping[str, Any], feature_flag_name: str
     ) -> bool:
         group_rollout_percentage = group.get(ROLLOUT_PERCENTAGE_KEY, 0)
         if not target_user:
@@ -96,7 +96,7 @@ class TargetingFilter(FeatureFilter):
 
         return self._is_targeted(audience_context_id, group_rollout_percentage)
 
-    def evaluate(self, context: Mapping, **kwargs: Dict[str, Any]) -> bool:
+    def evaluate(self, context: Mapping[Any, Any], **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -156,11 +156,11 @@ class TargetingFilter(FeatureFilter):
         return self._is_targeted(context_id, default_rollout_percentage)
 
     @staticmethod
-    def _validate(groups: List, default_rollout_percentage: int) -> None:
+    def _validate(groups: List[Dict[str, Any]], default_rollout_percentage: int) -> None:
         # Validate the audience settings
         if default_rollout_percentage < 0 or default_rollout_percentage > 100:
             raise TargetingException("DefaultRolloutPercentage must be between 0 and 100")
 
         for group in groups:
-            if group.get(ROLLOUT_PERCENTAGE_KEY) < 0 or group.get(ROLLOUT_PERCENTAGE_KEY) > 100:
+            if group.get(ROLLOUT_PERCENTAGE_KEY, 0) < 0 or group.get(ROLLOUT_PERCENTAGE_KEY, 100) > 100:
                 raise TargetingException("RolloutPercentage must be between 0 and 100")

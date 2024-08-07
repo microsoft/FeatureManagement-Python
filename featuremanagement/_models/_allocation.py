@@ -3,7 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from typing import cast, List, Optional, Mapping, Dict, Any
+from typing import cast, List, Optional, Mapping, Dict, Any, Union
 from dataclasses import dataclass
 from typing_extensions import Self
 from ._constants import DEFAULT_WHEN_ENABLED, DEFAULT_WHEN_DISABLED, USER, GROUP, PERCENTILE, SEED
@@ -16,7 +16,7 @@ class UserAllocation:
     """
 
     variant: str
-    users: list
+    users: List[str]
 
 
 @dataclass
@@ -26,7 +26,7 @@ class GroupAllocation:
     """
 
     variant: str
-    groups: list
+    groups: List[str]
 
 
 class PercentileAllocation:
@@ -35,12 +35,12 @@ class PercentileAllocation:
     """
 
     def __init__(self) -> None:
-        self._variant = None
+        self._variant: Optional[str] = None
         self._percentile_from: int = 0
         self._percentile_to: Optional[int] = None
 
     @classmethod
-    def convert_from_json(cls, json: Mapping) -> Self:
+    def convert_from_json(cls, json: Mapping[str, Union[str, int]]) -> Self:
         """
         Convert a JSON object to PercentileAllocation.
 
@@ -51,9 +51,21 @@ class PercentileAllocation:
         if not json:
             raise ValueError("Percentile allocation is not valid.")
         user_allocation = cls()
-        user_allocation._variant = json.get("variant")
-        user_allocation._percentile_from = json.get("from", 0)
-        user_allocation._percentile_to = json.get("to")
+
+        variant = json.get("variant")
+        if not variant or not isinstance(variant, str):
+            raise ValueError("Percentile allocation does not have a valid assigned variant.")
+        user_allocation._variant = variant
+
+        percentile_from = json.get("from", 0)
+        if not isinstance(percentile_from, int):
+            raise ValueError("Percentile allocation does not have a valid starting percentile.")
+        user_allocation._percentile_from = percentile_from
+
+        percentile_to = json.get("to")
+        if not percentile_to or not isinstance(percentile_to, int):
+            raise ValueError("Percentile allocation does not have a valid ending percentile.")
+        user_allocation._percentile_to = percentile_to
         return user_allocation
 
     @property
@@ -101,7 +113,7 @@ class Allocation:
         self._seed = "allocation\n" + feature_name
 
     @classmethod
-    def convert_from_json(cls, json: Dict, feature_name: str) -> Optional[Self]:
+    def convert_from_json(cls, json: Dict[str, Any], feature_name: str) -> Optional[Self]:
         """
         Convert a JSON object to Allocation.
 
