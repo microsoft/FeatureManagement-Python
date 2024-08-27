@@ -211,10 +211,7 @@ class FeatureManagerBase(ABC):
             return None
         for variant_reference in feature_flag.variants:
             if variant_reference.name == variant_name:
-                configuration = variant_reference.configuration_value
-                if not configuration and variant_reference.configuration_reference:
-                    configuration = self._configuration.get(variant_reference.configuration_reference)
-                return Variant(variant_reference.name, configuration)
+                return Variant(variant_reference.name, variant_reference.configuration_value)
         return None
 
     def _build_targeting_context(self, args: Tuple[Any]) -> TargetingContext:
