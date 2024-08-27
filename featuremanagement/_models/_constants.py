@@ -30,5 +30,4 @@ SEED = "seed"
 # Variant Reference
 VARIANT_REFERENCE_NAME = "name"
 CONFIGURATION_VALUE = "configuration_value"
-CONFIGURATION_REFERENCE = "configuration_reference"
 STATUS_OVERRIDE = "status_override"

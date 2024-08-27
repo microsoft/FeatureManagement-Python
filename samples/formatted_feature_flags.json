@@ -218,7 +218,6 @@
                     },
                     {
                         "name": "False_Override",
-                        "configuration_reference": "false-override",
                         "status_override": "True"
                     }
                 ]

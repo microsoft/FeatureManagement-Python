@@ -6,7 +6,7 @@
 from dataclasses import dataclass
 from typing import Optional, Mapping, Any
 from typing_extensions import Self
-from ._constants import VARIANT_REFERENCE_NAME, CONFIGURATION_VALUE, CONFIGURATION_REFERENCE, STATUS_OVERRIDE
+from ._constants import VARIANT_REFERENCE_NAME, CONFIGURATION_VALUE, STATUS_OVERRIDE
 
 
 @dataclass
@@ -18,7 +18,6 @@ class VariantReference:
     def __init__(self) -> None:
         self._name = None
         self._configuration_value = None
-        self._configuration_reference = None
         self._status_override = None
 
     @classmethod
@@ -33,7 +32,6 @@ class VariantReference:
         variant_reference = cls()
         variant_reference._name = json.get(VARIANT_REFERENCE_NAME)
         variant_reference._configuration_value = json.get(CONFIGURATION_VALUE)
-        variant_reference._configuration_reference = json.get(CONFIGURATION_REFERENCE)
         variant_reference._status_override = json.get(STATUS_OVERRIDE, None)
         return variant_reference
 
@@ -56,16 +54,6 @@ class VariantReference:
         :rtype: str
         """
         return self._configuration_value
-
-    @property
-    def configuration_reference(self) -> Optional[str]:
-        """
-        Get the configuration reference for the variant.
-
-        :return: Configuration reference for the variant.
-        :rtype: str
-        """
-        return self._configuration_reference
 
     @property
     def status_override(self) -> Optional[str]:
