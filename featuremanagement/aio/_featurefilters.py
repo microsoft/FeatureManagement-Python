@@ -4,7 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 from abc import ABC, abstractmethod
-from typing import Mapping, Callable, Any, Optional, Self
+from typing import Mapping, Callable, Any, Optional
 
 
 class FeatureFilter(ABC):
@@ -44,7 +44,7 @@ class FeatureFilter(ABC):
         :rtype: Callable
         """
 
-        def wrapper(cls: Self) -> Any:
+        def wrapper(cls) -> Any: # type: ignore
             cls._alias = alias  # pylint: disable=protected-access
             return cls
 
