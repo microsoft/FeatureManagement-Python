@@ -4,8 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 from abc import ABC, abstractmethod
-from typing import Mapping, Callable, Any, Optional
-from typing_extensions import Self
+from typing import Mapping, Callable, Any, Optional, Self
 
 
 class FeatureFilter(ABC):
