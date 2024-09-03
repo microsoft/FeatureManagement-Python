@@ -19,10 +19,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r dev_requirements.txt
         pip install .
-    - name: Analysing the code/samples with pylint
+    - name: Analysing the code with pylint
       run: |
         pylint featuremanagement
-        pylint --disable=missing-function-docstring,missing-class-docstring samples tests
     - uses: psf/black@stable
     - name: Run mypy
       run: |
@@ -33,3 +32,6 @@ jobs:
       run: |
         pip install -r requirements.txt
         pytest tests --doctest-modules --cov-report=xml --cov-report=html
+    - name: Analysing the samples with pylint
+      run: |
+        pylint --disable=missing-function-docstring,missing-class-docstring samples tests
