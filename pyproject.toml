@@ -14,7 +14,7 @@ max-returns = 7
 disable = ["missing-module-docstring", "duplicate-code"]
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "pylint", "pytest-asyncio", "mypy", "black"]
 build-backend = "setuptools.build_meta"
 
 [project]
