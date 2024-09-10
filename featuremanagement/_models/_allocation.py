@@ -5,7 +5,6 @@
 # -------------------------------------------------------------------------
 from typing import cast, List, Optional, Mapping, Dict, Any, Union
 from dataclasses import dataclass
-from typing_extensions import Self
 from ._constants import DEFAULT_WHEN_ENABLED, DEFAULT_WHEN_DISABLED, USER, GROUP, PERCENTILE, SEED
 
 
@@ -40,7 +39,7 @@ class PercentileAllocation:
         self._percentile_to: Optional[int] = None
 
     @classmethod
-    def convert_from_json(cls, json: Mapping[str, Union[str, int]]) -> Self:
+    def convert_from_json(cls, json: Mapping[str, Union[str, int]]) -> "PercentileAllocation":
         """
         Convert a JSON object to PercentileAllocation.
 
@@ -113,7 +112,7 @@ class Allocation:
         self._seed = "allocation\n" + feature_name
 
     @classmethod
-    def convert_from_json(cls, json: Dict[str, Any], feature_name: str) -> Optional[Self]:
+    def convert_from_json(cls, json: Dict[str, Any], feature_name: str) -> Optional["Allocation"]:
         """
         Convert a JSON object to Allocation.
 
