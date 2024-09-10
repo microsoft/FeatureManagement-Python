@@ -1,8 +1,9 @@
 # Release History
 
-## 2.0.0b1 (Unreleased)
+## 2.0.0b1 (09/10/2024)
 
 * Adds support for Feature Variants.
+* Adds support for Telemetry.
 
 ## 1.0.0 (06/26/2024)
 
