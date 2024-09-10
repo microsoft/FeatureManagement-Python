@@ -5,7 +5,6 @@
 # -------------------------------------------------------------------------
 from collections.abc import Mapping
 from typing import Any, Dict, List
-from typing_extensions import Self
 from ._constants import (
     FEATURE_FLAG_CLIENT_FILTERS,
     FEATURE_FILTER_NAME,
@@ -25,7 +24,7 @@ class FeatureConditions:
         self._client_filters: List[Dict[str, Any]] = []
 
     @classmethod
-    def convert_from_json(cls, feature_name: str, json_value: str) -> Self:
+    def convert_from_json(cls, feature_name: str, json_value: str) -> "FeatureConditions":
         """
         Convert a JSON object to FeatureConditions.
 

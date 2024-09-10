@@ -5,7 +5,6 @@
 # -------------------------------------------------------------------------
 from dataclasses import dataclass
 from typing import Optional, Mapping, Any
-from typing_extensions import Self
 from ._constants import VARIANT_REFERENCE_NAME, CONFIGURATION_VALUE, STATUS_OVERRIDE
 
 
@@ -21,7 +20,7 @@ class VariantReference:
         self._status_override = None
 
     @classmethod
-    def convert_from_json(cls, json: Mapping[str, Any]) -> Self:
+    def convert_from_json(cls, json: Mapping[str, Any]) -> "VariantReference":
         """
         Convert a JSON object to VariantReference.
 

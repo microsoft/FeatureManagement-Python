@@ -4,7 +4,6 @@
 # license information.
 # -------------------------------------------------------------------------
 from typing import cast, List, Union, Optional, Mapping, Any
-from typing_extensions import Self
 from ._feature_conditions import FeatureConditions
 from ._allocation import Allocation
 from ._variant_reference import VariantReference
@@ -32,7 +31,7 @@ class FeatureFlag:
         self._telemetry: Telemetry = Telemetry()
 
     @classmethod
-    def convert_from_json(cls, json_value: Mapping[str, Any]) -> Self:
+    def convert_from_json(cls, json_value: Mapping[str, Any]) -> "FeatureFlag":
         """
         Convert a JSON object to FeatureFlag.
 
