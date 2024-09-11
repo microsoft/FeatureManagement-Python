@@ -103,13 +103,13 @@ class Allocation:
     Represents an allocation configuration for a feature flag.
     """
 
-    def __init__(self, feature_name: str) -> None:
+    def __init__(self: str) -> None:
         self._default_when_enabled = None
         self._default_when_disabled = None
         self._user: List[UserAllocation] = []
         self._group: List[GroupAllocation] = []
         self._percentile: List[PercentileAllocation] = []
-        self._seed = "allocation\n" + feature_name
+        self._seed = None
 
     @classmethod
     def convert_from_json(cls, json: Dict[str, Any], feature_name: str) -> Optional["Allocation"]:
@@ -123,7 +123,7 @@ class Allocation:
         """
         if not json:
             return None
-        allocation = cls(feature_name)
+        allocation = cls()
         allocation._default_when_enabled = json.get(DEFAULT_WHEN_ENABLED)
         allocation._default_when_disabled = json.get(DEFAULT_WHEN_DISABLED)
         allocation._user = []

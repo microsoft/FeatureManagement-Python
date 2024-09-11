@@ -175,7 +175,10 @@ class FeatureManagerBase(ABC):
                         evaluation_event.reason = VariantAssignmentReason.GROUP
                         variant_name = group_allocation.variant
         elif feature.allocation.percentile:
-            context_id = targeting_context.user_id + "\n" + feature.allocation.seed
+            seed = feature.allocation.seed
+            if not seed:
+                seed = "allocation\n" + feature.id
+            context_id = targeting_context.user_id + "\n" + seed
             box: float = self._is_targeted(context_id)
             for percentile_allocation in feature.allocation.percentile:
                 if box == 100 and percentile_allocation.percentile_to == 100:
