@@ -29,6 +29,7 @@ EVENT_NAME = "FeatureEvaluation"
 
 EVALUATION_EVENT_VERSION = "1.0.0"
 
+
 def _generate_allocation_id(feature):
     """
     Generates an allocation ID for the specified feature.
@@ -38,61 +39,52 @@ def _generate_allocation_id(feature):
     :return: The allocation ID.
     """
 
-    # Seed
-    allocation_id = "seed="
-    if feature.allocation and feature.allocation._seed:
-        allocation_id += "{0}".format(feature.allocation._seed)
-
+    allocation_id = ""
     allocated_variants = []
 
-    # DefaultWhenEnabled
-    if feature.allocation and feature.allocation._default_when_enabled:
-        allocated_variants.append(feature.allocation._default_when_enabled)
+    if feature.allocation:
+        # Seed
+        allocation_id = f"seed={feature.allocation._seed or ''}"
 
-    allocation_id += "\n"
-    allocation_id += "default_when_enabled="
-    if feature.allocation and feature.allocation._default_when_enabled:
-            allocation_id += "{0}".format(feature.allocation._default_when_enabled)
+        # DefaultWhenEnabled
+        if feature.allocation._default_when_enabled:
+            allocated_variants.append(feature.allocation._default_when_enabled)
 
-    # Percentile
-    allocation_id += "\n"
-    allocation_id += "percentiles="
+        allocation_id += f"\ndefault_when_enabled={feature.allocation._default_when_enabled or ''}"
 
-    if feature.allocation and feature.allocation._percentile and len(feature.allocation._percentile) > 0:
-        percentile_allocations = feature.allocation._percentile
-        percentile_allocations = filter(lambda x: x.percentile_from != x.percentile_to, percentile_allocations)
-        percentile_allocations = sorted(percentile_allocations, key=lambda x: x.percentile_from)
+        # Percentile
+        allocation_id += "\npercentiles="
 
-        for percentile_allocation in percentile_allocations:
-            allocated_variants += percentile_allocation.variant
-        
-        variant_allocation_id = ""
-        for allocation in percentile_allocations:
-            variant_allocation_id = ";{0},{1},{2}".format(allocation.percentile_from, allocation.variant, allocation.percentile_to)
-        allocation_id += variant_allocation_id[1:]
+        if feature.allocation._percentile:
+            percentile_allocations = sorted(
+                (x for x in feature.allocation._percentile if x.percentile_from != x.percentile_to),
+                key=lambda x: x.percentile_from,
+            )
+
+            allocated_variants.extend(pa.variant for pa in percentile_allocations)
+
+            allocation_id += ";".join(
+                f"{pa.percentile_from},{pa.variant},{pa.percentile_to}" for pa in percentile_allocations
+            )
+    else:
+        allocation_id = "seed=\ndefault_when_enabled=\npercentiles="
 
     # Variants
-    allocation_id += "\n"
-    allocation_id += "variants="
+    allocation_id += "\nvariants="
 
-    if len(allocated_variants) > 0:
-        varients = feature._variants
-        varients = filter(lambda x: x.name in allocated_variants, varients)
-        varients = sorted(varients, key=lambda x: x.name)
-        variant_id = ""
-        for variant in varients:
-            variant_id = ";{0},{1}".format(variant.name, variant.configuration_value)
-        allocation_id += variant_id[1:]
-    
-    if feature.allocation and feature.allocation._seed and len(allocated_variants) == 0:
+    if allocated_variants:
+        variants = sorted((v for v in feature._variants if v.name in allocated_variants), key=lambda v: v.name)
+        allocation_id += ";".join(f"{v.name},{v.configuration_value}" for v in variants)
+
+    if not allocated_variants and (feature.allocation or feature.allocation._seed):
         return None
-    
+
     # Create a sha256 hash of the allocation_id
     hash_object = hashlib.sha256(allocation_id.encode())
     hash_digest = hash_object.digest()
 
     # Encode the first 15 bytes in base64 url
-    allocation_id_hash = base64.urlsafe_b64encode(hash_digest[:15]).decode('utf-8')
+    allocation_id_hash = base64.urlsafe_b64encode(hash_digest[:15]).decode("utf-8")
     return allocation_id_hash
 
 
@@ -137,7 +129,7 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
             allocation_percentage = 0
 
             if evaluation_event.feature.allocation._percentile:
-                
+
                 for allocation in evaluation_event.feature.allocation._percentile:
                     if allocation.variant == evaluation_event.variant.name:
                         allocation_percentage += allocation.percentile_to - allocation.percentile_from
