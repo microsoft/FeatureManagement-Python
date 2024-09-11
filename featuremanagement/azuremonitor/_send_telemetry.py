@@ -93,7 +93,6 @@ def _generate_allocation_id(feature):
 
     # Encode the first 15 bytes in base64 url
     allocation_id_hash = base64.urlsafe_b64encode(hash_digest[:15]).decode('utf-8')
-    breakpoint()
     return allocation_id_hash
 
 
