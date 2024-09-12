@@ -177,7 +177,7 @@ class FeatureManagerBase(ABC):
         elif feature.allocation.percentile:
             seed = feature.allocation.seed
             if not seed:
-                seed = "allocation\n" + feature.id
+                seed = "allocation\n" + feature.name
             context_id = targeting_context.user_id + "\n" + seed
             box: float = self._is_targeted(context_id)
             for percentile_allocation in feature.allocation.percentile:
