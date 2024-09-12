@@ -53,7 +53,7 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     """
     if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
         return
-    event = {}
+    event: Dict[str, Optional[str]] = {}
     if not evaluation_event.feature:
         return
     event[FEATURE_NAME] = evaluation_event.feature.name
