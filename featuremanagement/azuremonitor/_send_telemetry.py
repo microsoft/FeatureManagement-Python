@@ -4,11 +4,8 @@
 # license information.
 # --------------------------------------------------------------------------
 import logging
-import json
 from typing import Dict, Optional
-import hashlib
-import base64
-from .._models import VariantAssignmentReason, EvaluationEvent, FeatureFlag
+from .._models import VariantAssignmentReason, EvaluationEvent
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event  # type: ignore
@@ -29,6 +26,7 @@ REASON = "VariantAssignmentReason"
 EVENT_NAME = "FeatureEvaluation"
 
 EVALUATION_EVENT_VERSION = "1.0.0"
+
 
 def track_event(event_name: str, user: str, event_properties: Optional[Dict[str, Optional[str]]] = None) -> None:
     """
@@ -56,6 +54,8 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
         return
     event = {}
+    if not evaluation_event.feature:
+        return
     event[FEATURE_NAME] = evaluation_event.feature.name
     event[ENABLED] = str(evaluation_event.enabled)
     event["Version"] = EVALUATION_EVENT_VERSION
@@ -78,21 +78,25 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
                     ):
                         allocation_percentage += allocation.percentile_to - allocation.percentile_from
 
-            event["VariantAssignmentPercentage"] = 100 - allocation_percentage
+            event["VariantAssignmentPercentage"] = str(100 - allocation_percentage)
         elif evaluation_event.reason == VariantAssignmentReason.PERCENTILE:
-            if  evaluation_event.feature.allocation and evaluation_event.feature.allocation.percentile:
+            if evaluation_event.feature.allocation and evaluation_event.feature.allocation.percentile:
                 allocation_percentage = 0
                 for allocation in evaluation_event.feature.allocation.percentile:
-                    if allocation.variant == evaluation_event.variant.name:
+                    if (
+                        evaluation_event.variant
+                        and allocation.variant == evaluation_event.variant.name
+                        and allocation.percentile_to
+                    ):
                         allocation_percentage += allocation.percentile_to - allocation.percentile_from
-                event["VariantAssignmentPercentage"] = allocation_percentage
+                event["VariantAssignmentPercentage"] = str(allocation_percentage)
 
     # DefaultWhenEnabled
-    if evaluation_event.feature.allocation.default_when_enabled:
+    if evaluation_event.feature.allocation and evaluation_event.feature.allocation.default_when_enabled:
         event["DefaultWhenEnabled"] = evaluation_event.feature.allocation.default_when_enabled
 
     # AllocationId
-    allocation_id = evaluation_event.feature.telemetry.get("metadata", {}).get("AllocationId")
+    allocation_id = evaluation_event.feature.telemetry.metadata.get("AllocationId")
     if allocation_id:
         event["AllocationId"] = allocation_id
 
