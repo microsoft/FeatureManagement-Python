@@ -51,9 +51,7 @@ class FeatureFlag:
             )
         else:
             feature_flag._conditions = FeatureConditions()
-        feature_flag._allocation = Allocation.convert_from_json(
-            json_value.get(FEATURE_FLAG_ALLOCATION, None), feature_flag._id
-        )
+        feature_flag._allocation = Allocation.convert_from_json(json_value.get(FEATURE_FLAG_ALLOCATION, None))
         if FEATURE_FLAG_VARIANTS in json_value:
             variants: List[Mapping[str, Any]] = json_value.get(FEATURE_FLAG_VARIANTS, [])
             feature_flag._variants = []
@@ -66,7 +64,7 @@ class FeatureFlag:
         return feature_flag
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str:
         """
         Get the name of the feature flag.
 

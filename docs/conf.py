@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath("../featuremanagement"))
 project = "FeatureManagement"
 copyright = "2024, Microsoft"
 author = "Microsoft"
-release = "2.0.0b1"
+release = "2.0.0b2"
 
 # -- General configuration ---------------------------------------------------
 
