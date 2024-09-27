@@ -148,9 +148,7 @@ class TestFeatureVariants:
         assert not feature_manager.is_enabled("Alpha", TargetingContext(user_id="NotAdam", groups=["Group1"]))
         assert feature_manager.get_variant("Alpha", TargetingContext(user_id="NotAdam", groups=["Group1"])).name == "On"
         assert not feature_manager.is_enabled("Alpha", TargetingContext(user_id="NotAdam", groups=["Group1"]))
-        assert (
-            feature_manager.get_variant("Alpha", TargetingContext(groups=["Group2"])).name == "Off"
-        )
+        assert feature_manager.get_variant("Alpha", TargetingContext(groups=["Group2"])).name == "Off"
         assert feature_manager.is_enabled("Alpha", TargetingContext(user_id="NotCharlie", groups=["Group3"]))
         assert feature_manager.get_variant("Alpha", TargetingContext(user_id="NotCharlie", groups=["Group3"])) is None
 
