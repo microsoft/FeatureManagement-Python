@@ -168,13 +168,13 @@ class FeatureManagerBase(ABC):
                 if targeting_context.user_id in user_allocation.users:
                     evaluation_event.reason = VariantAssignmentReason.USER
                     variant_name = user_allocation.variant
-        elif feature.allocation.group and len(targeting_context.groups) > 0:
+        if not variant_name and feature.allocation.group and len(targeting_context.groups) > 0:
             for group_allocation in feature.allocation.group:
                 for group in targeting_context.groups:
                     if group in group_allocation.groups:
                         evaluation_event.reason = VariantAssignmentReason.GROUP
                         variant_name = group_allocation.variant
-        elif feature.allocation.percentile:
+        if not variant_name and feature.allocation.percentile:
             context_id = targeting_context.user_id + "\n" + feature.allocation.seed
             box: float = self._is_targeted(context_id)
             for percentile_allocation in feature.allocation.percentile:
