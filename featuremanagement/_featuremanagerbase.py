@@ -174,7 +174,7 @@ class FeatureManagerBase(ABC):
                     if group in group_allocation.groups:
                         evaluation_event.reason = VariantAssignmentReason.GROUP
                         variant_name = group_allocation.variant
-         if not variant_name and feature.allocation.percentile:
+        if not variant_name and feature.allocation.percentile:
             seed = feature.allocation.seed
             if not seed:
                 seed = "allocation\n" + feature.name
