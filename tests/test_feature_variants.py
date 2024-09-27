@@ -112,6 +112,48 @@ class TestFeatureVariants:
         assert feature_manager.is_enabled("Alpha", "Charlie")
         assert feature_manager.get_variant("Alpha", "Charlie") is None
 
+    def test_user_and_group_allocation(self):
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "Alpha",
+                        "enabled": True,
+                        "variants": [
+                            {"name": "Off", "status_override": "Enabled"},
+                            {"name": "On", "status_override": "Disabled"},
+                        ],
+                        "allocation": {
+                            "user": [{"variant": "On", "users": ["Adam"]}, {"variant": "Off", "users": ["Brittney"]}],
+                            "group": [
+                                {"variant": "On", "groups": ["Group1"]},
+                                {"variant": "Off", "groups": ["Group2"]},
+                            ],
+                        },
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "AlwaysOnFilter",
+                                    "parameters": {},
+                                }
+                            ]
+                        },
+                    }
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags, feature_filters=[AlwaysOnFilter()])
+        assert feature_manager.is_enabled("Alpha")
+        assert feature_manager.get_variant("Alpha") is None
+        assert not feature_manager.is_enabled("Alpha", TargetingContext(user_id="NotAdam", groups=["Group1"]))
+        assert feature_manager.get_variant("Alpha", TargetingContext(user_id="NotAdam", groups=["Group1"])).name == "On"
+        assert not feature_manager.is_enabled("Alpha", TargetingContext(user_id="NotAdam", groups=["Group1"]))
+        assert (
+            feature_manager.get_variant("Alpha", TargetingContext(groups=["Group2"])).name == "Off"
+        )
+        assert feature_manager.is_enabled("Alpha", TargetingContext(user_id="NotCharlie", groups=["Group3"]))
+        assert feature_manager.get_variant("Alpha", TargetingContext(user_id="NotCharlie", groups=["Group3"])) is None
+
     # method: is_enabled
     def test_basic_feature_variant_allocation_groups(self):
         feature_flags = {
