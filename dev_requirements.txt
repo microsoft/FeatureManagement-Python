@@ -1,7 +1,7 @@
 pytest
 pytest-cov
 pytest-asyncio
-black
+black<24.10.0
 pylint
 mypy
 sphinx
