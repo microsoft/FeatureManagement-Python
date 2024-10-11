@@ -95,11 +95,6 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     if evaluation_event.feature.allocation and evaluation_event.feature.allocation.default_when_enabled:
         event["DefaultWhenEnabled"] = evaluation_event.feature.allocation.default_when_enabled
 
-    # AllocationId
-    allocation_id = evaluation_event.feature.telemetry.metadata.get("AllocationId")
-    if allocation_id:
-        event["AllocationId"] = allocation_id
-
     if evaluation_event.feature.telemetry:
         for metadata_key, metadata_value in evaluation_event.feature.telemetry.metadata.items():
             if metadata_key not in event:
