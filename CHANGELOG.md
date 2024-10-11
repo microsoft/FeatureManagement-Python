@@ -1,6 +1,6 @@
 # Release History
 
-## 2.0.0b2 (Unreleased)
+## 2.0.0b2 (10/11/2024)
 
 * Adds VariantAllocationPercentage, DefaultWhenEnabled, and AllocationId to telemetry.
 * Allocation seed value is now None by default, and only defaults to `allocation\n<feature.id>` when assigning variants.
