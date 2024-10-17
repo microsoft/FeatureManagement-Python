@@ -9,6 +9,11 @@ from featuremanagement import TargetingContext
 
 
 class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
+
+    def __init__(self):
+        super().__init__()
+        self.called_telemetry = False
+
     # method: is_enabled
     async def test_basic_feature_variant_override_enabled(self):
         feature_flags = {
@@ -306,9 +311,11 @@ class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
         assert self.called_telemetry
 
     def fake_telemetry_callback(self, evaluation_event):
+        assert evaluation_event
         self.called_telemetry = True
 
     async def fake_telemetry_callback_async(self, evaluation_event):
+        assert evaluation_event
         self.called_telemetry = True
 
 

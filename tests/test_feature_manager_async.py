@@ -9,6 +9,11 @@ from featuremanagement.aio import FeatureManager, FeatureFilter
 
 
 class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
+
+    def __init__(self):
+        super().__init__()
+        self.called_telemetry = False
+
     # method: feature_manager_creation
     @pytest.mark.asyncio
     async def test_empty_feature_manager_creation(self):
@@ -150,9 +155,6 @@ class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
         assert await feature_manager.is_enabled("Alpha")
         assert self.called_telemetry
 
-    def fake_telemetry_callback(self, evaluation_event):
-        self.called_telemetry = True
-
     # method: feature_manager_creation
     @pytest.mark.asyncio
     async def test_feature_with_telemetry_async(self):
@@ -170,9 +172,11 @@ class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
         assert self.called_telemetry
 
     def fake_telemetry_callback(self, evaluation_event):
+        assert evaluation_event
         self.called_telemetry = True
 
     async def fake_telemetry_callback_async(self, evaluation_event):
+        assert evaluation_event
         self.called_telemetry = True
 
 

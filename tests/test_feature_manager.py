@@ -9,6 +9,11 @@ from featuremanagement import FeatureManager, FeatureFilter
 
 
 class TestFeatureManager(unittest.TestCase):
+
+    def __init__(self):
+        super().__init__()
+        self.called_telemetry = False
+
     # method: feature_manager_creation
     def test_empty_feature_manager_creation(self):
         feature_manager = FeatureManager({})
@@ -142,6 +147,7 @@ class TestFeatureManager(unittest.TestCase):
         assert self.called_telemetry
 
     def fake_telemetry_callback(self, evaluation_event):
+        assert evaluation_event
         self.called_telemetry = True
 
 

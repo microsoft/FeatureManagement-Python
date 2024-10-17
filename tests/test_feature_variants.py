@@ -7,6 +7,11 @@ from featuremanagement import FeatureManager, FeatureFilter, TargetingContext
 
 
 class TestFeatureVariants:
+
+    def __init__(self):
+        super().__init__()
+        self.called_telemetry = False
+
     # method: is_enabled
     def test_basic_feature_variant_override_enabled(self):
         feature_flags = {
@@ -313,6 +318,7 @@ class TestFeatureVariants:
         assert self.called_telemetry
 
     def fake_telemetry_callback(self, evaluation_event):
+        assert evaluation_event
         self.called_telemetry = True
 
 
