@@ -3,8 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
-import pytest
 import unittest
+import pytest
 from featuremanagement.aio import FeatureManager, FeatureFilter
 
 
