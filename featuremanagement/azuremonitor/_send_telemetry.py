@@ -38,10 +38,12 @@ def track_event(event_name: str, user: str, event_properties: Optional[Dict[str,
     """
     if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
         return
-    if event_properties is None:
-        event_properties = {}
+
+    event_properties = event_properties or {}
+
     if user:
         event_properties[TARGETING_ID] = user
+
     azure_monitor_track_event(event_name, event_properties)
 
 
@@ -53,50 +55,48 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     """
     if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
         return
-    event: Dict[str, Optional[str]] = {}
-    if not evaluation_event.feature:
+
+    feature = evaluation_event.feature
+
+    if not feature:
         return
-    event[FEATURE_NAME] = evaluation_event.feature.name
-    event[ENABLED] = str(evaluation_event.enabled)
-    event["Version"] = EVALUATION_EVENT_VERSION
+
+    event: Dict[str, Optional[str]] = {
+        FEATURE_NAME: feature.name,
+        ENABLED: str(evaluation_event.enabled),
+        "Version": EVALUATION_EVENT_VERSION,
+    }
+
+    reason = evaluation_event.reason
+    variant = evaluation_event.variant
 
     # VariantAllocationPercentage
-    if evaluation_event.reason and evaluation_event.reason != VariantAssignmentReason.NONE:
-        if evaluation_event.variant:
-            event[VARIANT] = evaluation_event.variant.name
-        event[REASON] = evaluation_event.reason.value
+    if reason and reason != VariantAssignmentReason.NONE:
+        if variant:
+            event[VARIANT] = variant.name
+        event[REASON] = reason.value
 
-        if evaluation_event.reason == VariantAssignmentReason.DEFAULT_WHEN_ENABLED:
+        if reason in {VariantAssignmentReason.DEFAULT_WHEN_ENABLED, VariantAssignmentReason.PERCENTILE}:
             allocation_percentage = 0
+            allocation = feature.allocation
 
-            if evaluation_event.feature.allocation and evaluation_event.feature.allocation.percentile:
-                for allocation in evaluation_event.feature.allocation.percentile:
-                    if (
-                        evaluation_event.variant
-                        and allocation.variant == evaluation_event.variant.name
-                        and allocation.percentile_to
-                    ):
-                        allocation_percentage += allocation.percentile_to - allocation.percentile_from
+            if allocation and allocation.percentile:
+                for alloc in allocation.percentile:
+                    if variant and alloc.variant == variant.name and alloc.percentile_to:
+                        allocation_percentage += alloc.percentile_to - alloc.percentile_from
 
-            event["VariantAssignmentPercentage"] = str(100 - allocation_percentage)
-        elif evaluation_event.reason == VariantAssignmentReason.PERCENTILE:
-            if evaluation_event.feature.allocation and evaluation_event.feature.allocation.percentile:
-                allocation_percentage = 0
-                for allocation in evaluation_event.feature.allocation.percentile:
-                    if (
-                        evaluation_event.variant
-                        and allocation.variant == evaluation_event.variant.name
-                        and allocation.percentile_to
-                    ):
-                        allocation_percentage += allocation.percentile_to - allocation.percentile_from
+            if reason == VariantAssignmentReason.DEFAULT_WHEN_ENABLED:
+                event["VariantAssignmentPercentage"] = str(100 - allocation_percentage)
+            else:
                 event["VariantAssignmentPercentage"] = str(allocation_percentage)
 
     # DefaultWhenEnabled
-    if evaluation_event.feature.allocation and evaluation_event.feature.allocation.default_when_enabled:
-        event["DefaultWhenEnabled"] = evaluation_event.feature.allocation.default_when_enabled
+    if feature.allocation and feature.allocation.default_when_enabled:
+        event["DefaultWhenEnabled"] = feature.allocation.default_when_enabled
 
-    if evaluation_event.feature.telemetry:
-        for metadata_key, metadata_value in evaluation_event.feature.telemetry.metadata.items():
+    if feature.telemetry:
+        for metadata_key, metadata_value in feature.telemetry.metadata.items():
             if metadata_key not in event:
                 event[metadata_key] = metadata_value
+
     track_event(EVENT_NAME, evaluation_event.user, event_properties=event)
