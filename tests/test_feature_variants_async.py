@@ -308,7 +308,7 @@ class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
     def fake_telemetry_callback(self, evaluation_event):
         self.called_telemetry = True
 
-    async def fake_telemetery_callback_async(self, evaluation_event):
+    async def fake_telemetry_callback_async(self, evaluation_event):
         self.called_telemetry = True
 
 
