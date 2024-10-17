@@ -21,8 +21,8 @@ class TestSendTelemetryAppinsights:
                     "metadata": {
                         "ETag": "cmwBRcIAq1jUyKL3Kj8bvf9jtxBrFg-R-ayExStMC90",
                         "FeatureFlagReference": "fake-store-uri/kv/.appconfig.featureflag/TestFeature",
-                        "FeatureFlagId": "7vpkRJe452WVvlKXfA5XF3ASllwKsYZfC7D4w05rIoo",
-                        "AllocationId": "MExY1waco2tqen4EcJKK",
+                        "FeatureFlagId": "fake-feature-flag-id",
+                        "AllocationId": "fake-allocation-id",
                     },
                 },
             }
@@ -52,8 +52,8 @@ class TestSendTelemetryAppinsights:
                 mock_track_event.call_args[0][1]["FeatureFlagReference"]
                 == "fake-store-uri/kv/.appconfig.featureflag/TestFeature"
             )
-            assert mock_track_event.call_args[0][1]["FeatureFlagId"] == "7vpkRJe452WVvlKXfA5XF3ASllwKsYZfC7D4w05rIoo"
-            assert mock_track_event.call_args[0][1]["AllocationId"] == "MExY1waco2tqen4EcJKK"
+            assert mock_track_event.call_args[0][1]["FeatureFlagId"] == "fake-feature-flag-id"
+            assert mock_track_event.call_args[0][1]["AllocationId"] == "fake-allocation-id"
             assert "DefaultWhenEnabled" not in mock_track_event.call_args[0][1]
 
     def test_send_telemetry_appinsights_no_user(self):
