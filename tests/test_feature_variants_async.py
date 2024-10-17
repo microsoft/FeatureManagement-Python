@@ -251,6 +251,66 @@ class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
         assert not await feature_manager.is_enabled("Alpha", "Dan")
         assert (await feature_manager.get_variant("Alpha", "Dan")).name == "On"
 
+    # method: feature_manager_creation
+    async def test_feature_with_telemetry(self):
+        self.called_telemetry = False
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "Alpha",
+                        "enabled": True,
+                        "variants": [
+                            {"name": "On", "status_override": "Disabled"},
+                        ],
+                        "allocation": {
+                            "default_when_enabled": "On",
+                        },
+                        "telemetry": {"enabled": "true"},
+                    }
+                ]
+            }
+        }
+
+        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetery_callback)
+        assert feature_manager is not None
+        assert not await feature_manager.is_enabled("Alpha")
+        assert (await feature_manager.get_variant("Alpha")).name == "On"
+        assert self.called_telemetry
+
+    # method: feature_manager_creation
+    async def test_feature_with_telemetry_async(self):
+        self.called_telemetry = False
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "Alpha",
+                        "enabled": True,
+                        "variants": [
+                            {"name": "On", "status_override": "Disabled"},
+                        ],
+                        "allocation": {
+                            "default_when_enabled": "On",
+                        },
+                        "telemetry": {"enabled": "true"},
+                    }
+                ]
+            }
+        }
+
+        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetery_callback_async)
+        assert feature_manager is not None
+        assert not await feature_manager.is_enabled("Alpha")
+        assert (await feature_manager.get_variant("Alpha")).name == "On"
+        assert self.called_telemetry
+
+    def fake_telemetery_callback(self, evaluation_event):
+        self.called_telemetry = True
+
+    async def fake_telemetery_callback_async(self, evaluation_event):
+        self.called_telemetry = True
+
 
 class AlwaysOnFilter(FeatureFilter):
     async def evaluate(self, context, **kwargs):

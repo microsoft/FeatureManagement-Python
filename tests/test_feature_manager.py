@@ -126,6 +126,24 @@ class TestFeatureManager(unittest.TestCase):
         assert e_info.type == ValueError
         assert e_info.value.args[0] == "Feature flag Alpha has unknown filter UnknownFilter"
 
+    # method: feature_manager_creation
+    def test_feature_with_telemetry(self):
+        self.called_telemetry = False
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {"id": "Alpha", "description": "", "enabled": "true", "telemetry": {"enabled": "true"}},
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetery_callback)
+        assert feature_manager is not None
+        assert feature_manager.is_enabled("Alpha")
+        assert self.called_telemetry
+
+    def fake_telemetery_callback(self, evaluation_event):
+        self.called_telemetry = True
+
 
 class AlwaysOn(FeatureFilter):
     def evaluate(self, context, **kwargs):
