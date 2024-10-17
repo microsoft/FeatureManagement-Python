@@ -10,7 +10,7 @@ from featuremanagement import TargetingContext
 
 class TestFeatureVariantsAsync(IsolatedAsyncioTestCase):
 
-    def __init__(self, methodName='runTest'):
+    def __init__(self, methodName="runTest"):
         super().__init__(methodName=methodName)
         self.called_telemetry = False
 
