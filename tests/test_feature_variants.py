@@ -3,13 +3,14 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+import unittest
 from featuremanagement import FeatureManager, FeatureFilter, TargetingContext
 
 
-class TestFeatureVariants:
+class TestFeatureVariants(unittest.TestCase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, methodName='runTest'):
+        super().__init__(methodName=methodName)
         self.called_telemetry = False
 
     # method: is_enabled
