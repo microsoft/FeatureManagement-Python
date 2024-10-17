@@ -136,12 +136,12 @@ class TestFeatureManager(unittest.TestCase):
                 ]
             }
         }
-        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetery_callback)
+        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetry_callback)
         assert feature_manager is not None
         assert feature_manager.is_enabled("Alpha")
         assert self.called_telemetry
 
-    def fake_telemetery_callback(self, evaluation_event):
+    def fake_telemetry_callback(self, evaluation_event):
         self.called_telemetry = True
 
 

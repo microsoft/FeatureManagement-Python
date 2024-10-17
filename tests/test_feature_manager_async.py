@@ -145,12 +145,12 @@ class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
                 ]
             }
         }
-        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetery_callback)
+        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetry_callback)
         assert feature_manager is not None
         assert await feature_manager.is_enabled("Alpha")
         assert self.called_telemetry
 
-    def fake_telemetery_callback(self, evaluation_event):
+    def fake_telemetry_callback(self, evaluation_event):
         self.called_telemetry = True
 
     # method: feature_manager_creation
@@ -164,15 +164,15 @@ class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
                 ]
             }
         }
-        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetery_callback_async)
+        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetry_callback_async)
         assert feature_manager is not None
         assert await feature_manager.is_enabled("Alpha")
         assert self.called_telemetry
 
-    def fake_telemetery_callback(self, evaluation_event):
+    def fake_telemetry_callback(self, evaluation_event):
         self.called_telemetry = True
 
-    async def fake_telemetery_callback_async(self, evaluation_event):
+    async def fake_telemetry_callback_async(self, evaluation_event):
         self.called_telemetry = True
 
 
