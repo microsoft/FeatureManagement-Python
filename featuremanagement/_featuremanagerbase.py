@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 import hashlib
+import logging
 from abc import ABC
 from typing import List, Optional, Dict, Tuple, Any, Mapping
 from ._models import FeatureFlag, Variant, VariantAssignmentReason, TargetingContext, EvaluationEvent, VariantReference
@@ -260,6 +261,43 @@ class FeatureManagerBase(ABC):
             return
 
         self._assign_variant(feature_flag, targeting_context, evaluation_event)
+
+    def _check_feature_base(self, feature_flag_id: str) -> Tuple[EvaluationEvent, bool]:
+        """
+        Determine if the feature flag is enabled for the given context.
+
+        :param str feature_flag_id: Name of the feature flag.
+        :return: The evaluation event and if the feature filters need to be checked.
+        :rtype: evaluation_event, bool
+        """
+        if self._copy is not self._configuration.get(FEATURE_MANAGEMENT_KEY):
+            self._cache = {}
+            self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
+
+        if not self._cache.get(feature_flag_id):
+            feature_flag = _get_feature_flag(self._configuration, feature_flag_id)
+            self._cache[feature_flag_id] = feature_flag
+        else:
+            feature_flag = self._cache.get(feature_flag_id)
+
+        evaluation_event = EvaluationEvent(feature_flag)
+        if not feature_flag:
+            logging.warning("Feature flag %s not found", feature_flag_id)
+            # Unknown feature flags are disabled by default
+            return evaluation_event, True
+
+        if not feature_flag.enabled:
+            # Feature flags that are disabled are always disabled
+            self._check_default_disabled_variant(evaluation_event)
+            if feature_flag.allocation:
+                variant_name = feature_flag.allocation.default_when_disabled
+                evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
+            evaluation_event.feature = feature_flag
+
+            # If a feature flag is disabled and override can't enable it
+            evaluation_event.enabled = False
+            return evaluation_event, True
+        return evaluation_event, False
 
     def list_feature_flag_names(self) -> List[str]:
         """

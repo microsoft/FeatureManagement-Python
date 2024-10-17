@@ -4,10 +4,11 @@
 # license information.
 # --------------------------------------------------------------------------
 import pytest
+import unittest
 from featuremanagement.aio import FeatureManager, FeatureFilter
 
 
-class TestFeatureManager:
+class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
     # method: feature_manager_creation
     @pytest.mark.asyncio
     async def test_empty_feature_manager_creation(self):
@@ -31,6 +32,13 @@ class TestFeatureManager:
         assert feature_manager is not None
         assert await feature_manager.is_enabled("Alpha")
         assert not await feature_manager.is_enabled("Beta")
+
+    # method: feature_manager_creation
+    @pytest.mark.asyncio
+    def test_feature_manager_creation_invalid_feature_filter(self):
+        feature_flags = {"feature_management": {"feature_flags": []}}
+        with self.assertRaises(ValueError):
+            FeatureManager(feature_flags, feature_filters=["invalid_filter"])
 
     # method: feature_manager_creation
     @pytest.mark.asyncio

@@ -4,10 +4,11 @@
 # license information.
 # --------------------------------------------------------------------------
 import pytest
+import unittest
 from featuremanagement import FeatureManager, FeatureFilter
 
 
-class TestFeatureManager:
+class TestFeatureManager(unittest.TestCase):
     # method: feature_manager_creation
     def test_empty_feature_manager_creation(self):
         feature_manager = FeatureManager({})
@@ -28,6 +29,12 @@ class TestFeatureManager:
         assert feature_manager is not None
         assert feature_manager.is_enabled("Alpha")
         assert not feature_manager.is_enabled("Beta")
+
+    # method: feature_manager_creation
+    def test_feature_manager_creation_invalid_feature_filter(self):
+        feature_flags = {"feature_management": {"feature_flags": []}}
+        with self.assertRaises(ValueError):
+            FeatureManager(feature_flags, feature_filters=["invalid_filter"])
 
     # method: feature_manager_creation
     def test_feature_manager_creation_with_filters(self):
