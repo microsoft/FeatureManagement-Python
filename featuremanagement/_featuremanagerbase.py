@@ -185,10 +185,9 @@ class FeatureManagerBase(ABC):
             context_id = f"{targeting_context.user_id}\n{seed}"
             box: float = self._is_targeted(context_id)
             for percentile_allocation in allocation.percentile:
-                percentile_to: Optional[int] = percentile_allocation.percentile_to
-                if percentile_to is not None and (
-                    (box == 100 and percentile_to == 100)
-                    or (percentile_allocation.percentile_from <= box < percentile_to)
+                percentile_to: int = percentile_allocation.percentile_to
+                if (box == 100 and percentile_to == 100) or (
+                    percentile_allocation.percentile_from <= box < percentile_to
                 ):
                     evaluation_event.reason = VariantAssignmentReason.PERCENTILE
                     variant_name = percentile_allocation.variant

@@ -70,24 +70,23 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     reason = evaluation_event.reason
     variant = evaluation_event.variant
 
-    # VariantAllocationPercentage
     if reason:
         event[REASON] = reason.value
 
     if variant:
         event[VARIANT] = variant.name
 
+    # VariantAllocationPercentage
     allocation_percentage = 0
     if reason == VariantAssignmentReason.DEFAULT_WHEN_ENABLED and feature.allocation and feature.allocation.percentile:
         for allocation in feature.allocation.percentile:
-            if allocation.percentile_to:
-                allocation_percentage += allocation.percentile_to - allocation.percentile_from
+            allocation_percentage += allocation.percentile_to - allocation.percentile_from
 
         event["VariantAssignmentPercentage"] = str(100 - allocation_percentage)
     elif reason == VariantAssignmentReason.PERCENTILE:
         if feature.allocation and feature.allocation.percentile:
             for allocation in feature.allocation.percentile:
-                if variant and allocation.variant == variant.name and allocation.percentile_to:
+                if variant and allocation.variant == variant.name:
                     allocation_percentage += allocation.percentile_to - allocation.percentile_from
             event["VariantAssignmentPercentage"] = str(allocation_percentage)
 
