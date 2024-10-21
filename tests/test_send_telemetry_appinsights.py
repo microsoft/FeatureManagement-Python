@@ -141,7 +141,7 @@ class TestSendTelemetryAppinsights:
             assert mock_track_event.call_args[0][1]["TargetingId"] == "test_user"
             assert mock_track_event.call_args[0][1]["Variant"] == "big"
             assert mock_track_event.call_args[0][1]["VariantAssignmentReason"] == "DefaultWhenEnabled"
-            assert mock_track_event.call_args[0][1]["VariantAssignmentPercentage"] == "50"
+            assert mock_track_event.call_args[0][1]["VariantAssignmentPercentage"] == "25"
             assert "DefaultWhenEnabled" in mock_track_event.call_args[0][1]
             assert mock_track_event.call_args[0][1]["DefaultWhenEnabled"] == "big"
 
