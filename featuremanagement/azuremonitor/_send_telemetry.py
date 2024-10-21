@@ -71,28 +71,25 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     variant = evaluation_event.variant
 
     # VariantAllocationPercentage
-    if reason and reason != VariantAssignmentReason.NONE:
-        if variant:
-            event[VARIANT] = variant.name
+    if reason:
         event[REASON] = reason.value
 
-        allocation_percentage = 0
-        if (
-            reason == VariantAssignmentReason.DEFAULT_WHEN_ENABLED
-            and feature.allocation
-            and feature.allocation.percentile
-        ):
-            for allocation in feature.allocation.percentile:
-                if allocation.percentile_to:
-                    allocation_percentage += allocation.percentile_to - allocation.percentile_from
+    if variant:
+        event[VARIANT] = variant.name
 
-            event["VariantAssignmentPercentage"] = str(100 - allocation_percentage)
-        elif reason == VariantAssignmentReason.PERCENTILE:
-            if feature.allocation and feature.allocation.percentile:
-                for allocation in feature.allocation.percentile:
-                    if variant and allocation.variant == variant.name and allocation.percentile_to:
-                        allocation_percentage += allocation.percentile_to - allocation.percentile_from
-                event["VariantAssignmentPercentage"] = str(allocation_percentage)
+    allocation_percentage = 0
+    if reason == VariantAssignmentReason.DEFAULT_WHEN_ENABLED and feature.allocation and feature.allocation.percentile:
+        for allocation in feature.allocation.percentile:
+            if allocation.percentile_to:
+                allocation_percentage += allocation.percentile_to - allocation.percentile_from
+
+        event["VariantAssignmentPercentage"] = str(100 - allocation_percentage)
+    elif reason == VariantAssignmentReason.PERCENTILE:
+        if feature.allocation and feature.allocation.percentile:
+            for allocation in feature.allocation.percentile:
+                if variant and allocation.variant == variant.name and allocation.percentile_to:
+                    allocation_percentage += allocation.percentile_to - allocation.percentile_from
+            event["VariantAssignmentPercentage"] = str(allocation_percentage)
 
     # DefaultWhenEnabled
     if feature.allocation and feature.allocation.default_when_enabled:
