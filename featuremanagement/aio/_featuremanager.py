@@ -69,7 +69,7 @@ class FeatureManager(FeatureManagerBase):
             result.user = targeting_context.user_id
             if inspect.iscoroutinefunction(self._on_feature_evaluated):
                 await self._on_feature_evaluated(result)
-            elif callable(self._on_feature_evaluated):
+            else:
                 self._on_feature_evaluated(result)
         return result.enabled
 
@@ -105,7 +105,7 @@ class FeatureManager(FeatureManagerBase):
             result.user = targeting_context.user_id
             if inspect.iscoroutinefunction(self._on_feature_evaluated):
                 await self._on_feature_evaluated(result)
-            elif callable(self._on_feature_evaluated):
+            else:
                 self._on_feature_evaluated(result)
         return result.variant
 

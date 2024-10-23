@@ -79,7 +79,7 @@ class FeatureManagerBase(ABC):
         self._on_feature_evaluated = kwargs.pop("on_feature_evaluated", None)
 
     @staticmethod
-    def _check_default_disabled_variant(evaluation_event: EvaluationEvent) -> None:
+    def _assign_default_disabled_variant(evaluation_event: EvaluationEvent) -> None:
         """
         A method called when the feature flag is disabled, to determine what the default variant should be. If there is
         no allocation, then None is set as the value of the variant in the EvaluationEvent.
@@ -89,7 +89,7 @@ class FeatureManagerBase(ABC):
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
         if not evaluation_event.feature or not evaluation_event.feature.allocation:
             return
-        FeatureManagerBase._check_variant_override(
+        FeatureManagerBase._assign_variant_override(
             evaluation_event.feature.variants,
             evaluation_event.feature.allocation.default_when_disabled,
             False,
@@ -97,7 +97,7 @@ class FeatureManagerBase(ABC):
         )
 
     @staticmethod
-    def _check_default_enabled_variant(evaluation_event: EvaluationEvent) -> None:
+    def _assign_default_enabled_variant(evaluation_event: EvaluationEvent) -> None:
         """
         A method called when the feature flag is enabled, to determine what the default variant should be. If there is
         no allocation, then None is set as the value of the variant in the EvaluationEvent.
@@ -107,7 +107,7 @@ class FeatureManagerBase(ABC):
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_ENABLED
         if not evaluation_event.feature or not evaluation_event.feature.allocation:
             return
-        FeatureManagerBase._check_variant_override(
+        FeatureManagerBase._assign_variant_override(
             evaluation_event.feature.variants,
             evaluation_event.feature.allocation.default_when_enabled,
             True,
@@ -115,7 +115,7 @@ class FeatureManagerBase(ABC):
         )
 
     @staticmethod
-    def _check_variant_override(
+    def _assign_variant_override(
         variants: Optional[List[VariantReference]],
         default_variant_name: Optional[str],
         status: bool,
@@ -191,7 +191,7 @@ class FeatureManagerBase(ABC):
                     break
 
         if not variant_name:
-            FeatureManagerBase._check_default_enabled_variant(evaluation_event)
+            FeatureManagerBase._assign_default_enabled_variant(evaluation_event)
             if feature_flag.allocation:
                 evaluation_event.variant = self._variant_name_to_variant(
                     feature_flag, feature_flag.allocation.default_when_enabled
@@ -200,7 +200,7 @@ class FeatureManagerBase(ABC):
 
         evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
         if feature_flag.variants:
-            FeatureManagerBase._check_variant_override(feature_flag.variants, variant_name, True, evaluation_event)
+            FeatureManagerBase._assign_variant_override(feature_flag.variants, variant_name, True, evaluation_event)
 
     def _variant_name_to_variant(self, feature_flag: FeatureFlag, variant_name: Optional[str]) -> Optional[Variant]:
         """
@@ -250,7 +250,7 @@ class FeatureManagerBase(ABC):
             )
             return
         if not evaluation_event.enabled:
-            FeatureManagerBase._check_default_disabled_variant(evaluation_event)
+            FeatureManagerBase._assign_default_disabled_variant(evaluation_event)
             evaluation_event.variant = self._variant_name_to_variant(
                 feature_flag, feature_flag.allocation.default_when_disabled
             )
@@ -284,11 +284,10 @@ class FeatureManagerBase(ABC):
 
         if not feature_flag.enabled:
             # Feature flags that are disabled are always disabled
-            self._check_default_disabled_variant(evaluation_event)
+            self._assign_default_disabled_variant(evaluation_event)
             if feature_flag.allocation:
                 variant_name = feature_flag.allocation.default_when_disabled
                 evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-            evaluation_event.feature = feature_flag
 
             # If a feature flag is disabled and override can't enable it
             evaluation_event.enabled = False
