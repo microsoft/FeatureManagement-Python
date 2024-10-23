@@ -151,7 +151,7 @@ class FeatureManager(FeatureManagerBase):
         :return: EvaluationEvent for the given context.
         :rtype: EvaluationEvent
         """
-        evaluation_event, done = FeatureManager._check_feature_base(self, feature_flag_id)
+        evaluation_event, done = super()._check_feature_base(feature_flag_id)
 
         if done:
             return evaluation_event
