@@ -150,22 +150,19 @@ class FeatureManagerBase(ABC):
 
         return (context_marker / (2**32 - 1)) * 100
 
-    def _assign_variant(
-        self, feature_flag: FeatureFlag, targeting_context: TargetingContext, evaluation_event: EvaluationEvent
-    ) -> None:
+    def _assign_variant(self, targeting_context: TargetingContext, evaluation_event: EvaluationEvent) -> None:
         """
         Assign a variant to the user based on the allocation.
 
-        :param FeatureFlag feature_flag: Feature flag object.
         :param TargetingContext targeting_context: Targeting context.
         :param EvaluationEvent evaluation_event: Evaluation event object.
         """
-        feature = evaluation_event.feature
+        feature_flag = evaluation_event.feature
         variant_name = None
-        if not feature or not feature.variants or not feature.allocation:
+        if not feature_flag or not feature_flag.variants or not feature_flag.allocation:
             return
 
-        allocation = feature.allocation
+        allocation = feature_flag.allocation
         groups = targeting_context.groups
 
         if allocation.user and targeting_context.user_id:
@@ -181,7 +178,7 @@ class FeatureManagerBase(ABC):
                     variant_name = group_allocation.variant
 
         if not variant_name and allocation.percentile:
-            seed = allocation.seed or f"allocation\n{feature.name}"
+            seed = allocation.seed or f"allocation\n{feature_flag.name}"
             context_id = f"{targeting_context.user_id}\n{seed}"
             box: float = self._is_targeted(context_id)
             for percentile_allocation in allocation.percentile:
@@ -259,7 +256,7 @@ class FeatureManagerBase(ABC):
             )
             return
 
-        self._assign_variant(feature_flag, targeting_context, evaluation_event)
+        self._assign_variant(targeting_context, evaluation_event)
 
     def _check_feature_base(self, feature_flag_id: str) -> Tuple[EvaluationEvent, bool]:
         """
