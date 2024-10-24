@@ -239,16 +239,9 @@ class FeatureManagerBase(ABC):
         if not feature_flag:
             return
 
-        if not feature_flag.variants:
+        if not feature_flag.variants or not feature_flag.allocation:
             return
 
-        if not feature_flag.allocation:
-            evaluation_event.reason = (
-                VariantAssignmentReason.DEFAULT_WHEN_ENABLED
-                if evaluation_event.enabled
-                else VariantAssignmentReason.DEFAULT_WHEN_DISABLED
-            )
-            return
         if not evaluation_event.enabled:
             FeatureManagerBase._assign_default_disabled_variant(evaluation_event)
             evaluation_event.variant = self._variant_name_to_variant(
