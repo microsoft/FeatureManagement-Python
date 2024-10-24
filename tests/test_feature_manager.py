@@ -3,11 +3,17 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+import unittest
 import pytest
 from featuremanagement import FeatureManager, FeatureFilter
 
 
-class TestFeatureManager:
+class TestFeatureManager(unittest.TestCase):
+
+    def __init__(self, methodName="runTest"):
+        super().__init__(methodName=methodName)
+        self.called_telemetry = False
+
     # method: feature_manager_creation
     def test_empty_feature_manager_creation(self):
         feature_manager = FeatureManager({})
@@ -28,6 +34,12 @@ class TestFeatureManager:
         assert feature_manager is not None
         assert feature_manager.is_enabled("Alpha")
         assert not feature_manager.is_enabled("Beta")
+
+    # method: feature_manager_creation
+    def test_feature_manager_creation_invalid_feature_filter(self):
+        feature_flags = {"feature_management": {"feature_flags": []}}
+        with self.assertRaises(ValueError):
+            FeatureManager(feature_flags, feature_filters=["invalid_filter"])
 
     # method: feature_manager_creation
     def test_feature_manager_creation_with_filters(self):
@@ -118,6 +130,25 @@ class TestFeatureManager:
             feature_manager.is_enabled("Alpha")
         assert e_info.type == ValueError
         assert e_info.value.args[0] == "Feature flag Alpha has unknown filter UnknownFilter"
+
+    # method: feature_manager_creation
+    def test_feature_with_telemetry(self):
+        self.called_telemetry = False
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {"id": "Alpha", "description": "", "enabled": "true", "telemetry": {"enabled": "true"}},
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags, on_feature_evaluated=self.fake_telemetry_callback)
+        assert feature_manager is not None
+        assert feature_manager.is_enabled("Alpha")
+        assert self.called_telemetry
+
+    def fake_telemetry_callback(self, evaluation_event):
+        assert evaluation_event
+        self.called_telemetry = True
 
 
 class AlwaysOn(FeatureFilter):

@@ -24,4 +24,4 @@ class EvaluationEvent:
         self.user = ""
         self.enabled = False
         self.variant: Optional[Variant] = None
-        self.reason: Optional[VariantAssignmentReason] = None
+        self.reason: VariantAssignmentReason = VariantAssignmentReason.NONE
