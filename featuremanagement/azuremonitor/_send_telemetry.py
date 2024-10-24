@@ -70,8 +70,7 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     reason = evaluation_event.reason
     variant = evaluation_event.variant
 
-    if reason:
-        event[REASON] = reason.value
+    event[REASON] = reason.value
 
     if variant:
         event[VARIANT] = variant.name
