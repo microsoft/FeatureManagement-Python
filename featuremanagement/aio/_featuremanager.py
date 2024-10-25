@@ -4,16 +4,13 @@
 # license information.
 # -------------------------------------------------------------------------
 import inspect
-import logging
-from typing import cast, overload, Mapping, Dict, Any, Optional, List
+from typing import cast, overload, Any, Optional, Dict, Mapping, List
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from .._models import EvaluationEvent, TargetingContext, Variant
+from .._models import EvaluationEvent, Variant, TargetingContext
 from .._featuremanagerbase import (
-    _get_feature_flag,
     FeatureManagerBase,
     PROVIDED_FEATURE_FILTERS,
-    FEATURE_MANAGEMENT_KEY,
     REQUIREMENT_TYPE_ALL,
     FEATURE_FILTER_NAME,
 )
@@ -63,11 +60,16 @@ class FeatureManager(FeatureManagerBase):
         targeting_context = self._build_targeting_context(args)
 
         result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature and result.feature.telemetry.enabled:
+        if (
+            self._on_feature_evaluated
+            and result.feature
+            and result.feature.telemetry.enabled
+            and callable(self._on_feature_evaluated)
+        ):
             result.user = targeting_context.user_id
             if inspect.iscoroutinefunction(self._on_feature_evaluated):
                 await self._on_feature_evaluated(result)
-            elif callable(self._on_feature_evaluated):
+            else:
                 self._on_feature_evaluated(result)
         return result.enabled
 
@@ -94,11 +96,16 @@ class FeatureManager(FeatureManagerBase):
         targeting_context = self._build_targeting_context(args)
 
         result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
-        if self._on_feature_evaluated and result.feature and result.feature.telemetry.enabled:
+        if (
+            self._on_feature_evaluated
+            and result.feature
+            and result.feature.telemetry.enabled
+            and callable(self._on_feature_evaluated)
+        ):
             result.user = targeting_context.user_id
             if inspect.iscoroutinefunction(self._on_feature_evaluated):
                 await self._on_feature_evaluated(result)
-            elif callable(self._on_feature_evaluated):
+            else:
                 self._on_feature_evaluated(result)
         return result.variant
 
@@ -141,35 +148,12 @@ class FeatureManager(FeatureManagerBase):
 
         :param str feature_flag_id: Name of the feature flag.
         :param TargetingContext targeting_context: Targeting context.
-        :return: True if the feature flag is enabled for the given context.
-        :rtype: bool
+        :return: EvaluationEvent for the given context.
+        :rtype: EvaluationEvent
         """
-        if self._copy is not self._configuration.get(FEATURE_MANAGEMENT_KEY):
-            self._cache = {}
-            self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
+        evaluation_event, done = super()._check_feature_base(feature_flag_id)
 
-        if not self._cache.get(feature_flag_id):
-            feature_flag = _get_feature_flag(self._configuration, feature_flag_id)
-            self._cache[feature_flag_id] = feature_flag
-        else:
-            feature_flag = self._cache.get(feature_flag_id)
-
-        evaluation_event = EvaluationEvent(feature_flag)
-        if not feature_flag:
-            logging.warning("Feature flag %s not found", feature_flag_id)
-            # Unknown feature flags are disabled by default
-            return evaluation_event
-
-        if not feature_flag.enabled:
-            # Feature flags that are disabled are always disabled
-            FeatureManager._check_default_disabled_variant(evaluation_event)
-            if feature_flag.allocation:
-                variant_name = feature_flag.allocation.default_when_disabled
-                evaluation_event.variant = self._variant_name_to_variant(feature_flag, variant_name)
-            evaluation_event.feature = feature_flag
-
-            # If a feature flag is disabled and override can't enable it
-            evaluation_event.enabled = False
+        if done:
             return evaluation_event
 
         await self._check_feature_filters(evaluation_event, targeting_context, **kwargs)

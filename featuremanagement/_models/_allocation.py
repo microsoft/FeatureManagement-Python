@@ -36,7 +36,7 @@ class PercentileAllocation:
     def __init__(self) -> None:
         self._variant: Optional[str] = None
         self._percentile_from: int = 0
-        self._percentile_to: Optional[int] = None
+        self._percentile_to: int = 0
 
     @classmethod
     def convert_from_json(cls, json: Mapping[str, Union[str, int]]) -> "PercentileAllocation":
@@ -88,7 +88,7 @@ class PercentileAllocation:
         return self._percentile_from
 
     @property
-    def percentile_to(self) -> Optional[int]:
+    def percentile_to(self) -> int:
         """
         Get the ending percentile for the allocation.
 

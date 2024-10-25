@@ -5,6 +5,7 @@ azuremonitor
 caplog
 Cass
 featurefilters
+featureflag
 featuremanagement
 featuremanager
 featuremanagerbase

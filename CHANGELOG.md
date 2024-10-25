@@ -1,5 +1,9 @@
 # Release History
 
+## 2.0.0b3 (Unreleased)
+
+* Fixes a bug where no allocation reason is set if a user is allocated to exactly 100.
+
 ## 2.0.0b2 (10/11/2024)
 
 * Adds VariantAssignmentPercentage, DefaultWhenEnabled, and AllocationId to telemetry.
