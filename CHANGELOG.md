@@ -1,8 +1,9 @@
 # Release History
 
-## 2.0.0b3 (Unreleased)
+## 2.0.0b3 (11/14/2024)
 
 * Fixes a bug where no allocation reason is set if a user is allocated to exactly 100.
+* Fixes a bug where VariantAssignmentPercentage wasn't correct for default when enabled.
 
 ## 2.0.0b2 (10/11/2024)
 
