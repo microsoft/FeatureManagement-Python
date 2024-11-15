@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------------
 import logging
 from typing import Dict, Optional
-from .._models import VariantAssignmentReason, EvaluationEvent
+from .._models import EvaluationEvent
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event  # type: ignore
@@ -25,7 +25,7 @@ REASON = "VariantAssignmentReason"
 
 EVENT_NAME = "FeatureEvaluation"
 
-EVALUATION_EVENT_VERSION = "1.1.0"
+EVALUATION_EVENT_VERSION = "1.0.0"
 
 
 def track_event(event_name: str, user: str, event_properties: Optional[Dict[str, Optional[str]]] = None) -> None:
@@ -74,25 +74,6 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
 
     if variant:
         event[VARIANT] = variant.name
-
-    # VariantAllocationPercentage
-    allocation_percentage = 0
-    if reason == VariantAssignmentReason.DEFAULT_WHEN_ENABLED:
-        event["VariantAssignmentPercentage"] = str(100)
-        if feature.allocation:
-            for allocation in feature.allocation.percentile:
-                allocation_percentage += allocation.percentile_to - allocation.percentile_from
-            event["VariantAssignmentPercentage"] = str(100 - allocation_percentage)
-    elif reason == VariantAssignmentReason.PERCENTILE:
-        if feature.allocation and feature.allocation.percentile:
-            for allocation in feature.allocation.percentile:
-                if variant and allocation.variant == variant.name:
-                    allocation_percentage += allocation.percentile_to - allocation.percentile_from
-            event["VariantAssignmentPercentage"] = str(allocation_percentage)
-
-    # DefaultWhenEnabled
-    if feature.allocation and feature.allocation.default_when_enabled:
-        event["DefaultWhenEnabled"] = feature.allocation.default_when_enabled
 
     if feature.telemetry:
         for metadata_key, metadata_value in feature.telemetry.metadata.items():

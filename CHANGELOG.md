@@ -1,5 +1,13 @@
 # Release History
 
+## 2.0.0 (11/19/2024)
+
+* GA release of Feature Management supporting Feature Variants.
+* GA release of Telemetry support.
+  * `publish_telemetry` sends: feature name, enabled, telemetry version, reason, variant name, targeting id, and additionally provided metadata.
+  * `publish_telemetry` can be added as a callback when creating `FeatureManager` with `on_feature_evaluated=publish_telemetry`
+  & `track_event` a custom event logger that adds the targeting id to the event.
+
 ## 2.0.0b3 (11/14/2024)
 
 * Fixes a bug where no allocation reason is set if a user is allocated to exactly 100.
