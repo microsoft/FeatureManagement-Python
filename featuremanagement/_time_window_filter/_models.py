@@ -5,8 +5,9 @@
 # -------------------------------------------------------------------------
 from enum import Enum
 from datetime import datetime
-from typing import List
+from typing import Self
 from dataclasses import dataclass
+from email.utils import parsedate_to_datetime
 
 
 class RecurrencePatternType(str, Enum):
@@ -16,6 +17,13 @@ class RecurrencePatternType(str, Enum):
 
     DAILY = "Daily"
     WEEKLY = "Weekly"
+
+    def from_str(value: str) -> Self:
+        if value == "Daily":
+            return RecurrencePatternType.DAILY
+        if value == "Weekly":
+            return RecurrencePatternType.WEEKLY
+        raise ValueError(f"Invalid value: {value}")
 
 
 class RecurrenceRangeType(str, Enum):
@@ -27,38 +35,45 @@ class RecurrenceRangeType(str, Enum):
     END_DATE = "EndDate"
     NUMBERED = "Numbered"
 
+    def from_str(value: str) -> Self:
+        if value == "NoEnd":
+            return RecurrenceRangeType.NO_END
+        if value == "EndDate":
+            return RecurrenceRangeType.END_DATE
+        if value == "Numbered":
+            return RecurrenceRangeType.NUMBERED
+        raise ValueError(f"Invalid value: {value}")
 
-@dataclass
 class RecurrencePattern:
     """
     The recurrence pattern settings.
     """
 
-    days_of_week: List[int]
-    interval: int = 1
-    first_day_of_week: int = 7
-    type: RecurrencePatternType = RecurrencePatternType.DAILY
+    def __init__(self, pattern_data: dict[str: any]):
+        self.type = RecurrencePatternType.from_str(pattern_data.get("Type", "Daily"))
+        self.interval = pattern_data.get("Interval", 1)
+        self.days_of_week = pattern_data.get("DaysOfWeek", [])
+        self.first_day_of_week = pattern_data.get("FirstDayOfWeek", 7)
 
-
-@dataclass
 class RecurrenceRange:
     """
     The recurrence range settings.
     """
 
-    end_date: datetime
-    num_of_occurrences: int
-    type: RecurrenceRangeType = RecurrenceRangeType.NO_END
+    def __init__(self, range_data: dict[str: any]):
+        self.type = RecurrenceRangeType.from_str(range_data.get("Type", "NoEnd"))
+        if range_data.get("EndDate"):
+            self.end_date = parsedate_to_datetime(range_data.get("EndDate"))
+        self.num_of_occurrences = range_data.get("NumberOfOccurrences")
 
-
-@dataclass
 class Recurrence:
     """
     The recurrence settings.
     """
 
-    pattern: RecurrencePattern
-    range: RecurrenceRange
+    def __init__(self, recurrence_data: dict[str: any]):
+        self.pattern = RecurrencePattern(recurrence_data.get("Pattern"))
+        self.range = RecurrenceRange(recurrence_data.get("Range"))
 
 
 @dataclass

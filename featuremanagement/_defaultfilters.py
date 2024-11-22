@@ -72,7 +72,7 @@ class TimeWindowFilter(FeatureFilter):
         current_time = datetime.now(timezone.utc)
 
         if recurrence_data:
-            recurrence = Recurrence(**cast(Dict[str, Any], recurrence_data))
+            recurrence = Recurrence(recurrence_data)
 
         if not start and not end:
             logger.warning(
@@ -105,7 +105,6 @@ class TimeWindowFilter(FeatureFilter):
             return False
 
         return (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time)
-
 
 @FeatureFilter.alias("Microsoft.Targeting")
 class TargetingFilter(FeatureFilter):
