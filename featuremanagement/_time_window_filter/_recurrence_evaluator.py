@@ -41,14 +41,18 @@ def _get_previous_occurrence(settings: TimeWindowFilterSettings, now: datetime) 
 
     recurrence_range = settings.recurrence.range
     range_type = recurrence_range.type
+    previous_occurrence = occurrence_info.previous_occurrence
+    end_date = recurrence_range.end_date
     if (
         range_type == RecurrenceRangeType.END_DATE
-        and occurrence_info.previous_occurrence
-        and occurrence_info.previous_occurrence > recurrence_range.end_date
+        and previous_occurrence is not None
+        and end_date is not None
+        and previous_occurrence > end_date
     ):
         return None
     if (
         range_type == RecurrenceRangeType.NUMBERED
+        and recurrence_range.num_of_occurrences is not None
         and occurrence_info.num_of_occurrences > recurrence_range.num_of_occurrences
     ):
         return None

@@ -23,10 +23,10 @@ TIME_WINDOW_FILTER_SETTING_RECURRENCE = "Recurrence"
 
 # Time Window Exceptions
 TIME_WINDOW_FILTER_INVALID = (
-    "%s: The %s feature filter is not valid for feature %s. It must specify either %s, $s, or both."
+    "{}: The {} feature filter is not valid for feature {}. It must specify either {}, {}, or both."
 )
 TIME_WINDOW_FILTER_INVALID_RECURRENCE = (
-    "%s: The %s feature filter is not valid for feature %s. It must specify both %s and $s when Recurrence is not None."
+    "{}: The {} feature filter is not valid for feature {}. It must specify both {} and {} when Recurrence is not None."
 )
 
 # Targeting kwargs
@@ -105,6 +105,7 @@ class TimeWindowFilter(FeatureFilter):
             return False
 
         return (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time)
+
 
 @FeatureFilter.alias("Microsoft.Targeting")
 class TargetingFilter(FeatureFilter):

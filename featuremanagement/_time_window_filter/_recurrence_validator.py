@@ -109,7 +109,8 @@ def _validate_days_of_week(settings: TimeWindowFilterSettings) -> None:
 
 
 def _validate_end_date(settings: TimeWindowFilterSettings) -> None:
-    if settings.recurrence.range.end_date < settings.start:
+    end_date = settings.recurrence.range.end_date
+    if end_date and end_date < settings.start:
         raise ValueError("The Recurrence.Range.EndDate should be after the Start")
 
 
