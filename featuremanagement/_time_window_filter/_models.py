@@ -88,6 +88,8 @@ class RecurrenceRange:  # pylint: disable=too-few-public-methods
             end_date_str = range_data.get("EndDate", "")
             self.end_date = parsedate_to_datetime(end_date_str) if end_date_str else None
         self.num_of_occurrences = range_data.get("NumberOfOccurrences", 0)
+        if self.num_of_occurrences < 0:
+            raise ValueError("The number of occurrences must be greater than or equal to 0.")
 
 
 class Recurrence:  # pylint: disable=too-few-public-methods
