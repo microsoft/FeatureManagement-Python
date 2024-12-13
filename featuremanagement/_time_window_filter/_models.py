@@ -71,6 +71,8 @@ class RecurrencePattern:  # pylint: disable=too-few-public-methods
     def __init__(self, pattern_data: Dict[str, Any]):
         self.type = RecurrencePatternType.from_str(pattern_data.get("Type", "Daily"))
         self.interval = pattern_data.get("Interval", 1)
+        if self.interval <= 0:
+            raise ValueError("The interval must be greater than 0.")
         self.days_of_week = pattern_data.get("DaysOfWeek", [])
         self.first_day_of_week = pattern_data.get("FirstDayOfWeek", 7)
 
@@ -85,7 +87,7 @@ class RecurrenceRange:  # pylint: disable=too-few-public-methods
         if range_data.get("EndDate") and isinstance(range_data.get("EndDate"), str):
             end_date_str = range_data.get("EndDate", "")
             self.end_date = parsedate_to_datetime(end_date_str) if end_date_str else None
-        self.num_of_occurrences = range_data.get("NumberOfOccurrences")
+        self.num_of_occurrences = range_data.get("NumberOfOccurrences", 0)
 
 
 class Recurrence:  # pylint: disable=too-few-public-methods
