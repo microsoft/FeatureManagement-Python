@@ -4,7 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 from enum import Enum
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime
 from dataclasses import dataclass
 from email.utils import parsedate_to_datetime
@@ -68,13 +68,18 @@ class RecurrencePattern:  # pylint: disable=too-few-public-methods
     The recurrence pattern settings.
     """
 
+    days: list = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
     def __init__(self, pattern_data: Dict[str, Any]):
         self.type = RecurrencePatternType.from_str(pattern_data.get("Type", "Daily"))
         self.interval = pattern_data.get("Interval", 1)
         if self.interval <= 0:
             raise ValueError("The interval must be greater than 0.")
-        self.days_of_week = pattern_data.get("DaysOfWeek", [])
-        self.first_day_of_week = pattern_data.get("FirstDayOfWeek", 7)
+        days_of_week = pattern_data.get("DaysOfWeek", [])
+        for day in days_of_week:
+            self.days_of_week.append(self.days.index(day))
+        first_day_of_week = pattern_data.get("FirstDayOfWeek", "Sunday")
+        self.first_day_of_week = self.days.index(first_day_of_week) if first_day_of_week in self.days else 0
 
 
 class RecurrenceRange:  # pylint: disable=too-few-public-methods
@@ -110,7 +115,7 @@ class TimeWindowFilterSettings:
 
     start: datetime
     end: datetime
-    recurrence: Recurrence
+    recurrence: Optional[Recurrence]
 
 
 @dataclass
