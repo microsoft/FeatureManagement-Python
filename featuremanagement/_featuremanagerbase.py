@@ -77,7 +77,9 @@ class FeatureManagerBase(ABC):
         self._cache: Dict[str, Optional[FeatureFlag]] = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
         self._on_feature_evaluated = kwargs.pop("on_feature_evaluated", None)
-        self._targeting_context_accessor: Optional[Callable[[],TargetingContext]] = kwargs.pop("targeting_context_accessor", None)
+        self._targeting_context_accessor: Optional[Callable[[], TargetingContext]] = kwargs.pop(
+            "targeting_context_accessor", None
+        )
 
     @staticmethod
     def _assign_default_disabled_variant(evaluation_event: EvaluationEvent) -> None:
@@ -240,7 +242,11 @@ class FeatureManagerBase(ABC):
             targeting_context = self._targeting_context_accessor()
             if targeting_context and isinstance(targeting_context, TargetingContext):
                 return targeting_context
-            logging.warning("targeting_context_accessor did not return a TargetingContext")
+            logging.warning(
+                "targeting_context_accessor did not return a TargetingContex. Received type {}.".format(
+                    type(targeting_context)
+                )
+            )
         return TargetingContext()
 
     def _assign_allocation(self, evaluation_event: EvaluationEvent, targeting_context: TargetingContext) -> None:
