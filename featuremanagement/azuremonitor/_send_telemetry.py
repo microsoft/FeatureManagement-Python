@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------------
 import logging
 from typing import Dict, Optional
-from .._models import VariantAssignmentReason, EvaluationEvent, TargetingContext
+from .._models import VariantAssignmentReason, EvaluationEvent
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event  # type: ignore
@@ -109,6 +109,7 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
 
     track_event(EVENT_NAME, evaluation_event.user, event_properties=event)
 
+
 def attach_targeting_info(targeting_id: str):
     """
     Attaches the targeting ID to the current span and baggage.
@@ -118,18 +119,19 @@ def attach_targeting_info(targeting_id: str):
     context.attach(baggage.set_baggage(MICROSOFT_TARGETING_ID, targeting_id))
     trace.get_current_span().set_attribute(TARGETING_ID, targeting_id)
 
-"""
-This class is a custom SpanProcessor that attaches the targeting ID to the span and baggage when a new span is started.
-"""
-class TargetingSpanProcessor(SpanProcessor):
 
-    def on_start(self, span: Span, parent_context = None):
+class TargetingSpanProcessor(SpanProcessor):
+    """
+    A custom SpanProcessor that attaches the targeting ID to the span and baggage when a new span is started.
+    """
+
+    def on_start(self, span: Span, parent_context=None):
         """
         Attaches the targeting ID to the span and baggage when a new span is started.
-        
+
         :param Span span: The span that was started.
         :param parent_context: The parent context of the span.
         """
         target_baggage = baggage.get_baggage(MICROSOFT_TARGETING_ID, parent_context)
-        if (target_baggage != None):
+        if target_baggage is not None:
             span.set_attribute(TARGETING_ID, target_baggage)
