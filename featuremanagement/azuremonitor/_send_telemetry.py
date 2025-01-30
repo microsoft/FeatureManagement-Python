@@ -36,6 +36,7 @@ EVENT_NAME = "FeatureEvaluation"
 
 EVALUATION_EVENT_VERSION = "1.1.0"
 
+
 def track_event(event_name: str, user: str, event_properties: Optional[Dict[str, Optional[str]]] = None) -> None:
     """
     Tracks an event with the specified name and properties.
@@ -123,6 +124,7 @@ def attach_targeting_info(targeting_id: str) -> None:
 
 
 if HAS_AZURE_MONITOR_EVENTS_EXTENSION:
+
     class TargetingSpanProcessor(SpanProcessor):
         """
         A custom SpanProcessor that attaches the targeting ID to the span and baggage when a new span is started.
