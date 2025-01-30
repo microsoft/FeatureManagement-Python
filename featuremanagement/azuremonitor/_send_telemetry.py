@@ -25,10 +25,10 @@ TARGETING_ID = "TargetingId"
 VARIANT = "Variant"
 REASON = "VariantAssignmentReason"
 
-DefaultWhenEnabled = "DefaultWhenEnabled"
+DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
 VERSION = "Version"
 VARIANT_ASSIGNMENT_PERCENTAGE = "VariantAssignmentPercentage"
-Microsoft_TargetingId = "Microsoft.TargetingId"
+MICROSOFT_TARGETING_ID = "Microsoft.TargetingId"
 SPAN = "Span"
 
 EVENT_NAME = "FeatureEvaluation"
@@ -100,7 +100,7 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
 
     # DefaultWhenEnabled
     if feature.allocation and feature.allocation.default_when_enabled:
-        event[DefaultWhenEnabled] = feature.allocation.default_when_enabled
+        event[DEFAULT_WHEN_ENABLED] = feature.allocation.default_when_enabled
 
     if feature.telemetry:
         for metadata_key, metadata_value in feature.telemetry.metadata.items():
@@ -110,10 +110,26 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     track_event(EVENT_NAME, evaluation_event.user, event_properties=event)
 
 def attach_targeting_info(targeting_id: str):
-    context.attach(baggage.set_baggage(Microsoft_TargetingId, targeting_id))
+    """
+    Attaches the targeting ID to the current span and baggage.
+
+    :param str targeting_id: The targeting ID to attach.
+    """
+    context.attach(baggage.set_baggage(MICROSOFT_TARGETING_ID, targeting_id))
     trace.get_current_span().set_attribute(TARGETING_ID, targeting_id)
 
+"""
+This class is a custom SpanProcessor that attaches the targeting ID to the span and baggage when a new span is started.
+"""
 class TargetingSpanProcessor(SpanProcessor):
+
     def on_start(self, span: Span, parent_context = None):
-        if (baggage.get_baggage(Microsoft_TargetingId, parent_context) != None):
-            span.set_attribute(TARGETING_ID, baggage.get_baggage(Microsoft_TargetingId, parent_context))
+        """
+        Attaches the targeting ID to the span and baggage when a new span is started.
+        
+        :param Span span: The span that was started.
+        :param parent_context: The parent context of the span.
+        """
+        target_baggage = baggage.get_baggage(MICROSOFT_TARGETING_ID, parent_context)
+        if (target_baggage != None):
+            span.set_attribute(TARGETING_ID, target_baggage)
