@@ -8,5 +8,3 @@ sphinx
 sphinx_rtd_theme
 sphinx-toolbox
 myst_parser
-opentelemetry-api
-opentelemetry-sdk

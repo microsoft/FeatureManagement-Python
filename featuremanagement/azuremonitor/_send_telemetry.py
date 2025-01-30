@@ -9,9 +9,9 @@ from .._models import VariantAssignmentReason, EvaluationEvent
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event  # type: ignore
-    from opentelemetry import trace, baggage, context
-    from opentelemetry.context.context import Context
-    from opentelemetry.sdk.trace import Span, SpanProcessor
+    from opentelemetry import trace, baggage, context  # type: ignore
+    from opentelemetry.context.context import Context  # type: ignore
+    from opentelemetry.sdk.trace import Span, SpanProcessor  # type: ignore
 
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = True
 except ImportError:
