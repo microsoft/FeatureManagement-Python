@@ -126,7 +126,7 @@ class TargetingSpanProcessor(SpanProcessor):
     A custom SpanProcessor that attaches the targeting ID to the span and baggage when a new span is started.
     """
 
-    def on_start(self, span: Span, parent_context: Optional[Context] =None) -> None:
+    def on_start(self, span: Span, parent_context: Optional[Context] = None) -> None:
         """
         Attaches the targeting ID to the span and baggage when a new span is started.
 
