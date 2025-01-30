@@ -5,10 +5,12 @@
 # --------------------------------------------------------------------------
 import logging
 from typing import Dict, Optional
-from .._models import VariantAssignmentReason, EvaluationEvent
+from .._models import VariantAssignmentReason, EvaluationEvent, TargetingContext
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event  # type: ignore
+    from opentelemetry import trace, baggage, context
+    from opentelemetry.sdk.trace import Span, SpanProcessor
 
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = True
 except ImportError:
@@ -22,6 +24,12 @@ ENABLED = "Enabled"
 TARGETING_ID = "TargetingId"
 VARIANT = "Variant"
 REASON = "VariantAssignmentReason"
+
+DefaultWhenEnabled = "DefaultWhenEnabled"
+VERSION = "Version"
+VARIANT_ASSIGNMENT_PERCENTAGE = "VariantAssignmentPercentage"
+Microsoft_TargetingId = "Microsoft.TargetingId"
+SPAN = "Span"
 
 EVENT_NAME = "FeatureEvaluation"
 
@@ -64,7 +72,7 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     event: Dict[str, Optional[str]] = {
         FEATURE_NAME: feature.name,
         ENABLED: str(evaluation_event.enabled),
-        "Version": EVALUATION_EVENT_VERSION,
+        VERSION: EVALUATION_EVENT_VERSION,
     }
 
     reason = evaluation_event.reason
@@ -78,21 +86,21 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     # VariantAllocationPercentage
     allocation_percentage = 0
     if reason == VariantAssignmentReason.DEFAULT_WHEN_ENABLED:
-        event["VariantAssignmentPercentage"] = str(100)
+        event[VARIANT_ASSIGNMENT_PERCENTAGE] = str(100)
         if feature.allocation:
             for allocation in feature.allocation.percentile:
                 allocation_percentage += allocation.percentile_to - allocation.percentile_from
-            event["VariantAssignmentPercentage"] = str(100 - allocation_percentage)
+            event[VARIANT_ASSIGNMENT_PERCENTAGE] = str(100 - allocation_percentage)
     elif reason == VariantAssignmentReason.PERCENTILE:
         if feature.allocation and feature.allocation.percentile:
             for allocation in feature.allocation.percentile:
                 if variant and allocation.variant == variant.name:
                     allocation_percentage += allocation.percentile_to - allocation.percentile_from
-            event["VariantAssignmentPercentage"] = str(allocation_percentage)
+            event[VARIANT_ASSIGNMENT_PERCENTAGE] = str(allocation_percentage)
 
     # DefaultWhenEnabled
     if feature.allocation and feature.allocation.default_when_enabled:
-        event["DefaultWhenEnabled"] = feature.allocation.default_when_enabled
+        event[DefaultWhenEnabled] = feature.allocation.default_when_enabled
 
     if feature.telemetry:
         for metadata_key, metadata_value in feature.telemetry.metadata.items():
@@ -100,3 +108,12 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
                 event[metadata_key] = metadata_value
 
     track_event(EVENT_NAME, evaluation_event.user, event_properties=event)
+
+def attach_targeting_info(targeting_id: str):
+    context.attach(baggage.set_baggage(Microsoft_TargetingId, targeting_id))
+    trace.get_current_span().set_attribute(TARGETING_ID, targeting_id)
+
+class TargetingSpanProcessor(SpanProcessor):
+    def on_start(self, span: Span, parent_context = None):
+        if (baggage.get_baggage(Microsoft_TargetingId, parent_context) != None):
+            span.set_attribute(TARGETING_ID, baggage.get_baggage(Microsoft_TargetingId, parent_context))
