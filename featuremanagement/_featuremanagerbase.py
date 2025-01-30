@@ -243,7 +243,8 @@ class FeatureManagerBase(ABC):
             if targeting_context and isinstance(targeting_context, TargetingContext):
                 return targeting_context
             logging.warning(
-                f"targeting_context_accessor did not return a TargetingContext. Received type {type(targeting_context)}."
+                "targeting_context_accessor did not return a TargetingContext. Received type %s.",
+                type(targeting_context),
             )
         return TargetingContext()
 
