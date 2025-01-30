@@ -12,7 +12,6 @@ try:
     from opentelemetry import trace, baggage, context
     from opentelemetry.context.context import Context
     from opentelemetry.sdk.trace import Span, SpanProcessor
-    from opentelemetry.util import types
 
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = True
 except ImportError:
