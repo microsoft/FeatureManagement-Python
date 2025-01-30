@@ -6,7 +6,7 @@
 import hashlib
 import logging
 from abc import ABC
-from typing import List, Optional, Dict, Tuple, Any, Mapping
+from typing import List, Optional, Dict, Tuple, Any, Mapping, Callable
 from ._models import FeatureFlag, Variant, VariantAssignmentReason, TargetingContext, EvaluationEvent, VariantReference
 
 
@@ -77,6 +77,7 @@ class FeatureManagerBase(ABC):
         self._cache: Dict[str, Optional[FeatureFlag]] = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
         self._on_feature_evaluated = kwargs.pop("on_feature_evaluated", None)
+        self._targeting_context_accessor: Optional[Callable[[],TargetingContext]] = kwargs.pop("targeting_context_accessor", None)
 
     @staticmethod
     def _assign_default_disabled_variant(evaluation_event: EvaluationEvent) -> None:
@@ -229,9 +230,17 @@ class FeatureManagerBase(ABC):
         if len(args) == 1:
             arg = args[0]
             if isinstance(arg, str):
+                # If the user_id is provided, return a TargetingContext with the user_id
                 return TargetingContext(user_id=arg, groups=[])
             if isinstance(arg, TargetingContext):
+                # If a TargetingContext is provided, return it
                 return arg
+        elif self._targeting_context_accessor and callable(self._targeting_context_accessor):
+            # If a targeting_context_accessor is provided, return the TargetingContext from it
+            targeting_context = self._targeting_context_accessor()
+            if targeting_context and isinstance(targeting_context, TargetingContext):
+                return targeting_context
+            logging.warning("targeting_context_accessor did not return a TargetingContext")
         return TargetingContext()
 
     def _assign_allocation(self, evaluation_event: EvaluationEvent, targeting_context: TargetingContext) -> None:
