@@ -19,6 +19,9 @@ except ImportError:
     logging.warning(
         "azure-monitor-events-extension is not installed. Telemetry will not be sent to Application Insights."
     )
+    SpanProcessor = object  # type: ignore
+    Span = object  # type: ignore
+    Context = object  # type: ignore
 
 FEATURE_NAME = "FeatureName"
 ENABLED = "Enabled"
@@ -123,20 +126,20 @@ def attach_targeting_info(targeting_id: str) -> None:
     trace.get_current_span().set_attribute(TARGETING_ID, targeting_id)
 
 
-if HAS_AZURE_MONITOR_EVENTS_EXTENSION:
+class TargetingSpanProcessor(SpanProcessor):
+    """
+    A custom SpanProcessor that attaches the targeting ID to the span and baggage when a new span is started.
+    """
 
-    class TargetingSpanProcessor(SpanProcessor):
+    def on_start(self, span: Span, parent_context: Optional[Context] = None) -> None:
         """
-        A custom SpanProcessor that attaches the targeting ID to the span and baggage when a new span is started.
+        Attaches the targeting ID to the span and baggage when a new span is started.
+
+        :param Span span: The span that was started.
+        :param parent_context: The parent context of the span.
         """
-
-        def on_start(self, span: Span, parent_context: Optional[Context] = None) -> None:
-            """
-            Attaches the targeting ID to the span and baggage when a new span is started.
-
-            :param Span span: The span that was started.
-            :param parent_context: The parent context of the span.
-            """
-            target_baggage = baggage.get_baggage(MICROSOFT_TARGETING_ID, parent_context)
-            if target_baggage is not None and isinstance(target_baggage, str):
-                span.set_attribute(TARGETING_ID, target_baggage)
+        if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
+            return
+        target_baggage = baggage.get_baggage(MICROSOFT_TARGETING_ID, parent_context)
+        if target_baggage is not None and isinstance(target_baggage, str):
+            span.set_attribute(TARGETING_ID, target_baggage)
