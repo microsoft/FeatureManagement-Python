@@ -21,6 +21,9 @@ REQUIREMENT_TYPE_ANY = "Any"
 FEATURE_FILTER_PARAMETERS = "parameters"
 
 
+logger = logging.getLogger(__name__)
+
+
 def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) -> Optional[FeatureFlag]:
     """
     Gets the FeatureFlag json from the configuration, if it exists it gets converted to a FeatureFlag object.
@@ -221,7 +224,7 @@ class FeatureManagerBase(ABC):
                 return Variant(variant_reference.name, variant_reference.configuration_value)
         return None
 
-    def _build_targeting_context(self, args: Tuple[Any]) -> TargetingContext:
+    def _build_targeting_context(self, args: Tuple[Any]) -> Optional[TargetingContext]:
         """
         Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
         returns an empty context.
@@ -237,16 +240,7 @@ class FeatureManagerBase(ABC):
             if isinstance(arg, TargetingContext):
                 # If a TargetingContext is provided, return it
                 return arg
-        elif self._targeting_context_accessor and callable(self._targeting_context_accessor):
-            # If a targeting_context_accessor is provided, return the TargetingContext from it
-            targeting_context = self._targeting_context_accessor()
-            if targeting_context and isinstance(targeting_context, TargetingContext):
-                return targeting_context
-            logging.warning(
-                "targeting_context_accessor did not return a TargetingContext. Received type %s.",
-                type(targeting_context),
-            )
-        return TargetingContext()
+        return None
 
     def _assign_allocation(self, evaluation_event: EvaluationEvent, targeting_context: TargetingContext) -> None:
         feature_flag = evaluation_event.feature
@@ -285,7 +279,7 @@ class FeatureManagerBase(ABC):
 
         evaluation_event = EvaluationEvent(feature_flag)
         if not feature_flag:
-            logging.warning("Feature flag %s not found", feature_flag_id)
+            logger.warning("Feature flag %s not found", feature_flag_id)
             # Unknown feature flags are disabled by default
             return evaluation_event, True
 
