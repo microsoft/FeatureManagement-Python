@@ -16,11 +16,11 @@ script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
 with open(script_directory + "/formatted_feature_flags.json", "r", encoding="utf-8") as f:
     feature_flags = json.load(f)
 
-user_id = "Adam"
+USER_ID = "Adam"
 
 
 def my_targeting_accessor() -> TargetingContext:
-    return TargetingContext(user_id=user_id)
+    return TargetingContext(user_id=USER_ID)
 
 
 feature_manager = FeatureManager(
@@ -30,7 +30,7 @@ feature_manager = FeatureManager(
 print(feature_manager.is_enabled("TestVariants"))
 print(feature_manager.get_variant("TestVariants").configuration)
 
-user_id = "Ellie"
+USER_ID = "Ellie"
 
 print(feature_manager.is_enabled("TestVariants"))
 print(feature_manager.get_variant("TestVariants").configuration)

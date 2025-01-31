@@ -311,6 +311,8 @@ class TestDefaultFeatureFlags(IsolatedAsyncioTestCase):
         user_id = "Belle"
         assert not await feature_manager.is_enabled("Target")
         # Belle is enabled because all of Stage 1 is enabled
-        assert await feature_manager.is_enabled("Target", TargetingContext(user_id="Belle", groups=["Stage1"]))
+        group_id = "Stage1"
+        assert await feature_manager.is_enabled("Target")
         # Belle is not enabled because he is not in Stage 2, group isn't looked at when user is targeted
-        assert not await feature_manager.is_enabled("Target", TargetingContext(user_id="Belle", groups=["Stage2"]))
+        group_id = "Stage2"
+        assert not await feature_manager.is_enabled("Target")
