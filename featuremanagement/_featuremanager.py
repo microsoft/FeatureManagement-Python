@@ -3,7 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from typing import cast, overload, Any, Optional, Dict, Mapping, List
+import logging
+from typing import cast, overload, Any, Optional, Dict, Mapping, List, Tuple
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from ._models import EvaluationEvent, Variant, TargetingContext
@@ -14,6 +15,8 @@ from ._featuremanagerbase import (
     FEATURE_FILTER_NAME,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class FeatureManager(FeatureManagerBase):
     """
@@ -23,6 +26,8 @@ class FeatureManager(FeatureManagerBase):
     :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags.
     :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is
     evaluated.
+    :keyword Callable[[], TargetingContext] targeting_context_accessor: Callback function to get the current targeting
+    context if one isn't provided.
     """
 
     def __init__(self, configuration: Mapping[str, Any], **kwargs: Any):
@@ -56,7 +61,7 @@ class FeatureManager(FeatureManagerBase):
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
-        targeting_context = self._build_targeting_context(args)
+        targeting_context: TargetingContext = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if (
@@ -89,7 +94,7 @@ class FeatureManager(FeatureManagerBase):
         :return: Variant instance.
         :rtype: Variant
         """
-        targeting_context = self._build_targeting_context(args)
+        targeting_context: TargetingContext = self._build_targeting_context(args)
 
         result = self._check_feature(feature_flag_id, targeting_context, **kwargs)
         if (
@@ -101,6 +106,21 @@ class FeatureManager(FeatureManagerBase):
             result.user = targeting_context.user_id
             self._on_feature_evaluated(result)
         return result.variant
+
+    def _build_targeting_context(self, args: Tuple[Any]) -> TargetingContext:
+        targeting_context = super()._build_targeting_context(args)
+        if targeting_context:
+            return targeting_context
+        if not targeting_context and self._targeting_context_accessor and callable(self._targeting_context_accessor):
+            targeting_context = self._targeting_context_accessor()
+            if targeting_context and isinstance(targeting_context, TargetingContext):
+                return targeting_context
+            logger.warning(
+                "targeting_context_accessor did not return a TargetingContext. Received type %s.",
+                type(targeting_context),
+            )
+
+        return TargetingContext()
 
     def _check_feature_filters(
         self, evaluation_event: EvaluationEvent, targeting_context: TargetingContext, **kwargs: Any

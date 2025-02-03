@@ -6,7 +6,7 @@
 import hashlib
 import logging
 from abc import ABC
-from typing import List, Optional, Dict, Tuple, Any, Mapping
+from typing import List, Optional, Dict, Tuple, Any, Mapping, Callable
 from ._models import FeatureFlag, Variant, VariantAssignmentReason, TargetingContext, EvaluationEvent, VariantReference
 
 
@@ -19,6 +19,9 @@ REQUIREMENT_TYPE_ALL = "All"
 REQUIREMENT_TYPE_ANY = "Any"
 
 FEATURE_FILTER_PARAMETERS = "parameters"
+
+
+logger = logging.getLogger(__name__)
 
 
 def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) -> Optional[FeatureFlag]:
@@ -77,6 +80,9 @@ class FeatureManagerBase(ABC):
         self._cache: Dict[str, Optional[FeatureFlag]] = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
         self._on_feature_evaluated = kwargs.pop("on_feature_evaluated", None)
+        self._targeting_context_accessor: Optional[Callable[[], TargetingContext]] = kwargs.pop(
+            "targeting_context_accessor", None
+        )
 
     @staticmethod
     def _assign_default_disabled_variant(evaluation_event: EvaluationEvent) -> None:
@@ -218,7 +224,7 @@ class FeatureManagerBase(ABC):
                 return Variant(variant_reference.name, variant_reference.configuration_value)
         return None
 
-    def _build_targeting_context(self, args: Tuple[Any]) -> TargetingContext:
+    def _build_targeting_context(self, args: Tuple[Any]) -> Optional[TargetingContext]:
         """
         Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
         returns an empty context.
@@ -229,10 +235,12 @@ class FeatureManagerBase(ABC):
         if len(args) == 1:
             arg = args[0]
             if isinstance(arg, str):
+                # If the user_id is provided, return a TargetingContext with the user_id
                 return TargetingContext(user_id=arg, groups=[])
             if isinstance(arg, TargetingContext):
+                # If a TargetingContext is provided, return it
                 return arg
-        return TargetingContext()
+        return None
 
     def _assign_allocation(self, evaluation_event: EvaluationEvent, targeting_context: TargetingContext) -> None:
         feature_flag = evaluation_event.feature
@@ -271,7 +279,7 @@ class FeatureManagerBase(ABC):
 
         evaluation_event = EvaluationEvent(feature_flag)
         if not feature_flag:
-            logging.warning("Feature flag %s not found", feature_flag_id)
+            logger.warning("Feature flag %s not found", feature_flag_id)
             # Unknown feature flags are disabled by default
             return evaluation_event, True
 
