@@ -4,19 +4,21 @@
 # license information.
 # --------------------------------------------------------------------------
 import logging
-from typing import Dict, Optional
-from .._models import VariantAssignmentReason, EvaluationEvent
+import inspect
+from typing import Dict, Optional, Callable
+from .._models import VariantAssignmentReason, EvaluationEvent, TargetingContext
+
+logger = logging.getLogger(__name__)
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event  # type: ignore
-    from opentelemetry import trace, baggage, context
     from opentelemetry.context.context import Context
     from opentelemetry.sdk.trace import Span, SpanProcessor
 
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = True
 except ImportError:
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = False
-    logging.warning(
+    logger.warning(
         "azure-monitor-events-extension is not installed. Telemetry will not be sent to Application Insights."
     )
     SpanProcessor = object  # type: ignore
@@ -114,22 +116,17 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     track_event(EVENT_NAME, evaluation_event.user, event_properties=event)
 
 
-def attach_targeting_info(targeting_id: str) -> None:
-    """
-    Attaches the targeting ID to the current span and baggage.
-
-    :param str targeting_id: The targeting ID to attach.
-    """
-    if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
-        return
-    context.attach(baggage.set_baggage(MICROSOFT_TARGETING_ID, targeting_id))
-    trace.get_current_span().set_attribute(TARGETING_ID, targeting_id)
-
-
 class TargetingSpanProcessor(SpanProcessor):
     """
     A custom SpanProcessor that attaches the targeting ID to the span and baggage when a new span is started.
+    :keyword Callable[[], TargetingContext] targeting_context_accessor: Callback function to get the current targeting
+    context if one isn't provided.
     """
+
+    def __init__(self, **kwargs) -> None:
+        self._targeting_context_accessor: Optional[Callable[[], TargetingContext]] = kwargs.pop(
+            "targeting_context_accessor", None
+        )
 
     def on_start(self, span: Span, parent_context: Optional[Context] = None) -> None:
         """
@@ -140,6 +137,20 @@ class TargetingSpanProcessor(SpanProcessor):
         """
         if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
             return
-        target_baggage = baggage.get_baggage(MICROSOFT_TARGETING_ID, parent_context)
-        if target_baggage is not None and isinstance(target_baggage, str):
-            span.set_attribute(TARGETING_ID, target_baggage)
+        if self._targeting_context_accessor and callable(self._targeting_context_accessor):
+            if inspect.iscoroutinefunction(self._targeting_context_accessor):
+                logger.warning("Async targeting_context_accessor is not supported.")
+                return
+            targeting_context = self._targeting_context_accessor()
+            if not targeting_context or not isinstance(targeting_context, TargetingContext):
+                logger.warning(
+                    "targeting_context_accessor did not return a TargetingContext. Received type %s.",
+                    type(targeting_context),
+                )
+                return
+            if not targeting_context.user_id:
+                logger.debug("TargetingContext does not have a user ID.")
+                return
+            span.set_attribute(TARGETING_ID, targeting_context.user_id)
+            
+            
