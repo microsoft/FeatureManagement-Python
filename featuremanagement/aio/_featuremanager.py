@@ -123,11 +123,9 @@ class FeatureManager(FeatureManagerBase):
             if inspect.iscoroutinefunction(self._targeting_context_accessor):
                 # If a targeting_context_accessor is provided, return the TargetingContext from it
                 targeting_context = await self._targeting_context_accessor()
-                if targeting_context and isinstance(targeting_context, TargetingContext):
-                    return targeting_context
             else:
                 targeting_context = self._targeting_context_accessor()
-                if targeting_context and isinstance(targeting_context, TargetingContext):
+            if targeting_context and isinstance(targeting_context, TargetingContext):
                     return targeting_context
             logger.warning(
                 "targeting_context_accessor did not return a TargetingContext. Received type %s.",
