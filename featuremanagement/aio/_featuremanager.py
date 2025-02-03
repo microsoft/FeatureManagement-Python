@@ -126,7 +126,7 @@ class FeatureManager(FeatureManagerBase):
             else:
                 targeting_context = self._targeting_context_accessor()
             if targeting_context and isinstance(targeting_context, TargetingContext):
-                    return targeting_context
+                return targeting_context
             logger.warning(
                 "targeting_context_accessor did not return a TargetingContext. Received type %s.",
                 type(targeting_context),
