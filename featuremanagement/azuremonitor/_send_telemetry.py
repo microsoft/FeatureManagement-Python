@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------------
 import logging
 import inspect
-from typing import Dict, Optional, Callable
+from typing import Any, Callable, Dict, Optional
 from .._models import VariantAssignmentReason, EvaluationEvent, TargetingContext
 
 logger = logging.getLogger(__name__)
@@ -123,7 +123,7 @@ class TargetingSpanProcessor(SpanProcessor):
     context if one isn't provided.
     """
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         self._targeting_context_accessor: Optional[Callable[[], TargetingContext]] = kwargs.pop(
             "targeting_context_accessor", None
         )
@@ -152,5 +152,3 @@ class TargetingSpanProcessor(SpanProcessor):
                 logger.debug("TargetingContext does not have a user ID.")
                 return
             span.set_attribute(TARGETING_ID, targeting_context.user_id)
-            
-            
