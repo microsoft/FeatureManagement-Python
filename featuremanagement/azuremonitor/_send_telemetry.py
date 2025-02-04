@@ -136,6 +136,7 @@ class TargetingSpanProcessor(SpanProcessor):
         :param parent_context: The parent context of the span.
         """
         if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
+            logger.warning("Azure Monitor Events Extension is not installed.")
             return
         if self._targeting_context_accessor and callable(self._targeting_context_accessor):
             if inspect.iscoroutinefunction(self._targeting_context_accessor):
