@@ -10,16 +10,25 @@ from quart import Quart, request, session
 from quart.sessions import SecureCookieSessionInterface
 from azure.appconfiguration.provider import load
 from azure.identity import DefaultAzureCredential
+from azure.monitor.opentelemetry import configure_azure_monitor
 from featuremanagement.aio import FeatureManager
 from featuremanagement import TargetingContext
+from featuremanagement.azuremonitor import TargetingSpanProcessor
 
-try:
-    from azure.monitor.opentelemetry import configure_azure_monitor  # pylint: disable=ungrouped-imports
 
-    # Configure Azure Monitor
-    configure_azure_monitor(connection_string=os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"))
-except ImportError:
-    pass
+# A callback for assigning a TargetingContext for both Telemetry logs and Feature Flag evaluation
+async def my_targeting_accessor() -> TargetingContext:
+    session_id = ""
+    if "Session-ID" in request.headers:
+        session_id = request.headers["Session-ID"]
+    return TargetingContext(user_id=session_id)
+
+
+# Configure Azure Monitor
+configure_azure_monitor(
+    connection_string=os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"),
+    span_processors=[TargetingSpanProcessor(targeting_context_accessor=my_targeting_accessor)],
+)
 
 app = Quart(__name__)
 app.session_interface = SecureCookieSessionInterface()
@@ -27,14 +36,6 @@ app.secret_key = os.urandom(24)
 
 endpoint = os.environ.get("APPCONFIGURATION_ENDPOINT_STRING")
 credential = DefaultAzureCredential()
-
-
-async def my_targeting_accessor() -> TargetingContext:
-    session_id = ""
-    if "Session-ID" in request.headers:
-        session_id = request.headers["Session-ID"]
-    return TargetingContext(user_id=session_id)
-
 
 # Connecting to Azure App Configuration using AAD
 config = load(endpoint=endpoint, credential=credential, feature_flag_enabled=True, feature_flag_refresh_enabled=True)
