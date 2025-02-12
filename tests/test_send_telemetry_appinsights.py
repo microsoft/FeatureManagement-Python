@@ -3,14 +3,18 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+import logging
 from unittest.mock import patch
 import pytest
-from featuremanagement import EvaluationEvent, FeatureFlag, Variant, VariantAssignmentReason
+from featuremanagement import EvaluationEvent, FeatureFlag, Variant, VariantAssignmentReason, TargetingContext
 import featuremanagement.azuremonitor._send_telemetry
+from featuremanagement.azuremonitor import TargetingSpanProcessor
 
 
 @pytest.mark.usefixtures("caplog")
 class TestSendTelemetryAppinsights:
+
+    user_id = None
 
     def test_send_telemetry_appinsights(self):
         feature_flag = FeatureFlag.convert_from_json(
@@ -211,3 +215,49 @@ class TestSendTelemetryAppinsights:
             assert mock_track_event.call_args[0][1]["VariantAssignmentReason"] == "Percentile"
             assert mock_track_event.call_args[0][1]["VariantAssignmentPercentage"] == "25"
             assert "DefaultWhenEnabled" not in mock_track_event.call_args[0][1]
+
+    def test_targeting_span_processor(self, caplog):
+        processor = TargetingSpanProcessor()
+        processor.on_start(None)
+        assert "" in caplog.text
+        caplog.clear()
+
+        processor = TargetingSpanProcessor(targeting_context_accessor="not callable")
+        processor.on_start(None)
+        assert "" in caplog.text
+        caplog.clear()
+
+        processor = TargetingSpanProcessor(targeting_context_accessor=self.bad_targeting_context_accessor)
+        processor.on_start(None)
+        assert (
+            "targeting_context_accessor did not return a TargetingContext. Received type <class 'str'>." in caplog.text
+        )
+        caplog.clear()
+
+        processor = TargetingSpanProcessor(targeting_context_accessor=self.async_targeting_context_accessor)
+        processor.on_start(None)
+        assert "Async targeting_context_accessor is not supported." in caplog.text
+        caplog.clear()
+
+        processor = TargetingSpanProcessor(targeting_context_accessor=self.accessor_callback)
+        logging.getLogger().setLevel(logging.DEBUG)
+        processor.on_start(None)
+        assert "TargetingContext does not have a user ID." in caplog.text
+        caplog.clear()
+
+        with patch("opentelemetry.sdk.trace.Span") as mock_span:
+            self.user_id = "test_user"
+            processor.on_start(mock_span)
+            assert mock_span.set_attribute.call_args[0][0] == "TargetingId"
+            assert mock_span.set_attribute.call_args[0][1] == "test_user"
+
+        self.user_id = None
+
+    def bad_targeting_context_accessor(self):
+        return "not targeting context"
+
+    async def async_targeting_context_accessor(self):
+        return TargetingContext(user_id=self.user_id)
+
+    def accessor_callback(self):
+        return TargetingContext(user_id=self.user_id)

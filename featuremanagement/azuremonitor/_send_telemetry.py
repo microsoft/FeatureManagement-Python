@@ -4,24 +4,38 @@
 # license information.
 # --------------------------------------------------------------------------
 import logging
-from typing import Dict, Optional
-from .._models import VariantAssignmentReason, EvaluationEvent
+import inspect
+from typing import Any, Callable, Dict, Optional
+from .._models import VariantAssignmentReason, EvaluationEvent, TargetingContext
+
+logger = logging.getLogger(__name__)
 
 try:
     from azure.monitor.events.extension import track_event as azure_monitor_track_event  # type: ignore
+    from opentelemetry.context.context import Context
+    from opentelemetry.sdk.trace import Span, SpanProcessor
 
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = True
 except ImportError:
     HAS_AZURE_MONITOR_EVENTS_EXTENSION = False
-    logging.warning(
+    logger.warning(
         "azure-monitor-events-extension is not installed. Telemetry will not be sent to Application Insights."
     )
+    SpanProcessor = object  # type: ignore
+    Span = object  # type: ignore
+    Context = object  # type: ignore
 
 FEATURE_NAME = "FeatureName"
 ENABLED = "Enabled"
 TARGETING_ID = "TargetingId"
 VARIANT = "Variant"
 REASON = "VariantAssignmentReason"
+
+DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
+VERSION = "Version"
+VARIANT_ASSIGNMENT_PERCENTAGE = "VariantAssignmentPercentage"
+MICROSOFT_TARGETING_ID = "Microsoft.TargetingId"
+SPAN = "Span"
 
 EVENT_NAME = "FeatureEvaluation"
 
@@ -64,7 +78,7 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     event: Dict[str, Optional[str]] = {
         FEATURE_NAME: feature.name,
         ENABLED: str(evaluation_event.enabled),
-        "Version": EVALUATION_EVENT_VERSION,
+        VERSION: EVALUATION_EVENT_VERSION,
     }
 
     reason = evaluation_event.reason
@@ -78,21 +92,21 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
     # VariantAllocationPercentage
     allocation_percentage = 0
     if reason == VariantAssignmentReason.DEFAULT_WHEN_ENABLED:
-        event["VariantAssignmentPercentage"] = str(100)
+        event[VARIANT_ASSIGNMENT_PERCENTAGE] = str(100)
         if feature.allocation:
             for allocation in feature.allocation.percentile:
                 allocation_percentage += allocation.percentile_to - allocation.percentile_from
-            event["VariantAssignmentPercentage"] = str(100 - allocation_percentage)
+            event[VARIANT_ASSIGNMENT_PERCENTAGE] = str(100 - allocation_percentage)
     elif reason == VariantAssignmentReason.PERCENTILE:
         if feature.allocation and feature.allocation.percentile:
             for allocation in feature.allocation.percentile:
                 if variant and allocation.variant == variant.name:
                     allocation_percentage += allocation.percentile_to - allocation.percentile_from
-            event["VariantAssignmentPercentage"] = str(allocation_percentage)
+            event[VARIANT_ASSIGNMENT_PERCENTAGE] = str(allocation_percentage)
 
     # DefaultWhenEnabled
     if feature.allocation and feature.allocation.default_when_enabled:
-        event["DefaultWhenEnabled"] = feature.allocation.default_when_enabled
+        event[DEFAULT_WHEN_ENABLED] = feature.allocation.default_when_enabled
 
     if feature.telemetry:
         for metadata_key, metadata_value in feature.telemetry.metadata.items():
@@ -100,3 +114,42 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
                 event[metadata_key] = metadata_value
 
     track_event(EVENT_NAME, evaluation_event.user, event_properties=event)
+
+
+class TargetingSpanProcessor(SpanProcessor):
+    """
+    A custom SpanProcessor that attaches the targeting ID to the span and baggage when a new span is started.
+    :keyword Callable[[], TargetingContext] targeting_context_accessor: Callback function to get the current targeting
+    context if one isn't provided.
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        self._targeting_context_accessor: Optional[Callable[[], TargetingContext]] = kwargs.pop(
+            "targeting_context_accessor", None
+        )
+
+    def on_start(self, span: Span, parent_context: Optional[Context] = None) -> None:
+        """
+        Attaches the targeting ID to the span and baggage when a new span is started.
+
+        :param Span span: The span that was started.
+        :param parent_context: The parent context of the span.
+        """
+        if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
+            logger.warning("Azure Monitor Events Extension is not installed.")
+            return
+        if self._targeting_context_accessor and callable(self._targeting_context_accessor):
+            if inspect.iscoroutinefunction(self._targeting_context_accessor):
+                logger.warning("Async targeting_context_accessor is not supported.")
+                return
+            targeting_context = self._targeting_context_accessor()
+            if not targeting_context or not isinstance(targeting_context, TargetingContext):
+                logger.warning(
+                    "targeting_context_accessor did not return a TargetingContext. Received type %s.",
+                    type(targeting_context),
+                )
+                return
+            if not targeting_context.user_id:
+                logger.debug("TargetingContext does not have a user ID.")
+                return
+            span.set_attribute(TARGETING_ID, targeting_context.user_id)
