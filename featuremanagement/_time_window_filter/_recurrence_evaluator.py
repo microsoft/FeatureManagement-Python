@@ -5,10 +5,11 @@
 # -------------------------------------------------------------------------
 from datetime import datetime, timedelta
 from typing import Optional
-from ._models import RecurrencePatternType, RecurrenceRangeType, TimeWindowFilterSettings, OccurrenceInfo
+from ._models import RecurrencePatternType, RecurrenceRangeType, TimeWindowFilterSettings, OccurrenceInfo, Recurrence
 from ._recurrence_validator import validate_settings, _get_passed_week_days, _sort_days_of_week
 
 DAYS_PER_WEEK = 7
+REQUIRED_PARAMETER = "Required parameter: %s"
 
 
 def is_match(settings: TimeWindowFilterSettings, now: datetime) -> bool:
@@ -20,30 +21,38 @@ def is_match(settings: TimeWindowFilterSettings, now: datetime) -> bool:
     :return: True if the current time is within the time window filter settings, otherwise False.
     :rtype: bool
     """
-    validate_settings(settings)
+    recurrence = settings.recurrence
+    if recurrence is None:
+        raise ValueError(REQUIRED_PARAMETER % "Recurrence")
 
-    previous_occurrence = _get_previous_occurrence(settings, now)
+    start = settings.start
+    end = settings.end
+    if start is None or end is None:
+        raise ValueError(REQUIRED_PARAMETER % "Start or End")
+
+    validate_settings(recurrence, start, end)
+
+    previous_occurrence = _get_previous_occurrence(recurrence, start, now)
     if previous_occurrence is None:
         return False
 
-    occurrence_end_date = previous_occurrence + (settings.end - settings.start)
+    occurrence_end_date = previous_occurrence + (end - start)
     return now < occurrence_end_date
 
 
-def _get_previous_occurrence(settings: TimeWindowFilterSettings, now: datetime) -> Optional[datetime]:
-    start = settings.start
+def _get_previous_occurrence(recurrence: Recurrence, start: datetime, now: datetime) -> Optional[datetime]:
     if now < start:
         return None
 
-    pattern_type = settings.recurrence.pattern.type
+    pattern_type = recurrence.pattern.type
     if pattern_type == RecurrencePatternType.DAILY:
-        occurrence_info = _get_daily_previous_occurrence(settings, now)
+        occurrence_info = _get_daily_previous_occurrence(recurrence, start, now)
     elif pattern_type == RecurrencePatternType.WEEKLY:
-        occurrence_info = _get_weekly_previous_occurrence(settings, now)
+        occurrence_info = _get_weekly_previous_occurrence(recurrence, start, now)
     else:
         raise ValueError(f"Invalid recurrence pattern type: {pattern_type}")
 
-    recurrence_range = settings.recurrence.range
+    recurrence_range = recurrence.range
     range_type = recurrence_range.type
     previous_occurrence = occurrence_info.previous_occurrence
     end_date = recurrence_range.end_date
@@ -64,18 +73,16 @@ def _get_previous_occurrence(settings: TimeWindowFilterSettings, now: datetime) 
     return occurrence_info.previous_occurrence
 
 
-def _get_daily_previous_occurrence(settings: TimeWindowFilterSettings, now: datetime) -> OccurrenceInfo:
-    start = settings.start
-    interval = settings.recurrence.pattern.interval
+def _get_daily_previous_occurrence(recurrence: Recurrence, start: datetime, now: datetime) -> OccurrenceInfo:
+    interval = recurrence.pattern.interval
     num_of_occurrences = (now - start).days // interval
     previous_occurrence = start + timedelta(days=num_of_occurrences * interval)
     return OccurrenceInfo(previous_occurrence, num_of_occurrences + 1)
 
 
-def _get_weekly_previous_occurrence(settings: TimeWindowFilterSettings, now: datetime) -> OccurrenceInfo:
-    pattern = settings.recurrence.pattern
+def _get_weekly_previous_occurrence(recurrence: Recurrence, start: datetime, now: datetime) -> OccurrenceInfo:
+    pattern = recurrence.pattern
     interval = pattern.interval
-    start = settings.start
     first_day_of_first_week = start - timedelta(days=_get_passed_week_days(start.weekday(), pattern.first_day_of_week))
 
     number_of_interval = (now - first_day_of_first_week).days // (interval * DAYS_PER_WEEK)

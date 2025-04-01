@@ -5,7 +5,7 @@
 # -------------------------------------------------------------------------
 from datetime import datetime, timedelta
 from typing import List
-from ._models import RecurrencePatternType, RecurrenceRangeType, TimeWindowFilterSettings, Recurrence
+from ._models import RecurrencePatternType, RecurrenceRangeType, Recurrence
 
 
 DAYS_PER_WEEK = 7
@@ -20,22 +20,13 @@ NOT_MATCHED = "Start day does not match any day of the week: %s"
 TIME_WINDOW_DURATION_OUT_OF_RANGE = "Time window duration is out of range: %s"
 
 
-def validate_settings(settings: TimeWindowFilterSettings) -> None:
+def validate_settings(recurrence: Recurrence, start: datetime, end: datetime) -> None:
     """
     Validate the settings for the time window filter.
 
     :param TimeWindowFilterSettings settings: The settings for the time window filter.
     :raises ValueError: If the settings are invalid.
     """
-    recurrence = settings.recurrence
-    if recurrence is None:
-        raise ValueError(REQUIRED_PARAMETER % "Recurrence")
-
-    start = settings.start
-    end = settings.end
-    if start is None or end is None:
-        raise ValueError(REQUIRED_PARAMETER % "Start or End")
-
     _validate_recurrence_required_parameter(recurrence, start, end)
     _validate_recurrence_pattern(recurrence, start, end)
     _validate_recurrence_range(recurrence, start)
