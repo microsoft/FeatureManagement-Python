@@ -4,8 +4,8 @@
 # license information.
 # -------------------------------------------------------------------------
 from datetime import datetime, timedelta
-from typing import List
 from ._models import RecurrencePatternType, RecurrenceRangeType, TimeWindowFilterSettings
+from ._recurrence_evaluator import _get_passed_week_days, _sort_days_of_week
 
 
 DAYS_PER_WEEK = 7
@@ -151,12 +151,3 @@ def _is_duration_compliant_with_days_of_week(settings: TimeWindowFilterSettings)
 
     time_window_duration = settings.end - settings.start
     return min_gap >= time_window_duration
-
-
-def _get_passed_week_days(today: int, first_day_of_week: int) -> int:
-    return (today - first_day_of_week + DAYS_PER_WEEK) % DAYS_PER_WEEK
-
-
-def _sort_days_of_week(days_of_week: List[int], first_day_of_week: int) -> List[int]:
-    sorted_days = sorted(days_of_week, key=lambda day: _get_passed_week_days(day, first_day_of_week))
-    return sorted_days

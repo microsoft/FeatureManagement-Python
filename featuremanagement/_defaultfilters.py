@@ -71,9 +71,6 @@ class TimeWindowFilter(FeatureFilter):
 
         current_time = datetime.now(timezone.utc)
 
-        if recurrence_data:
-            recurrence = Recurrence(recurrence_data)
-
         if not start and not end:
             logger.warning(
                 TIME_WINDOW_FILTER_INVALID,
@@ -87,24 +84,19 @@ class TimeWindowFilter(FeatureFilter):
         start_time: Optional[datetime] = parsedate_to_datetime(start) if start else None
         end_time: Optional[datetime] = parsedate_to_datetime(end) if end else None
 
-        if recurrence:
-            if start_time and end_time:
-                settings = TimeWindowFilterSettings(start_time, end_time, recurrence)
-                return is_match(settings, current_time)
-            logger.warning(
-                TIME_WINDOW_FILTER_INVALID_RECURRENCE,
-                TimeWindowFilter.__name__,
-                context.get(FEATURE_FLAG_NAME_KEY),
-                START_KEY,
-                END_KEY,
-            )
-            return False
-
         if not start and not end:
             logging.warning("%s: At least one of Start or End is required.", TimeWindowFilter.__name__)
             return False
 
-        return (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time)
+        if (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time):
+            return True
+
+        if recurrence_data:
+            recurrence = Recurrence(recurrence_data)
+            settings = TimeWindowFilterSettings(start_time, end_time, recurrence)
+            return is_match(settings, current_time)
+
+        return False
 
 
 @FeatureFilter.alias("Microsoft.Targeting")

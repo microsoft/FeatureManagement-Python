@@ -8,6 +8,7 @@ from typing import List, Optional
 from ._models import RecurrencePatternType, RecurrenceRangeType, TimeWindowFilterSettings, OccurrenceInfo
 from ._recurrence_validator import validate_settings
 
+DAYS_PER_WEEK = 7
 
 def is_match(settings: TimeWindowFilterSettings, now: datetime) -> bool:
     """
@@ -36,8 +37,10 @@ def _get_previous_occurrence(settings: TimeWindowFilterSettings, now: datetime) 
     pattern_type = settings.recurrence.pattern.type
     if pattern_type == RecurrencePatternType.DAILY:
         occurrence_info = _get_daily_previous_occurrence(settings, now)
-    else:
+    elif pattern_type == RecurrencePatternType.WEEKLY:
         occurrence_info = _get_weekly_previous_occurrence(settings, now)
+    else:
+        raise ValueError(f"Invalid recurrence pattern type: %s", pattern_type)
 
     recurrence_range = settings.recurrence.range
     range_type = recurrence_range.type
@@ -74,16 +77,16 @@ def _get_weekly_previous_occurrence(settings: TimeWindowFilterSettings, now: dat
     start = settings.start
     first_day_of_first_week = start - timedelta(days=_get_passed_week_days(start.weekday(), pattern.first_day_of_week))
 
-    number_of_interval = (now - first_day_of_first_week).days // (interval * 7)
+    number_of_interval = (now - first_day_of_first_week).days // (interval * DAYS_PER_WEEK)
     first_day_of_most_recent_occurring_week = first_day_of_first_week + timedelta(
-        days=number_of_interval * (interval * 7)
+        days=number_of_interval * (interval * DAYS_PER_WEEK)
     )
     sorted_days_of_week = _sort_days_of_week(pattern.days_of_week, pattern.first_day_of_week)
     max_day_offset = _get_passed_week_days(sorted_days_of_week[-1], pattern.first_day_of_week)
     min_day_offset = _get_passed_week_days(sorted_days_of_week[0], pattern.first_day_of_week)
     num_of_occurrences = number_of_interval * len(sorted_days_of_week) - sorted_days_of_week.index(start.weekday())
 
-    if now > first_day_of_most_recent_occurring_week + timedelta(days=7):
+    if now > first_day_of_most_recent_occurring_week + timedelta(days=DAYS_PER_WEEK):
         num_of_occurrences += len(sorted_days_of_week)
         most_recent_occurrence = first_day_of_most_recent_occurring_week + timedelta(days=max_day_offset)
         return OccurrenceInfo(most_recent_occurrence, num_of_occurrences)
@@ -94,7 +97,7 @@ def _get_weekly_previous_occurrence(settings: TimeWindowFilterSettings, now: dat
         day_with_min_offset = start
     if now < day_with_min_offset:
         most_recent_occurrence = (
-            first_day_of_most_recent_occurring_week - timedelta(days=interval * 7) + timedelta(days=max_day_offset)
+            first_day_of_most_recent_occurring_week - timedelta(days=interval * DAYS_PER_WEEK) + timedelta(days=max_day_offset)
         )
     else:
         most_recent_occurrence = day_with_min_offset
@@ -113,7 +116,14 @@ def _get_weekly_previous_occurrence(settings: TimeWindowFilterSettings, now: dat
 
 
 def _get_passed_week_days(current_day: int, first_day_of_week: int) -> int:
-    return (current_day - first_day_of_week + 7) % 7
+    """
+    Get the number of days passed since the first day of the week.
+    :param int current_day: The current day of the week (0-6).
+    :param int first_day_of_week: The first day of the week (0-6).
+    :return: The number of days passed since the first day of the week.
+    :rtype: int
+    """
+    return (current_day - first_day_of_week + DAYS_PER_WEEK) % DAYS_PER_WEEK
 
 
 def _sort_days_of_week(days_of_week: List[int], first_day_of_week: int) -> List[int]:

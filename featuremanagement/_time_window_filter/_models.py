@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+import math
 from enum import Enum
 from typing import Dict, Any, Optional
 from datetime import datetime
@@ -68,7 +69,8 @@ class RecurrencePattern:  # pylint: disable=too-few-public-methods
     The recurrence pattern settings.
     """
 
-    days: list = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    days: list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    days_of_week: list = []
 
     def __init__(self, pattern_data: Dict[str, Any]):
         self.type = RecurrencePatternType.from_str(pattern_data.get("Type", "Daily"))
@@ -78,8 +80,7 @@ class RecurrencePattern:  # pylint: disable=too-few-public-methods
         days_of_week = pattern_data.get("DaysOfWeek", [])
         for day in days_of_week:
             self.days_of_week.append(self.days.index(day))
-        first_day_of_week = pattern_data.get("FirstDayOfWeek", "Sunday")
-        self.first_day_of_week = self.days.index(first_day_of_week) if first_day_of_week in self.days else 0
+        self.first_day_of_week = self.days.index(pattern_data.get("FirstDayOfWeek", "Sunday"))
 
 
 class RecurrenceRange:  # pylint: disable=too-few-public-methods
@@ -87,12 +88,15 @@ class RecurrenceRange:  # pylint: disable=too-few-public-methods
     The recurrence range settings.
     """
 
+    type: RecurrenceRangeType
+    end_date: Optional[datetime] = None
+
     def __init__(self, range_data: Dict[str, Any]):
         self.type = RecurrenceRangeType.from_str(range_data.get("Type", "NoEnd"))
         if range_data.get("EndDate") and isinstance(range_data.get("EndDate"), str):
             end_date_str = range_data.get("EndDate", "")
             self.end_date = parsedate_to_datetime(end_date_str) if end_date_str else None
-        self.num_of_occurrences = range_data.get("NumberOfOccurrences", 0)
+        self.num_of_occurrences = range_data.get("NumberOfOccurrences", math.pow(2, 63) - 1)
         if self.num_of_occurrences < 0:
             raise ValueError("The number of occurrences must be greater than or equal to 0.")
 
