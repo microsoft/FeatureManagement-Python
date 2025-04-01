@@ -4,8 +4,8 @@
 # license information.
 # -------------------------------------------------------------------------
 from datetime import datetime, timedelta
-from ._models import RecurrencePatternType, RecurrenceRangeType, TimeWindowFilterSettings
-from ._recurrence_evaluator import _get_passed_week_days, _sort_days_of_week
+from typing import List
+from ._models import RecurrencePatternType, RecurrenceRangeType, TimeWindowFilterSettings, Recurrence
 
 
 DAYS_PER_WEEK = 7
@@ -27,13 +27,21 @@ def validate_settings(settings: TimeWindowFilterSettings) -> None:
     :param TimeWindowFilterSettings settings: The settings for the time window filter.
     :raises ValueError: If the settings are invalid.
     """
-    _validate_recurrence_required_parameter(settings)
-    _validate_recurrence_pattern(settings)
-    _validate_recurrence_range(settings)
-
-
-def _validate_recurrence_required_parameter(settings: TimeWindowFilterSettings) -> None:
     recurrence = settings.recurrence
+    if recurrence is None:
+        raise ValueError(REQUIRED_PARAMETER % "Recurrence")
+
+    start = settings.start
+    end = settings.end
+    if start is None or end is None:
+        raise ValueError(REQUIRED_PARAMETER % "Start or End")
+
+    _validate_recurrence_required_parameter(recurrence, start, end)
+    _validate_recurrence_pattern(recurrence, start, end)
+    _validate_recurrence_range(recurrence, start)
+
+
+def _validate_recurrence_required_parameter(recurrence: Recurrence, start: datetime, end: datetime) -> None:
     param_name = ""
     reason = ""
     if recurrence.pattern is None:
@@ -42,10 +50,10 @@ def _validate_recurrence_required_parameter(settings: TimeWindowFilterSettings) 
     if recurrence.range is None:
         param_name = f"{RECURRENCE_RANGE}"
         reason = REQUIRED_PARAMETER
-    if not settings.end > settings.start:
+    if not end > start:
         param_name = "end"
         reason = OUT_OF_RANGE
-    if settings.end > settings.start + timedelta(days=TEN_YEARS):
+    if end > start + timedelta(days=TEN_YEARS):
         param_name = "end"
         reason = TIME_WINDOW_DURATION_TEN_YEARS
 
@@ -53,75 +61,77 @@ def _validate_recurrence_required_parameter(settings: TimeWindowFilterSettings) 
         raise ValueError(reason % param_name)
 
 
-def _validate_recurrence_pattern(settings: TimeWindowFilterSettings) -> None:
-    pattern_type = settings.recurrence.pattern.type
+def _validate_recurrence_pattern(recurrence: Recurrence, start: datetime, end: datetime) -> None:
+    if recurrence is None:
+        raise ValueError(REQUIRED_PARAMETER % "Recurrence")
+    pattern_type = recurrence.pattern.type
 
     if pattern_type == RecurrencePatternType.DAILY:
-        _validate_daily_recurrence_pattern(settings)
+        _validate_daily_recurrence_pattern(recurrence, start, end)
     else:
-        _validate_weekly_recurrence_pattern(settings)
+        _validate_weekly_recurrence_pattern(recurrence, start, end)
 
 
-def _validate_recurrence_range(settings: TimeWindowFilterSettings) -> None:
-    range_type = settings.recurrence.range.type
+def _validate_recurrence_range(recurrence: Recurrence, start: datetime) -> None:
+    range_type = recurrence.range.type
     if range_type == RecurrenceRangeType.END_DATE:
-        _validate_end_date(settings)
+        _validate_end_date(recurrence, start)
 
 
-def _validate_daily_recurrence_pattern(settings: TimeWindowFilterSettings) -> None:
+def _validate_daily_recurrence_pattern(recurrence: Recurrence, start: datetime, end: datetime) -> None:
     # "Start" is always a valid first occurrence for "Daily" pattern.
     # Only need to check if time window validated
-    _validate_time_window_duration(settings)
+    _validate_time_window_duration(recurrence, start, end)
 
 
-def _validate_weekly_recurrence_pattern(settings: TimeWindowFilterSettings) -> None:
-    _validate_days_of_week(settings)
+def _validate_weekly_recurrence_pattern(recurrence: Recurrence, start: datetime, end: datetime) -> None:
+    _validate_days_of_week(recurrence)
 
     # Check whether "Start" is a valid first occurrence
-    pattern = settings.recurrence.pattern
-    if settings.start.weekday() not in pattern.days_of_week:
+    pattern = recurrence.pattern
+    if start.weekday() not in pattern.days_of_week:
         raise ValueError(NOT_MATCHED % "start")
 
     # Time window duration must be shorter than how frequently it occurs
-    _validate_time_window_duration(settings)
+    _validate_time_window_duration(recurrence, start, end)
 
     # Check whether the time window duration is shorter than the minimum gap between days of week
-    if not _is_duration_compliant_with_days_of_week(settings):
+    if not _is_duration_compliant_with_days_of_week(recurrence, start, end):
         raise ValueError(TIME_WINDOW_DURATION_OUT_OF_RANGE % "Recurrence.Pattern.DaysOfWeek")
 
 
-def _validate_time_window_duration(settings: TimeWindowFilterSettings) -> None:
-    pattern = settings.recurrence.pattern
+def _validate_time_window_duration(recurrence: Recurrence, start: datetime, end: datetime) -> None:
+    pattern = recurrence.pattern
     interval_duration = (
         timedelta(days=pattern.interval)
         if pattern.type == RecurrencePatternType.DAILY
         else timedelta(days=pattern.interval * DAYS_PER_WEEK)
     )
-    time_window_duration = settings.end - settings.start
+    time_window_duration = end - start
     if time_window_duration > interval_duration:
         raise ValueError(TIME_WINDOW_DURATION_OUT_OF_RANGE % "Recurrence.Pattern.Interval")
 
 
-def _validate_days_of_week(settings: TimeWindowFilterSettings) -> None:
-    days_of_week = settings.recurrence.pattern.days_of_week
+def _validate_days_of_week(recurrence: Recurrence) -> None:
+    days_of_week = recurrence.pattern.days_of_week
     if not days_of_week:
         raise ValueError(REQUIRED_PARAMETER % "Recurrence.Pattern.DaysOfWeek")
 
 
-def _validate_end_date(settings: TimeWindowFilterSettings) -> None:
-    end_date = settings.recurrence.range.end_date
-    if end_date and end_date < settings.start:
+def _validate_end_date(recurrence: Recurrence, start: datetime) -> None:
+    end_date = recurrence.range.end_date
+    if end_date and end_date < start:
         raise ValueError("The Recurrence.Range.EndDate should be after the Start")
 
 
-def _is_duration_compliant_with_days_of_week(settings: TimeWindowFilterSettings) -> bool:
-    days_of_week = settings.recurrence.pattern.days_of_week
+def _is_duration_compliant_with_days_of_week(recurrence: Recurrence, start: datetime, end: datetime) -> bool:
+    days_of_week = recurrence.pattern.days_of_week
     if len(days_of_week) == 1:
         return True
 
     # Get the date of first day of the week
     today = datetime.now()
-    first_day_of_week = settings.recurrence.pattern.first_day_of_week
+    first_day_of_week = recurrence.pattern.first_day_of_week
     offset = _get_passed_week_days(today.weekday(), first_day_of_week)
     first_date_of_week = today - timedelta(days=offset)
     sorted_days_of_week = _sort_days_of_week(days_of_week, first_day_of_week)
@@ -137,7 +147,7 @@ def _is_duration_compliant_with_days_of_week(settings: TimeWindowFilterSettings)
             min_gap = min(min_gap, current_gap)
         prev_occurrence = date
 
-    if settings.recurrence.pattern.interval == 1:
+    if recurrence.pattern.interval == 1:
         # It may cross weeks. Check the adjacent week
         date = first_date_of_week + timedelta(
             days=DAYS_PER_WEEK + _get_passed_week_days(sorted_days_of_week[0], first_day_of_week)
@@ -149,5 +159,21 @@ def _is_duration_compliant_with_days_of_week(settings: TimeWindowFilterSettings)
         current_gap = date - prev_occurrence
         min_gap = min(min_gap, current_gap)
 
-    time_window_duration = settings.end - settings.start
+    time_window_duration = end - start
     return min_gap >= time_window_duration
+
+
+def _get_passed_week_days(current_day: int, first_day_of_week: int) -> int:
+    """
+    Get the number of days passed since the first day of the week.
+    :param int current_day: The current day of the week, where Monday == 0 ... Sunday == 6.
+    :param int first_day_of_week: The first day of the week (0-6), where Monday == 0 ... Sunday == 6.
+    :return: The number of days passed since the first day of the week.
+    :rtype: int
+    """
+    return (current_day - first_day_of_week + DAYS_PER_WEEK) % DAYS_PER_WEEK
+
+
+def _sort_days_of_week(days_of_week: List[int], first_day_of_week: int) -> List[int]:
+    sorted_days = sorted(days_of_week)
+    return sorted_days[sorted_days.index(first_day_of_week) :] + sorted_days[: sorted_days.index(first_day_of_week)]

@@ -5,7 +5,7 @@
 # -------------------------------------------------------------------------
 import math
 from enum import Enum
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 from dataclasses import dataclass
 from email.utils import parsedate_to_datetime
@@ -69,8 +69,8 @@ class RecurrencePattern:  # pylint: disable=too-few-public-methods
     The recurrence pattern settings.
     """
 
-    days: list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    days_of_week: list = []
+    days: List[str] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    days_of_week: List[int] = []
 
     def __init__(self, pattern_data: Dict[str, Any]):
         self.type = RecurrencePatternType.from_str(pattern_data.get("Type", "Daily"))
@@ -106,6 +106,9 @@ class Recurrence:  # pylint: disable=too-few-public-methods
     The recurrence settings.
     """
 
+    pattern: RecurrencePattern
+    range: RecurrenceRange
+
     def __init__(self, recurrence_data: Dict[str, Any]):
         self.pattern = RecurrencePattern(recurrence_data.get("Pattern", {}))
         self.range = RecurrenceRange(recurrence_data.get("Range", {}))
@@ -117,8 +120,8 @@ class TimeWindowFilterSettings:
     The settings for the time window filter.
     """
 
-    start: datetime
-    end: datetime
+    start: Optional[datetime]
+    end: Optional[datetime]
     recurrence: Optional[Recurrence]
 
 

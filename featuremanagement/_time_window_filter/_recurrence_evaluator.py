@@ -4,11 +4,12 @@
 # license information.
 # -------------------------------------------------------------------------
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Optional
 from ._models import RecurrencePatternType, RecurrenceRangeType, TimeWindowFilterSettings, OccurrenceInfo
-from ._recurrence_validator import validate_settings
+from ._recurrence_validator import validate_settings, _get_passed_week_days, _sort_days_of_week
 
 DAYS_PER_WEEK = 7
+
 
 def is_match(settings: TimeWindowFilterSettings, now: datetime) -> bool:
     """
@@ -40,7 +41,7 @@ def _get_previous_occurrence(settings: TimeWindowFilterSettings, now: datetime) 
     elif pattern_type == RecurrencePatternType.WEEKLY:
         occurrence_info = _get_weekly_previous_occurrence(settings, now)
     else:
-        raise ValueError(f"Invalid recurrence pattern type: %s", pattern_type)
+        raise ValueError(f"Invalid recurrence pattern type: {pattern_type}")
 
     recurrence_range = settings.recurrence.range
     range_type = recurrence_range.type
@@ -97,7 +98,9 @@ def _get_weekly_previous_occurrence(settings: TimeWindowFilterSettings, now: dat
         day_with_min_offset = start
     if now < day_with_min_offset:
         most_recent_occurrence = (
-            first_day_of_most_recent_occurring_week - timedelta(days=interval * DAYS_PER_WEEK) + timedelta(days=max_day_offset)
+            first_day_of_most_recent_occurring_week
+            - timedelta(days=interval * DAYS_PER_WEEK)
+            + timedelta(days=max_day_offset)
         )
     else:
         most_recent_occurrence = day_with_min_offset
@@ -113,19 +116,3 @@ def _get_weekly_previous_occurrence(settings: TimeWindowFilterSettings, now: dat
             num_of_occurrences += 1
 
     return OccurrenceInfo(most_recent_occurrence, num_of_occurrences)
-
-
-def _get_passed_week_days(current_day: int, first_day_of_week: int) -> int:
-    """
-    Get the number of days passed since the first day of the week.
-    :param int current_day: The current day of the week (0-6).
-    :param int first_day_of_week: The first day of the week (0-6).
-    :return: The number of days passed since the first day of the week.
-    :rtype: int
-    """
-    return (current_day - first_day_of_week + DAYS_PER_WEEK) % DAYS_PER_WEEK
-
-
-def _sort_days_of_week(days_of_week: List[int], first_day_of_week: int) -> List[int]:
-    sorted_days = sorted(days_of_week)
-    return sorted_days[sorted_days.index(first_day_of_week) :] + sorted_days[: sorted_days.index(first_day_of_week)]
