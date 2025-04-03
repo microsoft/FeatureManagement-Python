@@ -70,15 +70,19 @@ class RecurrencePattern:  # pylint: disable=too-few-public-methods
     """
 
     days: List[str] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    days_of_week: List[int] = []
 
     def __init__(self, pattern_data: Dict[str, Any]):
         self.type = RecurrencePatternType.from_str(pattern_data.get("Type", "Daily"))
         self.interval = pattern_data.get("Interval", 1)
         if self.interval <= 0:
             raise ValueError("The interval must be greater than 0.")
-        days_of_week = pattern_data.get("DaysOfWeek", [])
-        for day in days_of_week:
+        # Days of the week are represented as a list of strings of there names.
+        days_of_week_str = pattern_data.get("DaysOfWeek", [])
+
+        # Days of the week are represented as a list of integers from 0 to 6.
+        # 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+        self.days_of_week = []
+        for day in days_of_week_str:
             self.days_of_week.append(self.days.index(day))
         self.first_day_of_week = self.days.index(pattern_data.get("FirstDayOfWeek", "Sunday"))
 
