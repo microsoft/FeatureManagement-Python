@@ -29,7 +29,7 @@ def validate_settings(recurrence: Recurrence, start: datetime, end: datetime) ->
     """
     if not recurrence:
         raise ValueError("Recurrence is required")
-    
+
     _validate_start_end_parameter(start, end)
     _validate_recurrence_pattern(recurrence.pattern, start, end)
     _validate_recurrence_range(recurrence.range, start)
@@ -67,7 +67,7 @@ def _validate_weekly_recurrence_pattern(pattern: RecurrencePattern, start: datet
 
     # Check whether "Start" is a valid first occurrence
     if start.weekday() not in pattern.days_of_week:
-        raise ValueError(NOT_MATCHED % "start")
+        raise ValueError(NOT_MATCHED % start.strftime("%A"))
 
     # Time window duration must be shorter than how frequently it occurs
     _validate_time_window_duration(pattern, start, end)
@@ -116,10 +116,12 @@ def _is_duration_compliant_with_days_of_week(pattern: RecurrencePattern, start: 
     sorted_days_of_week = _sort_days_of_week(days_of_week, first_day_of_week)
 
     # Loop the whole week to get the min gap between the two consecutive recurrences
-    prev_occurrence = None
+    prev_occurrence = first_date_of_week + timedelta(
+        days=_get_passed_week_days(sorted_days_of_week[0], first_day_of_week)
+    )
     min_gap = timedelta(days=DAYS_PER_WEEK)
 
-    for day in sorted_days_of_week:
+    for day in sorted_days_of_week[1:]:
         date = first_date_of_week + timedelta(days=_get_passed_week_days(day, first_day_of_week))
         if prev_occurrence is not None:
             current_gap = date - prev_occurrence
@@ -131,9 +133,6 @@ def _is_duration_compliant_with_days_of_week(pattern: RecurrencePattern, start: 
         date = first_date_of_week + timedelta(
             days=DAYS_PER_WEEK + _get_passed_week_days(sorted_days_of_week[0], first_day_of_week)
         )
-
-        if not prev_occurrence:
-            return False
 
         current_gap = date - prev_occurrence
         min_gap = min(min_gap, current_gap)
