@@ -1,3 +1,8 @@
+# ------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for
+# license information.
+# -------------------------------------------------------------------------
 from datetime import timedelta, datetime
 import pytest
 from recurrence_util import valid_daily_recurrence, valid_daily_end_date_recurrence, valid_no_end_range, START, END

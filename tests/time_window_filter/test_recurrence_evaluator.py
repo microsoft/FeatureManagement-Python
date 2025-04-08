@@ -1,5 +1,10 @@
+# ------------------------------------------------------------------------
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for
+# license information.
+# -------------------------------------------------------------------------
+from datetime import datetime
 import pytest
-from datetime import datetime, timedelta
 from featuremanagement._time_window_filter._recurrence_evaluator import is_match
 from featuremanagement._time_window_filter._models import TimeWindowFilterSettings, Recurrence
 
@@ -186,6 +191,7 @@ def test_is_match_weekly_recurrence_with_occurrences_single_day():
     # Fifth week occurrence shouldn't match, passed the range
     assert is_match(settings, datetime(2025, 5, 5, 10, 0, 0)) is False
 
+
 def test_is_match_weekly_recurrence_with_occurrences_multi_day():
     start = datetime(2025, 4, 7, 9, 0, 0)  # Monday
     end = datetime(2025, 4, 7, 17, 0, 0)  # Monday
@@ -253,7 +259,7 @@ def test_weekly_recurrence_start_after_min_offset():
 def test_weekly_recurrence_now_before_min_offset():
     start = datetime(2025, 4, 9, 9, 0, 0)  # Monday
     end = datetime(2025, 4, 9, 17, 0, 0)  # Monday
-    now = datetime(2025, 4, 16, 8, 0, 0) 
+    now = datetime(2025, 4, 16, 8, 0, 0)
 
     recurrence = Recurrence(
         {
@@ -271,4 +277,3 @@ def test_weekly_recurrence_now_before_min_offset():
 
     # Verify that the main method is_match correctly handles the scenario
     assert is_match(settings, now) is False
-
