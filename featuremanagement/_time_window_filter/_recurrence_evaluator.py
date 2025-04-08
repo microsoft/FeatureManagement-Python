@@ -49,8 +49,6 @@ def _get_previous_occurrence(recurrence: Recurrence, start: datetime, now: datet
         occurrence_info = _get_daily_previous_occurrence(recurrence, start, now)
     elif pattern_type == RecurrencePatternType.WEEKLY:
         occurrence_info = _get_weekly_previous_occurrence(recurrence, start, now)
-    else:
-        raise ValueError(f"Invalid recurrence pattern type: {pattern_type}")
 
     recurrence_range = recurrence.range
     range_type = recurrence_range.type
