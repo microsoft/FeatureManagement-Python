@@ -154,4 +154,11 @@ def _get_passed_week_days(current_day: int, first_day_of_week: int) -> int:
 
 def _sort_days_of_week(days_of_week: List[int], first_day_of_week: int) -> List[int]:
     sorted_days = sorted(days_of_week)
-    return sorted_days[sorted_days.index(first_day_of_week) :] + sorted_days[: sorted_days.index(first_day_of_week)]
+    if first_day_of_week in sorted_days:
+        return sorted_days[sorted_days.index(first_day_of_week) :] + sorted_days[: sorted_days.index(first_day_of_week)]
+    next_closet_day = first_day_of_week
+    for i in range(len(sorted_days)):
+        if sorted_days[i] > first_day_of_week:
+            next_closet_day = sorted_days[i]
+            break
+    return sorted_days[sorted_days.index(next_closet_day) :] + sorted_days[: sorted_days.index(next_closet_day)]
