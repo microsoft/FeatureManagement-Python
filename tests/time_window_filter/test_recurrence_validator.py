@@ -5,7 +5,13 @@
 # -------------------------------------------------------------------------
 from datetime import timedelta, datetime
 import pytest
-from recurrence_util import valid_daily_recurrence, valid_daily_end_date_recurrence, valid_no_end_range, START, END
+from time_window_filter.recurrence_util import (
+    valid_daily_recurrence,
+    valid_daily_end_date_recurrence,
+    valid_no_end_range,
+    START,
+    END,
+)
 from featuremanagement._time_window_filter._models import Recurrence
 from featuremanagement._time_window_filter._recurrence_validator import validate_settings
 
