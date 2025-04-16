@@ -54,6 +54,7 @@ def valid_daily_end_date_recurrence():
         }
     )
 
+
 def test_validate_settings_valid_daily():
     validate_settings(valid_daily_recurrence(), START, END)
 
