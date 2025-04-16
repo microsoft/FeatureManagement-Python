@@ -111,7 +111,7 @@ def _is_duration_compliant_with_days_of_week(pattern: RecurrencePattern, start: 
     # Get the date of first day of the week
     today = datetime.now()
     first_day_of_week = pattern.first_day_of_week
-    offset = _get_passed_week_days(today.weekday(), first_day_of_week)
+    offset = _get_passed_week_days((today.weekday() + 1) % 7, first_day_of_week)
     first_date_of_week = today - timedelta(days=offset)
     sorted_days_of_week = _sort_days_of_week(days_of_week, first_day_of_week)
 
@@ -144,8 +144,8 @@ def _is_duration_compliant_with_days_of_week(pattern: RecurrencePattern, start: 
 def _get_passed_week_days(current_day: int, first_day_of_week: int) -> int:
     """
     Get the number of days passed since the first day of the week.
-    :param int current_day: The current day of the week, where Monday == 0 ... Sunday == 6.
-    :param int first_day_of_week: The first day of the week (0-6), where Monday == 0 ... Sunday == 6.
+    :param int current_day: The current day of the week, where Sunday == 0 ... Saturday == 6.
+    :param int first_day_of_week: The first day of the week (0-6), where Sunday == 0 ... Saturday == 6.
     :return: The number of days passed since the first day of the week.
     :rtype: int
     """

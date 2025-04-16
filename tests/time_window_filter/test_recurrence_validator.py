@@ -5,7 +5,7 @@
 # -------------------------------------------------------------------------
 from datetime import timedelta, datetime
 import pytest
-from time_window_filter.recurrence_util import (
+from .recurrence_util import (
     valid_daily_recurrence,
     valid_daily_end_date_recurrence,
     valid_no_end_range,

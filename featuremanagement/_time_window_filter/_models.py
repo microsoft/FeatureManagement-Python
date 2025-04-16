@@ -76,11 +76,10 @@ class RecurrencePattern:  # pylint: disable=too-few-public-methods
         self.interval = pattern_data.get("Interval", 1)
         if self.interval <= 0:
             raise ValueError("The interval must be greater than 0.")
-        # Days of the week are represented as a list of strings of there names.
+        # Days of the week are represented as a list of strings of their names.
         days_of_week_str = pattern_data.get("DaysOfWeek", [])
 
         # Days of the week are represented as a list of integers from 0 to 6.
-        # 0 = Sunday, 1 = Monday, ..., 6 = Saturday
         self.days_of_week = []
         for day in days_of_week_str:
             self.days_of_week.append(self.days.index(day))
