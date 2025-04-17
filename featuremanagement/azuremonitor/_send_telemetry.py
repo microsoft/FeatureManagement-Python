@@ -39,7 +39,7 @@ SPAN = "Span"
 
 EVENT_NAME = "FeatureEvaluation"
 
-EVALUATION_EVENT_VERSION = "1.1.0"
+EVALUATION_EVENT_VERSION = "1.0.0"
 
 
 def track_event(event_name: str, user: str, event_properties: Optional[Dict[str, Optional[str]]] = None) -> None:

@@ -26,7 +26,6 @@ class TestSendTelemetryAppinsights:
                         "ETag": "cmwBRcIAq1jUyKL3Kj8bvf9jtxBrFg-R-ayExStMC90",
                         "FeatureFlagReference": "fake-store-uri/kv/.appconfig.featureflag/TestFeature",
                         "FeatureFlagId": "fake-feature-flag-id",
-                        "AllocationId": "fake-allocation-id",
                     },
                 },
             }
@@ -50,16 +49,12 @@ class TestSendTelemetryAppinsights:
             assert mock_track_event.call_args[0][1]["Enabled"] == "True"
             assert mock_track_event.call_args[0][1]["TargetingId"] == "test_user"
             assert mock_track_event.call_args[0][1]["Variant"] == "TestVariant"
-            assert mock_track_event.call_args[0][1]["VariantAssignmentReason"] == "DefaultWhenDisabled"
-            assert "VariantAssignmentPercentage" not in mock_track_event.call_args[0][1]
             assert mock_track_event.call_args[0][1]["ETag"] == "cmwBRcIAq1jUyKL3Kj8bvf9jtxBrFg-R-ayExStMC90"
             assert (
                 mock_track_event.call_args[0][1]["FeatureFlagReference"]
                 == "fake-store-uri/kv/.appconfig.featureflag/TestFeature"
             )
             assert mock_track_event.call_args[0][1]["FeatureFlagId"] == "fake-feature-flag-id"
-            assert mock_track_event.call_args[0][1]["AllocationId"] == "fake-allocation-id"
-            assert "DefaultWhenEnabled" not in mock_track_event.call_args[0][1]
 
     def test_send_telemetry_appinsights_no_user(self):
         feature_flag = FeatureFlag.convert_from_json({"id": "TestFeature"})
@@ -82,8 +77,6 @@ class TestSendTelemetryAppinsights:
             assert "TargetingId" not in mock_track_event.call_args[0][1]
             assert mock_track_event.call_args[0][1]["Variant"] == "TestVariant"
             assert mock_track_event.call_args[0][1]["VariantAssignmentReason"] == "DefaultWhenDisabled"
-            assert "VariantAssignmentPercentage" not in mock_track_event.call_args[0][1]
-            assert "DefaultWhenEnabled" not in mock_track_event.call_args[0][1]
 
     def test_send_telemetry_appinsights_no_variant(self):
         feature_flag = FeatureFlag.convert_from_json({"id": "TestFeature"})
@@ -147,9 +140,6 @@ class TestSendTelemetryAppinsights:
             assert mock_track_event.call_args[0][1]["TargetingId"] == "test_user"
             assert mock_track_event.call_args[0][1]["Variant"] == "big"
             assert mock_track_event.call_args[0][1]["VariantAssignmentReason"] == "DefaultWhenEnabled"
-            assert mock_track_event.call_args[0][1]["VariantAssignmentPercentage"] == "25"
-            assert "DefaultWhenEnabled" in mock_track_event.call_args[0][1]
-            assert mock_track_event.call_args[0][1]["DefaultWhenEnabled"] == "big"
 
     def test_send_telemetry_appinsights_default_when_enabled_no_percentile(self):
         feature_flag = FeatureFlag.convert_from_json(
@@ -180,9 +170,6 @@ class TestSendTelemetryAppinsights:
             assert mock_track_event.call_args[0][1]["TargetingId"] == "test_user"
             assert mock_track_event.call_args[0][1]["Variant"] == "big"
             assert mock_track_event.call_args[0][1]["VariantAssignmentReason"] == "DefaultWhenEnabled"
-            assert mock_track_event.call_args[0][1]["VariantAssignmentPercentage"] == "100"
-            assert "DefaultWhenEnabled" in mock_track_event.call_args[0][1]
-            assert mock_track_event.call_args[0][1]["DefaultWhenEnabled"] == "big"
 
     def test_send_telemetry_appinsights_allocation(self):
         feature_flag = FeatureFlag.convert_from_json(
