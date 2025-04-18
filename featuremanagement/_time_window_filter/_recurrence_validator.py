@@ -156,9 +156,9 @@ def _sort_days_of_week(days_of_week: List[int], first_day_of_week: int) -> List[
     sorted_days = sorted(days_of_week)
     if first_day_of_week in sorted_days:
         return sorted_days[sorted_days.index(first_day_of_week) :] + sorted_days[: sorted_days.index(first_day_of_week)]
-    next_closet_day = first_day_of_week
-    for day in sorted_days:
-        if day > first_day_of_week:
-            next_closet_day = day
+    next_closest_day = first_day_of_week
+    for i in range(7):
+        if (first_day_of_week + i) % 7 in sorted_days:
+            next_closest_day = (first_day_of_week + i) % 7
             break
-    return sorted_days[sorted_days.index(next_closet_day) :] + sorted_days[: sorted_days.index(next_closet_day)]
+    return sorted_days[sorted_days.index(next_closest_day) :] + sorted_days[: sorted_days.index(next_closest_day)]

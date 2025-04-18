@@ -6,7 +6,7 @@
 from datetime import timedelta, datetime
 import pytest
 from featuremanagement._time_window_filter._models import Recurrence
-from featuremanagement._time_window_filter._recurrence_validator import validate_settings
+from featuremanagement._time_window_filter._recurrence_validator import validate_settings, _sort_days_of_week
 
 DATE_FORMAT = "%a, %d %b %Y %H:%M:%S"
 
@@ -187,3 +187,8 @@ def test_is_duration_compliant_with_days_of_week_false():
     end = datetime(2025, 4, 10, 9, 0, 0)  # Wednesday (48 hours duration)
     with pytest.raises(ValueError, match="Recurrence.Pattern.DaysOfWeek"):
         validate_settings(Recurrence({"Pattern": pattern, "Range": valid_no_end_range()}), start, end)
+
+def test_sort_days_of_week():
+    days_of_week = [0, 3, 5] # Monday, Thursday, Saturday
+    sorted_days = _sort_days_of_week(days_of_week, 6)
+    assert sorted_days == [0, 3, 5]

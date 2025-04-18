@@ -12,7 +12,7 @@ from featuremanagement._time_window_filter._models import TimeWindowFilterSettin
 def test_is_match_within_time_window():
     start = datetime(2025, 4, 7, 9, 0, 0)
     end = datetime(2025, 4, 7, 17, 0, 0)
-    now = datetime(2025, 4, 7, 10, 0, 0)
+    now = datetime(2025, 4, 8, 10, 0, 0)
 
     recurrence = Recurrence(
         {
