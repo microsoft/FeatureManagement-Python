@@ -82,7 +82,11 @@ class RecurrencePattern:  # pylint: disable=too-few-public-methods
         # Days of the week are represented as a list of integers from 0 to 6.
         self.days_of_week = []
         for day in days_of_week_str:
+            if day not in self.days:
+                raise ValueError(f"Invalid value for DaysOfWeek: {day}")
             self.days_of_week.append(self.days.index(day))
+        if pattern_data.get("FirstDayOfWeek") and pattern_data.get("FirstDayOfWeek") not in self.days:
+            raise ValueError(f"Invalid value for FirstDayOfWeek: {pattern_data.get('FirstDayOfWeek')}")
         self.first_day_of_week = self.days.index(pattern_data.get("FirstDayOfWeek", "Sunday"))
 
 
@@ -98,7 +102,10 @@ class RecurrenceRange:  # pylint: disable=too-few-public-methods
         self.type = RecurrenceRangeType.from_str(range_data.get("Type", "NoEnd"))
         if range_data.get("EndDate") and isinstance(range_data.get("EndDate"), str):
             end_date_str = range_data.get("EndDate", "")
-            self.end_date = parsedate_to_datetime(end_date_str) if end_date_str else None
+            try:
+                self.end_date = parsedate_to_datetime(end_date_str) if end_date_str else None
+            except ValueError:
+                raise ValueError(f"Invalid value for EndDate: {end_date_str}")
         self.num_of_occurrences = range_data.get("NumberOfOccurrences", math.pow(2, 63) - 1)
         if self.num_of_occurrences < 0:
             raise ValueError("The number of occurrences must be greater than or equal to 0.")
