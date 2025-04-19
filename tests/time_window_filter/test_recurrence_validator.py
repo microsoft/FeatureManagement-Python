@@ -188,27 +188,28 @@ def test_is_duration_compliant_with_days_of_week_false():
     with pytest.raises(ValueError, match="Recurrence.Pattern.DaysOfWeek"):
         validate_settings(Recurrence({"Pattern": pattern, "Range": valid_no_end_range()}), start, end)
 
+
 def test_sort_days_of_week():
-    days_of_week = [0, 3, 5] # Monday, Thursday, Saturday
+    days_of_week = [0, 3, 5]  # Monday, Thursday, Saturday
     sorted_days = _sort_days_of_week(days_of_week, 6)
     assert sorted_days == [0, 3, 5]
 
-    days_of_week = [5, 0, 3] # Saturday, Monday, Thursday
+    days_of_week = [5, 0, 3]  # Saturday, Monday, Thursday
     sorted_days = _sort_days_of_week(days_of_week, 6)
     assert sorted_days == [0, 3, 5]
 
-    days_of_week = [0, 1, 2, 3, 4, 5, 6] # All days of the week
+    days_of_week = [0, 1, 2, 3, 4, 5, 6]  # All days of the week
     sorted_days = _sort_days_of_week(days_of_week, 6)
     assert sorted_days == [6, 0, 1, 2, 3, 4, 5]
 
-    days_of_week = [6, 5, 4, 3, 2, 1, 0] # All days of the week in reverse order
+    days_of_week = [6, 5, 4, 3, 2, 1, 0]  # All days of the week in reverse order
     sorted_days = _sort_days_of_week(days_of_week, 6)
     assert sorted_days == [6, 0, 1, 2, 3, 4, 5]
 
-    days_of_week = [0, 2, 4, 6] # Monday, Wednesday, Friday, Sunday
+    days_of_week = [0, 2, 4, 6]  # Monday, Wednesday, Friday, Sunday
     sorted_days = _sort_days_of_week(days_of_week, 2)
     assert sorted_days == [2, 4, 6, 0]
 
-    days_of_week = [1] # Tuesday
+    days_of_week = [1]  # Tuesday
     sorted_days = _sort_days_of_week(days_of_week, 0)
     assert sorted_days == [1]
