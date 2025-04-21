@@ -109,7 +109,7 @@ class RecurrenceRange:  # pylint: disable=too-few-public-methods
             except TypeError as e:
                 # Python 3.9 and earlier throw TypeError if the string is not in RFC 2822 format.
                 raise ValueError(f"Invalid value for EndDate: {end_date_str}") from e
-        self.num_of_occurrences = range_data.get("NumberOfOccurrences", math.pow(2, 63) - 1)
+        self.num_of_occurrences = range_data.get("NumberOfOccurrences", 2 ** 63 - 1)
         if self.num_of_occurrences <= 0:
             raise ValueError("The number of occurrences must be greater than 0.")
 

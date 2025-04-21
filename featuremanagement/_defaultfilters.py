@@ -84,10 +84,6 @@ class TimeWindowFilter(FeatureFilter):
         start_time: Optional[datetime] = parsedate_to_datetime(start) if start else None
         end_time: Optional[datetime] = parsedate_to_datetime(end) if end else None
 
-        if not start and not end:
-            logging.warning("%s: At least one of Start or End is required.", TimeWindowFilter.__name__)
-            return False
-
         if (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time):
             return True
 
