@@ -93,7 +93,12 @@ def test_recurrence_range():
     try:
         range = RecurrenceRange({"Type": "NoEnd", "NumberOfOccurrences": -1})
     except ValueError as e:
-        assert str(e) == "The number of occurrences must be greater than or equal to 0."
+        assert str(e) == "The number of occurrences must be greater than 0."
+
+    try:
+        range = RecurrenceRange({"Type": "NoEnd", "NumberOfOccurrences": 0})
+    except ValueError as e:
+        assert str(e) == "The number of occurrences must be greater than 0."
 
     try:
         range = RecurrenceRange({"Type": "EndDate", "EndDate": "InvalidDate"})
