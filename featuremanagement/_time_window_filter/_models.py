@@ -3,7 +3,6 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-import math
 from enum import Enum
 from typing import Dict, Any, Optional, List
 from datetime import datetime
@@ -80,10 +79,12 @@ class RecurrencePattern:  # pylint: disable=too-few-public-methods
         days_of_week_str = pattern_data.get("DaysOfWeek", [])
 
         # Days of the week are represented as a list of integers from 0 to 6.
-        self.days_of_week = []
+        self.days_of_week: List[int] = []
         for day in days_of_week_str:
             if day not in self.days:
                 raise ValueError(f"Invalid value for DaysOfWeek: {day}")
+            if self.days.index(day) in self.days_of_week:
+                raise ValueError(f"Duplicate day of the week found: {day}")
             self.days_of_week.append(self.days.index(day))
         if pattern_data.get("FirstDayOfWeek") and pattern_data.get("FirstDayOfWeek") not in self.days:
             raise ValueError(f"Invalid value for FirstDayOfWeek: {pattern_data.get('FirstDayOfWeek')}")
@@ -109,7 +110,7 @@ class RecurrenceRange:  # pylint: disable=too-few-public-methods
             except TypeError as e:
                 # Python 3.9 and earlier throw TypeError if the string is not in RFC 2822 format.
                 raise ValueError(f"Invalid value for EndDate: {end_date_str}") from e
-        self.num_of_occurrences = range_data.get("NumberOfOccurrences", 2 ** 63 - 1)
+        self.num_of_occurrences = range_data.get("NumberOfOccurrences", 2**63 - 1)
         if self.num_of_occurrences <= 0:
             raise ValueError("The number of occurrences must be greater than 0.")
 

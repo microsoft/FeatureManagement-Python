@@ -213,3 +213,109 @@ def test_sort_days_of_week():
     days_of_week = [1]  # Tuesday
     sorted_days = _sort_days_of_week(days_of_week, 0)
     assert sorted_days == [1]
+
+
+def test_validate_settings_invalid_days_of_week():
+    with pytest.raises(ValueError, match="Invalid value for DaysOfWeek: Thor's Day"):
+        validate_settings(
+            Recurrence(
+                {
+                    "Pattern": {
+                        "Type": "Weekly",
+                        "Interval": 1,
+                        "DaysOfWeek": ["Thor's Day"],
+                        "FirstDayOfWeek": "Monday",
+                    },
+                    "Range": valid_no_end_range(),
+                }
+            ),
+            START,
+            END,
+        )
+    with pytest.raises(ValueError, match="Required parameter: Recurrence.Pattern.DaysOfWeek"):
+        validate_settings(
+            Recurrence(
+                {
+                    "Pattern": {
+                        "Type": "Weekly",
+                        "Interval": 1,
+                        "DaysOfWeek": [],
+                        "FirstDayOfWeek": "Monday",
+                    },
+                    "Range": valid_no_end_range(),
+                }
+            ),
+            START,
+            END,
+        )
+
+
+def test_validate_settings_invalid_days_of_week_duplicate():
+    with pytest.raises(ValueError, match="Duplicate day of the week found: Monday"):
+        validate_settings(
+            Recurrence(
+                {
+                    "Pattern": {
+                        "Type": "Weekly",
+                        "Interval": 1,
+                        "DaysOfWeek": ["Monday", "Monday"],
+                        "FirstDayOfWeek": "Monday",
+                    },
+                    "Range": valid_no_end_range(),
+                }
+            ),
+            START,
+            END,
+        )
+
+
+def test_validate_settings_invalid_end_date_format():
+    with pytest.raises(ValueError, match="Invalid value for EndDate: invalid-date-format"):
+        validate_settings(
+            Recurrence(
+                {
+                    "Pattern": valid_daily_pattern(),
+                    "Range": {
+                        "Type": "EndDate",
+                        "EndDate": "invalid-date-format",
+                        "NumberOfOccurrences": 10,
+                    },
+                }
+            ),
+            START,
+            END,
+        )
+
+
+def test_validate_settings_boundary_condition_ten_years():
+    end = START + timedelta(days=3650)  # Exactly 10 years
+    recurrence = Recurrence(
+        {
+            "Pattern": {
+                "Type": "Daily",
+                "Interval": 3651,  # Interval greater than the time window length
+                "DaysOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                "FirstDayOfWeek": "Sunday",
+            },
+            "Range": valid_no_end_range(),
+        }
+    )
+    validate_settings(recurrence, START, end)
+    recurrence = Recurrence(
+        {
+            "Pattern": {
+                "Type": "Daily",
+                "Interval": 3652,  # Interval greater than the time window length
+                "DaysOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                "FirstDayOfWeek": "Sunday",
+            },
+            "Range": valid_no_end_range(),
+        }
+    )
+    with pytest.raises(ValueError, match="Time window duration exceeds ten years: end"):
+        validate_settings(recurrence, START, START + timedelta(days=3652))
+
+
+def test_validate_settings_boundary_condition_interval():
+    end = START + timedelta(days=1)  # Exactly matches the interval duration for daily recurrence
+    validate_settings(valid_daily_recurrence(), START, end)

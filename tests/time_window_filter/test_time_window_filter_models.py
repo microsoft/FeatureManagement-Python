@@ -73,7 +73,7 @@ def test_recurrence_pattern():
 
 
 def test_recurrence_range():
-    max_occurrences = math.pow(2, 63) - 1
+    max_occurrences = 2**63 - 1
 
     range = RecurrenceRange({"Type": "NoEnd"})
     assert range.type == RecurrenceRangeType.NO_END
