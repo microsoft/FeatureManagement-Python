@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import cast, List, Mapping, Optional, Dict, Any
 from ._featurefilters import FeatureFilter
+from ._time_window_filter import Recurrence, is_match, TimeWindowFilterSettings
 
 FEATURE_FLAG_NAME_KEY = "feature_name"
 ROLLOUT_PERCENTAGE_KEY = "RolloutPercentage"
@@ -18,6 +19,15 @@ PARAMETERS_KEY = "parameters"
 # Time Window Constants
 START_KEY = "Start"
 END_KEY = "End"
+TIME_WINDOW_FILTER_SETTING_RECURRENCE = "Recurrence"
+
+# Time Window Exceptions
+TIME_WINDOW_FILTER_INVALID = (
+    "{}: The {} feature filter is not valid for feature {}. It must specify either {}, {}, or both."
+)
+TIME_WINDOW_FILTER_INVALID_RECURRENCE = (
+    "{}: The {} feature filter is not valid for feature {}. It must specify both {} and {} when Recurrence is not None."
+)
 
 # Targeting kwargs
 TARGETED_USER_KEY = "user"
@@ -30,6 +40,8 @@ GROUPS_KEY = "Groups"
 EXCLUSION_KEY = "Exclusion"
 FEATURE_FILTER_NAME_KEY = "Name"
 IGNORE_CASE_KEY = "ignore_case"
+
+logger = logging.getLogger(__name__)
 
 
 class TargetingException(Exception):
@@ -52,19 +64,35 @@ class TimeWindowFilter(FeatureFilter):
         :return: True if the current time is within the time window.
         :rtype: bool
         """
-        start = context.get(PARAMETERS_KEY, {}).get(START_KEY)
-        end = context.get(PARAMETERS_KEY, {}).get(END_KEY)
+        start = context.get(PARAMETERS_KEY, {}).get(START_KEY, None)
+        end = context.get(PARAMETERS_KEY, {}).get(END_KEY, None)
+        recurrence_data = context.get(PARAMETERS_KEY, {}).get(TIME_WINDOW_FILTER_SETTING_RECURRENCE, None)
+        recurrence = None
 
         current_time = datetime.now(timezone.utc)
 
         if not start and not end:
-            logging.warning("%s: At least one of Start or End is required.", TimeWindowFilter.__name__)
+            logger.warning(
+                TIME_WINDOW_FILTER_INVALID,
+                TimeWindowFilter.__name__,
+                context.get(FEATURE_FLAG_NAME_KEY),
+                START_KEY,
+                END_KEY,
+            )
             return False
 
-        start_time = parsedate_to_datetime(start) if start else None
-        end_time = parsedate_to_datetime(end) if end else None
+        start_time: Optional[datetime] = parsedate_to_datetime(start) if start else None
+        end_time: Optional[datetime] = parsedate_to_datetime(end) if end else None
 
-        return (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time)
+        if (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time):
+            return True
+
+        if recurrence_data:
+            recurrence = Recurrence(recurrence_data)
+            settings = TimeWindowFilterSettings(start_time, end_time, recurrence)
+            return is_match(settings, current_time)
+
+        return False
 
 
 @FeatureFilter.alias("Microsoft.Targeting")
