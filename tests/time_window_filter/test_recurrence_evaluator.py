@@ -210,26 +210,28 @@ def test_is_match_weekly_recurrence_with_occurrences_multi_day():
 
     settings = TimeWindowFilterSettings(start=start, end=end, recurrence=recurrence)
 
+    # Before the start time, should not match
+    assert is_match(settings, datetime(2025, 4, 7, 8, 0, 0)) is False  # Monday
+
     # First occurrence should match
-    assert is_match(settings, datetime(2025, 4, 7, 10, 0, 0)) is True
-    assert is_match(settings, datetime(2025, 4, 8, 10, 0, 0)) is True
+    assert is_match(settings, datetime(2025, 4, 7, 10, 0, 0)) is True  # Monday
+    assert is_match(settings, datetime(2025, 4, 8, 10, 0, 0)) is True  # Tuesday
 
     # Second week occurrence shouldn't match
-    assert is_match(settings, datetime(2025, 4, 14, 10, 0, 0)) is False
-    assert is_match(settings, datetime(2025, 4, 15, 10, 0, 0)) is False
+    assert is_match(settings, datetime(2025, 4, 14, 10, 0, 0)) is False  # Monday
+    assert is_match(settings, datetime(2025, 4, 15, 10, 0, 0)) is False  # Tuesday
 
-    assert is_match(settings, datetime(2025, 4, 7, 8, 0, 0)) is False
     # Third week occurrence should match
-    assert is_match(settings, datetime(2025, 4, 21, 10, 0, 0)) is True
-    assert is_match(settings, datetime(2025, 4, 22, 10, 0, 0)) is True
+    assert is_match(settings, datetime(2025, 4, 21, 10, 0, 0)) is True  # Monday
+    assert is_match(settings, datetime(2025, 4, 22, 10, 0, 0)) is True  # Tuesday
 
     # Fourth week occurrence shouldn't match
-    assert is_match(settings, datetime(2025, 4, 28, 10, 0, 0)) is False
-    assert is_match(settings, datetime(2025, 4, 29, 10, 0, 0)) is False
+    assert is_match(settings, datetime(2025, 4, 28, 10, 0, 0)) is False  # Monday
+    assert is_match(settings, datetime(2025, 4, 29, 10, 0, 0)) is False  # Tuesday
 
     # Fifth week occurrence shouldn't match
-    assert is_match(settings, datetime(2025, 5, 5, 10, 0, 0)) is False
-    assert is_match(settings, datetime(2025, 5, 6, 10, 0, 0)) is False
+    assert is_match(settings, datetime(2025, 5, 5, 10, 0, 0)) is False  # Monday
+    assert is_match(settings, datetime(2025, 5, 6, 10, 0, 0)) is False  # Tuesday
 
 
 def test_weekly_recurrence_start_after_min_offset():
