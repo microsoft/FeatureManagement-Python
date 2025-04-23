@@ -259,7 +259,7 @@ def test_weekly_recurrence_start_after_min_offset():
 def test_weekly_recurrence_now_before_min_offset():
     start = datetime(2025, 4, 9, 9, 0, 0)  # Monday
     end = datetime(2025, 4, 9, 17, 0, 0)  # Monday
-    now = datetime(2025, 4, 16, 8, 0, 0)
+    now = datetime(2025, 4, 16, 8, 0, 0) # Saturday
 
     recurrence = Recurrence(
         {
