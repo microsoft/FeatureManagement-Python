@@ -12,3 +12,4 @@ featuremanagerbase
 quickstart
 rtype
 usefixtures
+urandom
