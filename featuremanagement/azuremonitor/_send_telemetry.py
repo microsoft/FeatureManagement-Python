@@ -35,7 +35,6 @@ DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
 VERSION = "Version"
 VARIANT_ASSIGNMENT_PERCENTAGE = "VariantAssignmentPercentage"
 MICROSOFT_TARGETING_ID = "Microsoft.TargetingId"
-SPAN = "Span"
 
 EVENT_NAME = "FeatureEvaluation"
 

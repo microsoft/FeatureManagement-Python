@@ -43,7 +43,7 @@ setup(
     author_email="appconfig@microsoft.com",
     url="https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/appconfiguration/feature-management",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3",
