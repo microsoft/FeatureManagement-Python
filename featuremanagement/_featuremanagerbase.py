@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) -> Optional[FeatureFlag]:
     """
     Gets the FeatureFlag json from the configuration, if it exists it gets converted to a FeatureFlag object.
+    If multiple feature flags have the same id, the last one wins.
 
     :param Mapping configuration: Configuration object.
     :param str feature_flag_name: Name of the feature flag.
@@ -40,21 +41,24 @@ def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) 
     if not feature_flags or not isinstance(feature_flags, list):
         return None
 
+    last_match = None
     for feature_flag in feature_flags:
         if feature_flag.get("id") == feature_flag_name:
-            return FeatureFlag.convert_from_json(feature_flag)
+            last_match = feature_flag
+
+    if last_match:
+        return FeatureFlag.convert_from_json(last_match)
 
     return None
 
 
 def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
     """
-    List of all feature flag names.
+    List of all feature flag names. If there are duplicate names, only unique names are returned.
 
     :param Mapping configuration: Configuration object.
     :return: List of feature flag names.
     """
-    feature_flag_names = []
     feature_management = configuration.get(FEATURE_MANAGEMENT_KEY)
     if not feature_management or not isinstance(feature_management, Mapping):
         return []
@@ -62,10 +66,16 @@ def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
     if not feature_flags or not isinstance(feature_flags, list):
         return []
 
+    # Use a set to track unique names and a list to preserve order
+    seen = set()
+    unique_names = []
     for feature_flag in feature_flags:
-        feature_flag_names.append(feature_flag.get("id"))
+        flag_id = feature_flag.get("id")
+        if flag_id not in seen:
+            seen.add(flag_id)
+            unique_names.append(flag_id)
 
-    return feature_flag_names
+    return unique_names
 
 
 class FeatureManagerBase(ABC):

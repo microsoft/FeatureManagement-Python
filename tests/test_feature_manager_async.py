@@ -179,6 +179,78 @@ class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
         assert evaluation_event
         self.called_telemetry = True
 
+    # method: duplicate_feature_flag_handling
+    @pytest.mark.asyncio
+    async def test_duplicate_feature_flags_last_wins_async(self):
+        """Test that when multiple feature flags have the same ID, the last one wins."""
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "First",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "Second",
+                        "enabled": "false",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "Third",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags)
+
+        # The last flag should win (enabled: true)
+        assert await feature_manager.is_enabled("DuplicateFlag") == True
+
+        # Should only list unique names
+        flag_names = feature_manager.list_feature_flag_names()
+        assert "DuplicateFlag" in flag_names
+        # Count how many times DuplicateFlag appears in the list
+        duplicate_count = flag_names.count("DuplicateFlag")
+        assert duplicate_count == 1, f"Expected DuplicateFlag to appear once, but appeared {duplicate_count} times"
+
+    @pytest.mark.asyncio
+    async def test_duplicate_feature_flags_last_wins_disabled_async(self):
+        """Test that when multiple feature flags have the same ID, the last one wins even if disabled."""
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "First",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "Second",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "Third",
+                        "enabled": "false",
+                        "conditions": {"client_filters": []},
+                    },
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags)
+
+        # The last flag should win (enabled: false)
+        assert await feature_manager.is_enabled("DuplicateFlag") == False
+
 
 class AlwaysOn(FeatureFilter):
     async def evaluate(self, context, **kwargs):

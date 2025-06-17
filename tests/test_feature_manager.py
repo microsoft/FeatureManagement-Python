@@ -150,6 +150,132 @@ class TestFeatureManager(unittest.TestCase):
         assert evaluation_event
         self.called_telemetry = True
 
+    # method: duplicate_feature_flag_handling
+    def test_duplicate_feature_flags_last_wins(self):
+        """Test that when multiple feature flags have the same ID, the last one wins."""
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "First",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "Second",
+                        "enabled": "false",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "Third",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags)
+
+        # The last flag should win (enabled: true)
+        assert feature_manager.is_enabled("DuplicateFlag") == True
+
+        # Should only list unique names
+        flag_names = feature_manager.list_feature_flag_names()
+        assert "DuplicateFlag" in flag_names
+        # Count how many times DuplicateFlag appears in the list
+        duplicate_count = flag_names.count("DuplicateFlag")
+        assert duplicate_count == 1, f"Expected DuplicateFlag to appear once, but appeared {duplicate_count} times"
+
+    def test_duplicate_feature_flags_last_wins_disabled(self):
+        """Test that when multiple feature flags have the same ID, the last one wins even if disabled."""
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "First",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "Second",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "Third",
+                        "enabled": "false",
+                        "conditions": {"client_filters": []},
+                    },
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags)
+
+        # The last flag should win (enabled: false)
+        assert feature_manager.is_enabled("DuplicateFlag") == False
+
+    def test_duplicate_feature_flags_mixed_with_unique(self):
+        """Test behavior with a mix of duplicate and unique feature flags."""
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "UniqueFlag1",
+                        "description": "First unique",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "First duplicate",
+                        "enabled": "false",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "UniqueFlag2",
+                        "description": "Second unique",
+                        "enabled": "false",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "DuplicateFlag",
+                        "description": "Second duplicate",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                    {
+                        "id": "UniqueFlag3",
+                        "description": "Third unique",
+                        "enabled": "true",
+                        "conditions": {"client_filters": []},
+                    },
+                ]
+            }
+        }
+        feature_manager = FeatureManager(feature_flags)
+
+        # Test unique flags work as expected
+        assert feature_manager.is_enabled("UniqueFlag1") == True
+        assert feature_manager.is_enabled("UniqueFlag2") == False
+        assert feature_manager.is_enabled("UniqueFlag3") == True
+
+        # Test duplicate flag - last should win (enabled: true)
+        assert feature_manager.is_enabled("DuplicateFlag") == True
+
+        # Test list includes all unique names
+        flag_names = feature_manager.list_feature_flag_names()
+        expected_names = ["UniqueFlag1", "DuplicateFlag", "UniqueFlag2", "UniqueFlag3"]
+        assert set(flag_names) == set(expected_names)
+        # Ensure each name appears only once
+        for name in expected_names:
+            assert flag_names.count(name) == 1
+
 
 class AlwaysOn(FeatureFilter):
     def evaluate(self, context, **kwargs):
