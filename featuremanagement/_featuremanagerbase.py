@@ -41,13 +41,10 @@ def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) 
     if not feature_flags or not isinstance(feature_flags, list):
         return None
 
-    last_match = None
-    for feature_flag in feature_flags:
+    # Iterate backwards to find the last matching feature flag more efficiently
+    for feature_flag in reversed(feature_flags):
         if feature_flag.get("id") == feature_flag_name:
-            last_match = feature_flag
-
-    if last_match:
-        return FeatureFlag.convert_from_json(last_match)
+            return FeatureFlag.convert_from_json(feature_flag)
 
     return None
 
