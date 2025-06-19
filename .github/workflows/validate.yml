@@ -32,7 +32,7 @@ jobs:
       run: |
         pip install -r tests/requirements.txt
         pytest tests --doctest-modules --cov-report=xml --cov-report=html
-    - name: Analysing the samples with pylint
+    - name: Analysing the samples/tests with pylint
       run: |
         pip install -r samples/requirements.txt
         pylint --disable=missing-function-docstring,missing-class-docstring samples tests

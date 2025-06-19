@@ -210,7 +210,7 @@ class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
         feature_manager = FeatureManager(feature_flags)
 
         # The last flag should win (enabled: true)
-        assert await feature_manager.is_enabled("DuplicateFlag") == True
+        assert await feature_manager.is_enabled("DuplicateFlag") is True
 
         # Should only list unique names
         flag_names = feature_manager.list_feature_flag_names()
@@ -249,7 +249,7 @@ class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
         feature_manager = FeatureManager(feature_flags)
 
         # The last flag should win (enabled: false)
-        assert await feature_manager.is_enabled("DuplicateFlag") == False
+        assert await feature_manager.is_enabled("DuplicateFlag") is False
 
 
 class AlwaysOn(FeatureFilter):

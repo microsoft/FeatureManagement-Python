@@ -180,7 +180,7 @@ class TestFeatureManager(unittest.TestCase):
         feature_manager = FeatureManager(feature_flags)
 
         # The last flag should win (enabled: true)
-        assert feature_manager.is_enabled("DuplicateFlag") == True
+        assert feature_manager.is_enabled("DuplicateFlag") is True
 
         # Should only list unique names
         flag_names = feature_manager.list_feature_flag_names()
@@ -218,7 +218,7 @@ class TestFeatureManager(unittest.TestCase):
         feature_manager = FeatureManager(feature_flags)
 
         # The last flag should win (enabled: false)
-        assert feature_manager.is_enabled("DuplicateFlag") == False
+        assert feature_manager.is_enabled("DuplicateFlag") is False
 
     def test_duplicate_feature_flags_mixed_with_unique(self):
         """Test behavior with a mix of duplicate and unique feature flags."""
@@ -261,12 +261,12 @@ class TestFeatureManager(unittest.TestCase):
         feature_manager = FeatureManager(feature_flags)
 
         # Test unique flags work as expected
-        assert feature_manager.is_enabled("UniqueFlag1") == True
-        assert feature_manager.is_enabled("UniqueFlag2") == False
-        assert feature_manager.is_enabled("UniqueFlag3") == True
+        assert feature_manager.is_enabled("UniqueFlag1") is True
+        assert feature_manager.is_enabled("UniqueFlag2") is False
+        assert feature_manager.is_enabled("UniqueFlag3") is True
 
         # Test duplicate flag - last should win (enabled: true)
-        assert feature_manager.is_enabled("DuplicateFlag") == True
+        assert feature_manager.is_enabled("DuplicateFlag") is True
 
         # Test list includes all unique names
         flag_names = feature_manager.list_feature_flag_names()
