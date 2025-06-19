@@ -40,9 +40,9 @@ def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) 
     feature_flags = feature_management.get(FEATURE_FLAG_KEY)
     if not feature_flags or not isinstance(feature_flags, list):
         return None
-    
+
     index = len(feature_flags) - 1
-    
+
     while index >= 0:
         if feature_flags[index].get("id") == feature_flag_name:
             return FeatureFlag.convert_from_json(feature_flags[index])
