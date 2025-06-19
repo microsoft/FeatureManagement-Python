@@ -24,14 +24,13 @@ FEATURE_FILTER_PARAMETERS = "parameters"
 logger = logging.getLogger(__name__)
 
 
-def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str, reversed_feature_flags: Optional[List] = None) -> Optional[FeatureFlag]:
+def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) -> Optional[FeatureFlag]:
     """
     Gets the FeatureFlag json from the configuration, if it exists it gets converted to a FeatureFlag object.
     If multiple feature flags have the same id, the last one wins.
 
     :param Mapping configuration: Configuration object.
     :param str feature_flag_name: Name of the feature flag.
-    :param List reversed_feature_flags: Optional pre-reversed list of feature flags for performance.
     :return: FeatureFlag
     :rtype: FeatureFlag
     """
@@ -41,21 +40,20 @@ def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str, 
     feature_flags = feature_management.get(FEATURE_FLAG_KEY)
     if not feature_flags or not isinstance(feature_flags, list):
         return None
-
-    # Use pre-reversed list if available, otherwise reverse on demand
-    flags_to_iterate = reversed_feature_flags if reversed_feature_flags is not None else reversed(feature_flags)
     
-    for feature_flag in flags_to_iterate:
-        if feature_flag.get("id") == feature_flag_name:
-            return FeatureFlag.convert_from_json(feature_flag)
+    index = len(feature_flags) - 1
+    
+    while index >= 0:
+        if feature_flags[index].get("id") == feature_flag_name:
+            return FeatureFlag.convert_from_json(feature_flags[index])
+        index -= 1
 
     return None
 
 
 def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
     """
-    List of all feature flag names. If there are duplicate names, only unique names are returned
-    in order of first appearance.
+    List of feature flag names, with duplicates removed.
 
     :param Mapping configuration: Configuration object.
     :return: List of feature flag names.
@@ -67,7 +65,6 @@ def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
     if not feature_flags or not isinstance(feature_flags, list):
         return []
 
-    # Use dict.fromkeys() to preserve order while ensuring uniqueness
     flag_ids = [feature_flag.get("id") for feature_flag in feature_flags]
     return list(dict.fromkeys(flag_ids))
 
@@ -83,25 +80,10 @@ class FeatureManagerBase(ABC):
         self._configuration = configuration
         self._cache: Dict[str, Optional[FeatureFlag]] = {}
         self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
-        self._reversed_feature_flags: Optional[List] = None
         self._on_feature_evaluated = kwargs.pop("on_feature_evaluated", None)
         self._targeting_context_accessor: Optional[Callable[[], TargetingContext]] = kwargs.pop(
             "targeting_context_accessor", None
         )
-        self._update_reversed_feature_flags()
-
-    def _update_reversed_feature_flags(self) -> None:
-        """Update the cached reversed feature flags list when configuration changes."""
-        feature_management = self._configuration.get(FEATURE_MANAGEMENT_KEY)
-        if not feature_management or not isinstance(feature_management, Mapping):
-            self._reversed_feature_flags = None
-            return
-        feature_flags = feature_management.get(FEATURE_FLAG_KEY)
-        if not feature_flags or not isinstance(feature_flags, list):
-            self._reversed_feature_flags = None
-            return
-        
-        self._reversed_feature_flags = list(reversed(feature_flags))
 
     @staticmethod
     def _assign_default_disabled_variant(evaluation_event: EvaluationEvent) -> None:
@@ -289,10 +271,9 @@ class FeatureManagerBase(ABC):
         if self._copy is not self._configuration.get(FEATURE_MANAGEMENT_KEY):
             self._cache = {}
             self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
-            self._update_reversed_feature_flags()
 
         if not self._cache.get(feature_flag_id):
-            feature_flag = _get_feature_flag(self._configuration, feature_flag_id, self._reversed_feature_flags)
+            feature_flag = _get_feature_flag(self._configuration, feature_flag_id)
             self._cache[feature_flag_id] = feature_flag
         else:
             feature_flag = self._cache.get(feature_flag_id)
