@@ -65,7 +65,7 @@ def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
     if not feature_flags or not isinstance(feature_flags, list):
         return []
 
-    flag_ids = [feature_flag.get("id") for feature_flag in feature_flags]
+    flag_ids = [feature_flag.get("id") for feature_flag in feature_flags if feature_flag.get("id")]
     return list(dict.fromkeys(flag_ids))
 
 
