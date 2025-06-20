@@ -66,7 +66,7 @@ def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
         return []
 
     flag_ids = [feature_flag.get("id") for feature_flag in feature_flags if feature_flag.get("id")]
-    return list(dict.fromkeys(flag_ids))
+    return list(set(flag_ids))
 
 
 class FeatureManagerBase(ABC):
