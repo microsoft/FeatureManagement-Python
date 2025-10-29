@@ -127,7 +127,7 @@ class TargetingSpanProcessor(SpanProcessor):
             "targeting_context_accessor", None
         )
 
-    def on_start(self, span: Span, parent_context: Optional[Context] = None) -> None:
+    def on_start(self, span: Span, parent_context: Optional[Context] = None) -> None: # pylint: disable=unused-argument
         """
         Attaches the targeting ID to the span and baggage when a new span is started.
 
