@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) -> Optional[FeatureFlag]:
     """
     Gets the FeatureFlag json from the configuration, if it exists it gets converted to a FeatureFlag object.
+    If multiple feature flags have the same id, the last one wins.
 
     :param Mapping configuration: Configuration object.
     :param str feature_flag_name: Name of the feature flag.
@@ -40,21 +41,23 @@ def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) 
     if not feature_flags or not isinstance(feature_flags, list):
         return None
 
-    for feature_flag in feature_flags:
-        if feature_flag.get("id") == feature_flag_name:
-            return FeatureFlag.convert_from_json(feature_flag)
+    index = len(feature_flags) - 1
+
+    while index >= 0:
+        if feature_flags[index].get("id") == feature_flag_name:
+            return FeatureFlag.convert_from_json(feature_flags[index])
+        index -= 1
 
     return None
 
 
 def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
     """
-    List of all feature flag names.
+    List of feature flag names, with duplicates removed.
 
     :param Mapping configuration: Configuration object.
     :return: List of feature flag names.
     """
-    feature_flag_names = []
     feature_management = configuration.get(FEATURE_MANAGEMENT_KEY)
     if not feature_management or not isinstance(feature_management, Mapping):
         return []
@@ -62,10 +65,8 @@ def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
     if not feature_flags or not isinstance(feature_flags, list):
         return []
 
-    for feature_flag in feature_flags:
-        feature_flag_names.append(feature_flag.get("id"))
-
-    return feature_flag_names
+    flag_ids = [feature_flag.get("id") for feature_flag in feature_flags if feature_flag.get("id")]
+    return list(set(flag_ids))
 
 
 class FeatureManagerBase(ABC):
