@@ -1,12 +1,12 @@
-pytest
-pytest-cov
-pytest-asyncio
-black
-pylint
-mypy
-sphinx
-sphinx_rtd_theme
-sphinx-toolbox
-myst_parser
-opentelemetry-api
-opentelemetry-sdk
+pytest < 9.0.0
+pytest-cov < 8.0.0
+pytest-asyncio < 2.0.0
+black < 26.0.0
+pylint < 5.0.0
+mypy < 2.0.0
+sphinx < 9.0.0
+sphinx_rtd_theme < 4.0.0
+sphinx-toolbox < 5.0.0
+myst_parser < 5.0.0
+opentelemetry-api < 2.0.0
+opentelemetry-sdk < 2.0.0
