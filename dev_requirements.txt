@@ -1,6 +1,6 @@
 pytest < 9.0.0
 pytest-cov < 8.0.0
-pytest-asyncio <2.0.0
+pytest-asyncio < 2.0.0
 black < 26.0.0
 pylint < 5.0.0
 mypy < 2.0.0
