@@ -16,6 +16,7 @@ script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
 with open(script_directory + "/formatted_feature_flags.json", "r", encoding="utf-8") as f:
     feature_flags = json.load(f)
 
+# pylint: disable=invalid-name
 user_id = "Adam"
 
 
