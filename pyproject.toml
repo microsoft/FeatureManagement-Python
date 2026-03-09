@@ -18,7 +18,7 @@ max-returns = 7
 disable = ["duplicate-code"]
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -49,6 +49,9 @@ version = {attr = "featuremanagement._version.VERSION"}
 
 [tool.setuptools.packages.find]
 include = ["featuremanagement*"]
+
+[tool.setuptools.package-data]
+featuremanagement = ["py.typed"]
 
 [project.urls]
 Homepage = "https://github.com/microsoft/FeatureManagement-Python"
