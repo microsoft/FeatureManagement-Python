@@ -10,7 +10,6 @@ from random_filter import RandomFilter
 from featuremanagement import FeatureManager
 from featuremanagement.azuremonitor import publish_telemetry, track_event
 
-
 try:
     from azure.monitor.opentelemetry import configure_azure_monitor
 
