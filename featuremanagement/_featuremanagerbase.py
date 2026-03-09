@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 """Base class for feature manager implementations."""
+
 import hashlib
 import logging
 from abc import ABC

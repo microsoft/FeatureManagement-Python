@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 """Variant reference model."""
+
 from dataclasses import dataclass
 from typing import Optional, Mapping, Any
 from ._constants import VARIANT_REFERENCE_NAME, CONFIGURATION_VALUE, STATUS_OVERRIDE

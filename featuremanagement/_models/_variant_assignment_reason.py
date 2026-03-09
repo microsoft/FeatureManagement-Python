@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 """Enum for variant assignment reasons."""
+
 from enum import Enum
 
 

@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 """Synchronous feature manager implementation."""
+
 import logging
 from typing import cast, overload, Any, Optional, Dict, Mapping, List, Tuple
 from ._defaultfilters import TimeWindowFilter, TargetingFilter

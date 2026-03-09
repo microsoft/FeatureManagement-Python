@@ -4,6 +4,7 @@
 # license information.
 # --------------------------------------------------------------------------
 """Telemetry publishing for feature evaluation events."""
+
 import logging
 import inspect
 from typing import Any, Callable, Dict, Optional

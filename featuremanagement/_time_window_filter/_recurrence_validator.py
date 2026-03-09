@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 """Validation logic for recurrence settings."""
+
 from datetime import datetime, timedelta
 from typing import List
 from ._models import RecurrencePatternType, RecurrenceRangeType, Recurrence, RecurrencePattern, RecurrenceRange

@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 """Variant model representing a feature flag variant."""
+
 from typing import Any
 
 

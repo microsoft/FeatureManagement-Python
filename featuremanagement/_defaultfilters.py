@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 """Built-in feature filter implementations."""
+
 import logging
 import hashlib
 from datetime import datetime, timezone

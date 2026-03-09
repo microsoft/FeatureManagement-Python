@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 """Telemetry metadata model."""
+
 from typing import Dict
 from dataclasses import dataclass, field
 

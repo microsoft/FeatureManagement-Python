@@ -4,6 +4,7 @@
 # license information.
 # -------------------------------------------------------------------------
 """Base class for feature filters."""
+
 from abc import ABC, abstractmethod
 from typing import Mapping, Callable, Any, Optional
 
