@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+"""Tests for the synchronous FeatureManager."""
+
 import unittest
 import pytest
 from featuremanagement import FeatureManager, FeatureFilter

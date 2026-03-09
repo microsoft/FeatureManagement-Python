@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+"""Sample demonstrating feature variants with telemetry."""
+
 import json
 import os
 import sys
