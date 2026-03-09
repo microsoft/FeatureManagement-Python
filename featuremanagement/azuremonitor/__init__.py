@@ -5,7 +5,6 @@
 # -------------------------------------------------------------------------
 from ._send_telemetry import publish_telemetry, track_event, TargetingSpanProcessor
 
-
 __all__ = [
     "publish_telemetry",
     "track_event",

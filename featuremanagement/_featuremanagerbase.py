@@ -9,7 +9,6 @@ from abc import ABC
 from typing import List, Optional, Dict, Tuple, Any, Mapping, Callable
 from ._models import FeatureFlag, Variant, VariantAssignmentReason, TargetingContext, EvaluationEvent, VariantReference
 
-
 FEATURE_MANAGEMENT_KEY = "feature_management"
 FEATURE_FLAG_KEY = "feature_flags"
 

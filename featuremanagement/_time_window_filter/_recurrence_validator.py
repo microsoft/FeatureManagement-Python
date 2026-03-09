@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from typing import List
 from ._models import RecurrencePatternType, RecurrenceRangeType, Recurrence, RecurrencePattern, RecurrenceRange
 
-
 DAYS_PER_WEEK = 7
 TEN_YEARS = 3650
 RECURRENCE_PATTERN = "Pattern"
