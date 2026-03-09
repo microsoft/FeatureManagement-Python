@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Data models for the time window filter."""
 from enum import Enum
 from typing import Dict, Any, Optional, List
 from datetime import datetime

@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Evaluation event model for feature flag telemetry."""
 from dataclasses import dataclass
 from typing import Optional
 from ._feature_flag import FeatureFlag

@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Async feature manager implementation."""
 import inspect
 import logging
 from typing import cast, overload, Any, Optional, Dict, Mapping, List, Tuple

@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Recurrence evaluation logic for the time window filter."""
 from datetime import datetime, timedelta
 from typing import Optional
 from ._models import RecurrencePatternType, RecurrenceRangeType, TimeWindowFilterSettings, OccurrenceInfo, Recurrence

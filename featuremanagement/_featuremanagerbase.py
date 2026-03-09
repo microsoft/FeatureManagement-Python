@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Base class for feature manager implementations."""
 import hashlib
 import logging
 from abc import ABC

@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Constants used by feature management models."""
 
 # Feature Flag
 FEATURE_FLAG_ID = "id"

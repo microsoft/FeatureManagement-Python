@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Data models for feature management."""
 from ._feature_flag import FeatureFlag
 from ._variant import Variant
 from ._evaluation_event import EvaluationEvent
