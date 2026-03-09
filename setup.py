@@ -47,9 +47,6 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
@@ -59,7 +56,7 @@ setup(
     ],
     zip_safe=False,
     packages=find_packages(),
-    python_requires=">=3.6",
+    python_requires=">=3.10",
     install_requires=[],
     extras_require={
         "AzureMonitor": ["azure-monitor-events-extension<2.0.0"],
