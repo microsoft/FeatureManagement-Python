@@ -1,27 +1,39 @@
-# Copilot Instructions
+# FEATURE MANAGEMENT FOR PYTHON - COPILOT INSTRUCTIONS
 
-## Python Environment
+---
 
-Always activate and use the Python virtual environment when running Python commands:
+## CORE PRINCIPLES
 
-- On Windows: `.venv\Scripts\activate`
-- On Linux/macOS: `source .venv/bin/activate`
+### RULE 1: DO NOT REPEAT INSTRUCTIONS
+**NEVER repeat instructions when guiding users. Users should follow instructions independently.**
 
-Use `python -m pip` instead of bare `pip` when installing packages.
+### RULE 2: REFERENCE OFFICIAL DOCUMENTATION
+**ALWAYS** reference the [Azure SDK Python Design Guidelines](https://azure.github.io/azure-sdk/python_design.html)
+- Link to specific pages when answering guidelines questions
+- Use this as the authoritative source for SDK development guidance
 
-## Dev Setup
+### RULE 3: VERIFY ENVIRONMENT FIRST
+**REQUIRED CONDITIONS:**
+- Always activate the Python virtual environment before running Python commands:
+  - On Windows: `.venv\Scripts\activate`
+  - On Linux/macOS: `source .venv/bin/activate`
+- Use `python -m pip` instead of bare `pip` when installing packages.
+
+---
+
+## DEV SETUP
 
 Install all dependencies with:
 
-```
+```bash
 python -m pip install -e ".[dev,test]"
 ```
 
-## Python Version
+This project requires **Python 3.10 or newer**.
 
-This project requires Python 3.10 or newer.
+---
 
-## Project Structure
+## PROJECT STRUCTURE
 
 - `featuremanagement/` — Synchronous feature management code
 - `featuremanagement/aio/` — Async equivalents of feature management classes
@@ -31,25 +43,78 @@ This project requires Python 3.10 or newer.
 - `tests/` — Unit tests (sync and async)
 - `samples/` — Sample applications
 
-## Code Conventions
+---
+
+## CODE CONVENTIONS
 
 - All source files must include the Microsoft copyright header.
 - All modules must have a module-level docstring.
 - Maximum line length is 120 characters.
 - Use type annotations on all functions and methods.
 
-## Code Quality
+---
 
-Run these before submitting changes:
+## PYLINT OPERATIONS
 
-```
-black featuremanagement
+### RUNNING PYLINT
+
+**COMMAND:**
+```bash
 pylint featuremanagement
+```
+
+### FIXING PYLINT WARNINGS
+
+**ALLOWED ACTIONS:**
+- ✅ Fix warnings with 100% confidence
+- ✅ Use existing files for all solutions
+- ✅ Reference official guidelines
+
+**FORBIDDEN ACTIONS:**
+- ❌ Fix warnings without complete confidence
+- ❌ Create new files for solutions
+- ❌ Import non-existent modules
+- ❌ Add new dependencies/imports
+- ❌ Make unnecessary large changes
+- ❌ Change code style without reason
+- ❌ Delete code without clear justification
+
+---
+
+## MYPY OPERATIONS
+
+### RUNNING MYPY
+
+**COMMAND:**
+```bash
 mypy featuremanagement
+```
+
+The project uses `strict = True` in `mypy.ini`.
+
+---
+
+## CODE FORMATTING
+
+### RUNNING BLACK
+
+**COMMAND:**
+```bash
+black featuremanagement
+```
+
+Line length is configured to 120 in `pyproject.toml`.
+
+---
+
+## TESTING
+
+### RUNNING TESTS
+
+**COMMAND:**
+```bash
 pytest tests
 ```
-
-## Testing
 
 - Sync tests are in `tests/test_*.py`
 - Async tests use `pytest-asyncio` and are in files ending with `_async.py`
