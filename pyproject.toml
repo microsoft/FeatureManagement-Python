@@ -14,7 +14,7 @@ min-public-methods = 1
 max-branches = 20
 max-returns = 7
 
-[tool.pylint."messages control"]
+[tool.pylint."messages_control"]
 disable = ["duplicate-code"]
 
 [build-system]
@@ -60,8 +60,8 @@ Issues = "https://github.com/microsoft/FeatureManagement-Python/issues"
 [project.optional-dependencies]
 AzureMonitor = ["azure-monitor-events-extension<2.0.0"]
 test = [
-    "azure-monitor-opentelemetry",
-    "azure-monitor-events-extension",
+    "azure-monitor-opentelemetry < 2.0.0",
+    "azure-monitor-events-extension < 2.0.0",
 ]
 dev = [
     "pytest >= 7.0.0, < 10.0.0",
