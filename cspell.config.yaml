@@ -12,7 +12,7 @@ ignorePaths:
   - '.*'
   - 'build'
   - 'docs'
-  - 'dev_requirements.txt'
+  - 'node_modules'
   - '*.egg-info'
   - '*.ini'
   - '*.toml'
