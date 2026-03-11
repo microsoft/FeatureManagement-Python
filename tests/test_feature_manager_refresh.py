@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+"""Tests for feature manager configuration refresh."""
+
 import pytest
 from featuremanagement import FeatureManager
 from featuremanagement.aio import FeatureManager as AsyncFeatureManager

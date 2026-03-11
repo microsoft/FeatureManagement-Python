@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Sample demonstrating Quart web app with feature management."""
 
 import uuid
 import os

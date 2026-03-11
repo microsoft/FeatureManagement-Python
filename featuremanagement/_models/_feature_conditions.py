@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Feature flag condition models."""
+
 from collections.abc import Mapping
 from typing import Any, Dict, List
 from ._constants import (

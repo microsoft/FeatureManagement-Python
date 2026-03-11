@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Allocation model for feature variant assignment."""
+
 from typing import cast, List, Optional, Mapping, Dict, Any, Union
 from dataclasses import dataclass
 from ._constants import DEFAULT_WHEN_ENABLED, DEFAULT_WHEN_DISABLED, USER, GROUP, PERCENTILE, SEED

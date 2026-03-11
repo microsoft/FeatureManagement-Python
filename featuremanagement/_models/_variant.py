@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Variant model representing a feature flag variant."""
+
 from typing import Any
 
 

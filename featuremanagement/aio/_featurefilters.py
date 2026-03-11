@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Base class for async feature filters."""
+
 from abc import ABC, abstractmethod
 from typing import Mapping, Callable, Any, Optional
 

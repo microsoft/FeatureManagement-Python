@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+"""Sample demonstrating feature flags with Azure App Configuration."""
 
 from time import sleep
 import os

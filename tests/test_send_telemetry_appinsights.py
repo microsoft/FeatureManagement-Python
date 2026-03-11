@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+"""Tests for Application Insights telemetry publishing."""
+
 import logging
 from unittest.mock import patch
 import pytest

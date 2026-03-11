@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Built-in async feature filter implementations."""
+
 from typing import Mapping, Any
 from ._featurefilters import FeatureFilter
 from .._defaultfilters import (

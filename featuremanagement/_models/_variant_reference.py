@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Variant reference model."""
+
 from dataclasses import dataclass
 from typing import Optional, Mapping, Any
 from ._constants import VARIANT_REFERENCE_NAME, CONFIGURATION_VALUE, STATUS_OVERRIDE

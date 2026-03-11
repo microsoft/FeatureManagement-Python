@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+"""Telemetry publishing for feature evaluation events."""
+
 import logging
 import inspect
 from typing import Any, Callable, Dict, Optional

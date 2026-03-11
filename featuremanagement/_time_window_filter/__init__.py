@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Time window filter with recurrence support."""
+
 from ._recurrence_evaluator import is_match
 from ._models import Recurrence, TimeWindowFilterSettings
 

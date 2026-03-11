@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Telemetry metadata model."""
+
 from typing import Dict
 from dataclasses import dataclass, field
 

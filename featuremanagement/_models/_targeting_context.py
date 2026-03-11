@@ -3,6 +3,7 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+"""Targeting context model for user and group targeting."""
 
 from typing import NamedTuple, List
 

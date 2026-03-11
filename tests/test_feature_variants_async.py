@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+"""Async tests for feature variant assignment."""
+
 from unittest import IsolatedAsyncioTestCase
 from featuremanagement.aio import FeatureManager, FeatureFilter
 from featuremanagement import TargetingContext

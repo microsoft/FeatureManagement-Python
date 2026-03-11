@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Feature flag model."""
+
 from typing import cast, List, Union, Optional, Mapping, Any
 from ._feature_conditions import FeatureConditions
 from ._allocation import Allocation
