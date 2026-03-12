@@ -8,13 +8,15 @@
 from time import sleep
 import os
 from azure.appconfiguration.provider import load
+from azure.identity import DefaultAzureCredential
 from random_filter import RandomFilter
 from featuremanagement import FeatureManager, TargetingContext
 
-connection_string = os.environ["APPCONFIGURATION_CONNECTION_STRING"]
+endpoint = os.environ["APPCONFIGURATION_ENDPOINT"]
+credential = DefaultAzureCredential()
 
-# Connecting to Azure App Configuration using AAD
-config = load(connection_string=connection_string, feature_flag_enabled=True, feature_flag_refresh_enabled=True)
+# Connecting to Azure App Configuration using Entra ID
+config = load(endpoint=endpoint, credential=credential, feature_flag_enabled=True, feature_flag_refresh_enabled=True)
 
 feature_manager = FeatureManager(config, feature_filters=[RandomFilter()])
 
