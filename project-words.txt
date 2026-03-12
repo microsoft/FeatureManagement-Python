@@ -4,6 +4,7 @@ appinsights
 azuremonitor
 caplog
 Cass
+Entra
 featurefilters
 featureflag
 featuremanagement
