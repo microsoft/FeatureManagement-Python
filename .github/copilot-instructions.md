@@ -54,6 +54,21 @@ This project requires **Python 3.10 or newer**.
 
 ---
 
+## CODE FORMATTING
+
+### RUNNING BLACK
+
+**COMMAND:**
+```bash
+black featuremanagement
+```
+
+Line length is configured to 120 in `pyproject.toml`.
+
+**Always run black before pylint and mypy**, as formatting fixes can resolve issues those tools detect.
+
+---
+
 ## PYLINT OPERATIONS
 
 ### RUNNING PYLINT
@@ -94,19 +109,6 @@ The project uses `strict = True` in `mypy.ini`.
 
 ---
 
-## CODE FORMATTING
-
-### RUNNING BLACK
-
-**COMMAND:**
-```bash
-black featuremanagement
-```
-
-Line length is configured to 120 in `pyproject.toml`.
-
----
-
 ## TESTING
 
 ### RUNNING TESTS
@@ -119,3 +121,12 @@ pytest tests
 - Sync tests are in `tests/test_*.py`
 - Async tests use `pytest-asyncio` and are in files ending with `_async.py`
 - Run tests with: `pytest tests`
+
+---
+
+## NEW FEATURES
+
+When adding a new user-facing feature or capability:
+
+- Create a sample in `samples/` demonstrating the feature.
+- Add corresponding unit tests (sync and async where applicable).
