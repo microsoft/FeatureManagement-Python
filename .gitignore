@@ -406,11 +406,6 @@ build/
 dist/*
 
 # Sphinx
-docs/_build/
-docs/_static
 docs/_templates
-doctrees
-docs/doctrees
-docs/html
 package-lock.json
 package.json
