@@ -218,7 +218,7 @@
                     },
                     {
                         "name": "False_Override",
-                        "configuration_reference": "false-override",
+                        "configuration_value": "The Variant False_Override overrides to True",
                         "status_override": "True"
                     }
                 ]

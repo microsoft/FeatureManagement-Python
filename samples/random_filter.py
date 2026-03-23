@@ -3,6 +3,8 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Sample custom feature filter using random evaluation."""
+
 import random
 from featuremanagement import FeatureFilter
 

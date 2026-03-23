@@ -3,13 +3,15 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Built-in feature filter implementations."""
+
 import logging
 import hashlib
-
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-
+from typing import cast, List, Mapping, Optional, Dict, Any
 from ._featurefilters import FeatureFilter
+from ._time_window_filter import Recurrence, is_match, TimeWindowFilterSettings
 
 FEATURE_FLAG_NAME_KEY = "feature_name"
 ROLLOUT_PERCENTAGE_KEY = "RolloutPercentage"
@@ -19,6 +21,15 @@ PARAMETERS_KEY = "parameters"
 # Time Window Constants
 START_KEY = "Start"
 END_KEY = "End"
+TIME_WINDOW_FILTER_SETTING_RECURRENCE = "Recurrence"
+
+# Time Window Exceptions
+TIME_WINDOW_FILTER_INVALID = (
+    "{}: The {} feature filter is not valid for feature {}. It must specify either {}, {}, or both."
+)
+TIME_WINDOW_FILTER_INVALID_RECURRENCE = (
+    "{}: The {} feature filter is not valid for feature {}. It must specify both {} and {} when Recurrence is not None."
+)
 
 # Targeting kwargs
 TARGETED_USER_KEY = "user"
@@ -31,6 +42,8 @@ GROUPS_KEY = "Groups"
 EXCLUSION_KEY = "Exclusion"
 FEATURE_FILTER_NAME_KEY = "Name"
 IGNORE_CASE_KEY = "ignore_case"
+
+logger = logging.getLogger(__name__)
 
 
 class TargetingException(Exception):
@@ -45,7 +58,7 @@ class TimeWindowFilter(FeatureFilter):
     Feature Filter that determines if the current time is within the time window.
     """
 
-    def evaluate(self, context, **kwargs):
+    def evaluate(self, context: Mapping[Any, Any], **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -53,19 +66,35 @@ class TimeWindowFilter(FeatureFilter):
         :return: True if the current time is within the time window.
         :rtype: bool
         """
-        start = context.get(PARAMETERS_KEY, {}).get(START_KEY)
-        end = context.get(PARAMETERS_KEY, {}).get(END_KEY)
+        start = context.get(PARAMETERS_KEY, {}).get(START_KEY, None)
+        end = context.get(PARAMETERS_KEY, {}).get(END_KEY, None)
+        recurrence_data = context.get(PARAMETERS_KEY, {}).get(TIME_WINDOW_FILTER_SETTING_RECURRENCE, None)
+        recurrence = None
 
         current_time = datetime.now(timezone.utc)
 
         if not start and not end:
-            logging.warning("%s: At least one of Start or End is required.", TimeWindowFilter.__name__)
+            logger.warning(
+                TIME_WINDOW_FILTER_INVALID,
+                TimeWindowFilter.__name__,
+                context.get(FEATURE_FLAG_NAME_KEY),
+                START_KEY,
+                END_KEY,
+            )
             return False
 
-        start_time = parsedate_to_datetime(start) if start else None
-        end_time = parsedate_to_datetime(end) if end else None
+        start_time: Optional[datetime] = parsedate_to_datetime(start) if start else None
+        end_time: Optional[datetime] = parsedate_to_datetime(end) if end else None
 
-        return (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time)
+        if (start_time is None or start_time <= current_time) and (end_time is None or current_time < end_time):
+            return True
+
+        if recurrence_data:
+            recurrence = Recurrence(recurrence_data)
+            settings = TimeWindowFilterSettings(start_time, end_time, recurrence)
+            return is_match(settings, current_time)
+
+        return False
 
 
 @FeatureFilter.alias("Microsoft.Targeting")
@@ -75,7 +104,7 @@ class TargetingFilter(FeatureFilter):
     """
 
     @staticmethod
-    def _is_targeted(context_id, rollout_percentage):
+    def _is_targeted(context_id: str, rollout_percentage: int) -> bool:
         """Determine if the user is targeted for the given context"""
         # Always return true if rollout percentage is 100
         if rollout_percentage == 100:
@@ -87,7 +116,9 @@ class TargetingFilter(FeatureFilter):
         percentage = (context_marker / (2**32 - 1)) * 100
         return percentage < rollout_percentage
 
-    def _target_group(self, target_user, target_group, group, feature_flag_name):
+    def _target_group(
+        self, target_user: Optional[str], target_group: str, group: Mapping[str, Any], feature_flag_name: str
+    ) -> bool:
         group_rollout_percentage = group.get(ROLLOUT_PERCENTAGE_KEY, 0)
         if not target_user:
             target_user = ""
@@ -95,7 +126,7 @@ class TargetingFilter(FeatureFilter):
 
         return self._is_targeted(audience_context_id, group_rollout_percentage)
 
-    def evaluate(self, context, **kwargs):
+    def evaluate(self, context: Mapping[Any, Any], **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -103,8 +134,11 @@ class TargetingFilter(FeatureFilter):
         :return: True if the user is targeted for the feature flag.
         :rtype: bool
         """
-        target_user = kwargs.get(TARGETED_USER_KEY, None)
-        target_groups = kwargs.get(TARGETED_GROUPS_KEY, [])
+        target_user: Optional[str] = cast(
+            str,
+            kwargs.get(TARGETED_USER_KEY, None),
+        )
+        target_groups: List[str] = cast(List[str], kwargs.get(TARGETED_GROUPS_KEY, []))
 
         if not target_user and not (target_groups and len(target_groups) > 0):
             logging.warning("%s: Name or Groups are required parameters", TargetingFilter.__name__)
@@ -152,11 +186,11 @@ class TargetingFilter(FeatureFilter):
         return self._is_targeted(context_id, default_rollout_percentage)
 
     @staticmethod
-    def _validate(groups, default_rollout_percentage):
+    def _validate(groups: List[Dict[str, Any]], default_rollout_percentage: int) -> None:
         # Validate the audience settings
         if default_rollout_percentage < 0 or default_rollout_percentage > 100:
             raise TargetingException("DefaultRolloutPercentage must be between 0 and 100")
 
         for group in groups:
-            if group.get(ROLLOUT_PERCENTAGE_KEY) < 0 or group.get(ROLLOUT_PERCENTAGE_KEY) > 100:
+            if group.get(ROLLOUT_PERCENTAGE_KEY, 0) < 0 or group.get(ROLLOUT_PERCENTAGE_KEY, 100) > 100:
                 raise TargetingException("RolloutPercentage must be between 0 and 100")

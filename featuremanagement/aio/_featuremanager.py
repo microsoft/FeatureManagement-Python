@@ -3,60 +3,50 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
-from collections.abc import Mapping
+"""Async feature manager implementation."""
+
+import inspect
 import logging
-from typing import overload
+from typing import cast, overload, Any, Optional, Dict, Mapping, List, Tuple
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
-from .._featuremanager import (
+from .._models import EvaluationEvent, Variant, TargetingContext
+from .._featuremanagerbase import (
+    FeatureManagerBase,
     PROVIDED_FEATURE_FILTERS,
-    FEATURE_FILTER_NAME,
     REQUIREMENT_TYPE_ALL,
-    FEATURE_MANAGEMENT_KEY,
-    _get_feature_flag,
-    _list_feature_flag_names,
+    FEATURE_FILTER_NAME,
 )
-from .._models import EvaluationEvent, TargetingContext
+
+logger = logging.getLogger(__name__)
 
 
-class FeatureManager:
+class FeatureManager(FeatureManagerBase):
     """
     Feature Manager that determines if a feature flag is enabled for the given context.
 
     :param Mapping configuration: Configuration object.
     :keyword list[FeatureFilter] feature_filters: Custom filters to be used for evaluating feature flags.
+    :keyword Callable[EvaluationEvent] on_feature_evaluated: Callback function to be called when a feature flag is
+    evaluated.
+    :keyword Callable[[], TargetingContext] targeting_context_accessor: Callback function to get the current targeting
+    context if one isn't provided.
     """
 
-    def __init__(self, configuration, **kwargs):
-        self._filters = {}
-        if configuration is None or not isinstance(configuration, Mapping):
-            raise AttributeError("Configuration must be a non-empty dictionary")
-        self._configuration = configuration
-        self._cache = {}
-        self._copy = configuration.get(FEATURE_MANAGEMENT_KEY)
-        filters = [TimeWindowFilter(), TargetingFilter()] + kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
+    def __init__(self, configuration: Mapping[str, Any], **kwargs: Any):
+        super().__init__(configuration, **kwargs)
+        self._filters: Dict[str, FeatureFilter] = {}
+        filters = [TimeWindowFilter(), TargetingFilter()] + cast(
+            List[FeatureFilter], kwargs.pop(PROVIDED_FEATURE_FILTERS, [])
+        )
 
         for feature_filter in filters:
             if not isinstance(feature_filter, FeatureFilter):
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
             self._filters[feature_filter.name] = feature_filter
 
-    def _build_targeting_context(self, args):
-        """
-        Builds a TargetingContext, either returns a provided context, takes the provided user_id to make a context, or
-        returns an empty context.
-
-        :param args: Arguments to build the TargetingContext.
-        :return: TargetingContext
-        """
-        if len(args) == 1 and isinstance(args[0], str):
-            return TargetingContext(user_id=args[0], groups=[])
-        if len(args) == 1 and isinstance(args[0], TargetingContext):
-            return args[0]
-        return TargetingContext()
-
-    @overload
-    async def is_enabled(self, feature_flag_id, user_id, **kwargs):
+    @overload  # type: ignore
+    async def is_enabled(self, feature_flag_id: str, user_id: str, **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -66,7 +56,7 @@ class FeatureManager:
         :rtype: bool
         """
 
-    async def is_enabled(self, feature_flag_id, *args, **kwargs):
+    async def is_enabled(self, feature_flag_id: str, *args: Any, **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -74,13 +64,85 @@ class FeatureManager:
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
-        targeting_context = self._build_targeting_context(args)
-        return (await self._check_feature(feature_flag_id, targeting_context, **kwargs)).enabled
+        targeting_context: TargetingContext = await self._build_targeting_context_async(args)
 
-    async def _check_feature_filters(self, feature_flag, targeting_context, **kwargs):
+        result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
+        if (
+            self._on_feature_evaluated
+            and result.feature
+            and result.feature.telemetry.enabled
+            and callable(self._on_feature_evaluated)
+        ):
+            result.user = targeting_context.user_id
+            if inspect.iscoroutinefunction(self._on_feature_evaluated):
+                await self._on_feature_evaluated(result)
+            else:
+                self._on_feature_evaluated(result)
+        return result.enabled
+
+    @overload  # type: ignore
+    async def get_variant(self, feature_flag_id: str, user_id: str, **kwargs: Any) -> Optional[Variant]:
+        """
+        Determine the variant for the given context.
+
+        :param str feature_flag_id: Name of the feature flag.
+        :param str user_id: User identifier.
+        :return: return: Variant instance.
+        :rtype: Variant
+        """
+
+    async def get_variant(self, feature_flag_id: str, *args: Any, **kwargs: Any) -> Optional[Variant]:
+        """
+        Determine the variant for the given context.
+
+        :param str feature_flag_id: Name of the feature flag
+        :keyword TargetingContext targeting_context: Targeting context.
+        :return: Variant instance.
+        :rtype: Variant
+        """
+        targeting_context: TargetingContext = await self._build_targeting_context_async(args)
+
+        result = await self._check_feature(feature_flag_id, targeting_context, **kwargs)
+        if (
+            self._on_feature_evaluated
+            and result.feature
+            and result.feature.telemetry.enabled
+            and callable(self._on_feature_evaluated)
+        ):
+            result.user = targeting_context.user_id
+            if inspect.iscoroutinefunction(self._on_feature_evaluated):
+                await self._on_feature_evaluated(result)
+            else:
+                self._on_feature_evaluated(result)
+        return result.variant
+
+    async def _build_targeting_context_async(self, args: Tuple[Any]) -> TargetingContext:
+        targeting_context = super()._build_targeting_context(args)
+        if targeting_context:
+            return targeting_context
+        if not targeting_context and self._targeting_context_accessor and callable(self._targeting_context_accessor):
+
+            if inspect.iscoroutinefunction(self._targeting_context_accessor):
+                # If a targeting_context_accessor is provided, return the TargetingContext from it
+                targeting_context = await self._targeting_context_accessor()
+            else:
+                targeting_context = self._targeting_context_accessor()
+            if targeting_context and isinstance(targeting_context, TargetingContext):
+                return targeting_context
+            logger.warning(
+                "targeting_context_accessor did not return a TargetingContext. Received type %s.",
+                type(targeting_context),
+            )
+        return TargetingContext()
+
+    async def _check_feature_filters(
+        self, evaluation_event: EvaluationEvent, targeting_context: TargetingContext, **kwargs: Any
+    ) -> None:
+        feature_flag = evaluation_event.feature
+        if not feature_flag:
+            return
         feature_conditions = feature_flag.conditions
         feature_filters = feature_conditions.client_filters
-        evaluation_event = EvaluationEvent(enabled=False)
 
         if len(feature_filters) == 0:
             # Feature flags without any filters return evaluate
@@ -100,43 +162,27 @@ class FeatureManager:
                 if not await self._filters[filter_name].evaluate(feature_filter, **kwargs):
                     evaluation_event.enabled = False
                     break
-            else:
-                if await self._filters[filter_name].evaluate(feature_filter, **kwargs):
-                    evaluation_event.enabled = True
-                    break
-        return evaluation_event
+            elif await self._filters[filter_name].evaluate(feature_filter, **kwargs):
+                evaluation_event.enabled = True
+                break
 
-    async def _check_feature(self, feature_flag_id, targeting_context, **kwargs):
+    async def _check_feature(
+        self, feature_flag_id: str, targeting_context: TargetingContext, **kwargs: Any
+    ) -> EvaluationEvent:
         """
         Determine if the feature flag is enabled for the given context.
 
         :param str feature_flag_id: Name of the feature flag.
-        :return: True if the feature flag is enabled for the given context.
-        :rtype: bool
+        :param TargetingContext targeting_context: Targeting context.
+        :return: EvaluationEvent for the given context.
+        :rtype: EvaluationEvent
         """
-        if self._copy is not self._configuration.get(FEATURE_MANAGEMENT_KEY):
-            self._cache = {}
-            self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
+        evaluation_event, done = super()._check_feature_base(feature_flag_id)
 
-        if not self._cache.get(feature_flag_id):
-            feature_flag = _get_feature_flag(self._configuration, feature_flag_id)
-            self._cache[feature_flag_id] = feature_flag
-        else:
-            feature_flag = self._cache.get(feature_flag_id)
+        if done:
+            return evaluation_event
 
-        if not feature_flag:
-            logging.warning("Feature flag %s not found", feature_flag_id)
-            # Unknown feature flags are disabled by default
-            return EvaluationEvent(enabled=False)
+        await self._check_feature_filters(evaluation_event, targeting_context, **kwargs)
 
-        if not feature_flag.enabled:
-            # Feature flags that are disabled are always disabled
-            return EvaluationEvent(enabled=False)
-
-        return await self._check_feature_filters(feature_flag, targeting_context, **kwargs)
-
-    def list_feature_flag_names(self):
-        """
-        List of all feature flag names.
-        """
-        return _list_feature_flag_names(self._configuration)
+        self._assign_allocation(evaluation_event, targeting_context)
+        return evaluation_event

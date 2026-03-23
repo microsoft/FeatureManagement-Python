@@ -3,5 +3,6 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Package version."""
 
-VERSION = "1.0.0"
+VERSION = "2.1.0"

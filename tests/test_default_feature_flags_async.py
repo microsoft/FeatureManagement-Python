@@ -3,13 +3,15 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # --------------------------------------------------------------------------
+"""Async tests for built-in feature filters."""
+
 from unittest import IsolatedAsyncioTestCase
 import pytest
 from featuremanagement.aio import FeatureManager
 from featuremanagement import TargetingContext
 
 
-class TestDefaultfeatureFlags(IsolatedAsyncioTestCase):
+class TestDefaultFeatureFlags(IsolatedAsyncioTestCase):
     def test_invalid_feature_flags(self):
         with self.assertRaises(AttributeError):
             FeatureManager("")
@@ -266,3 +268,53 @@ class TestDefaultfeatureFlags(IsolatedAsyncioTestCase):
         # The second TimeWindow filter failed
         assert not await feature_manager.is_enabled("Beta")
         assert await feature_manager.is_enabled("Gamma")
+
+    @pytest.mark.asyncio
+    async def test_feature_manager_with_targeting_accessor(self):
+        feature_flags = {
+            "feature_management": {
+                "feature_flags": [
+                    {
+                        "id": "Target",
+                        "enabled": "true",
+                        "conditions": {
+                            "client_filters": [
+                                {
+                                    "name": "Microsoft.Targeting",
+                                    "parameters": {
+                                        "Audience": {
+                                            "Users": ["Adam"],
+                                            "Groups": [{"Name": "Stage1", "RolloutPercentage": 100}],
+                                            "DefaultRolloutPercentage": 50,
+                                            "Exclusion": {"Users": [], "Groups": []},
+                                        }
+                                    },
+                                }
+                            ]
+                        },
+                    },
+                ]
+            }
+        }
+
+        user_id = "Adam"
+        group_id = None
+
+        def my_targeting_accessor() -> TargetingContext:
+            if group_id:
+                return TargetingContext(user_id=user_id, groups=[group_id])
+            return TargetingContext(user_id=user_id)
+
+        feature_manager = FeatureManager(feature_flags, targeting_context_accessor=my_targeting_accessor)
+        assert feature_manager is not None
+        # Adam is in the user audience
+        assert await feature_manager.is_enabled("Target")
+        # Belle is not part of the 50% or default 50% of users
+        user_id = "Belle"
+        assert not await feature_manager.is_enabled("Target")
+        # Belle is enabled because all of Stage 1 is enabled
+        group_id = "Stage1"
+        assert await feature_manager.is_enabled("Target")
+        # Belle is not enabled because he is not in Stage 2, group isn't looked at when user is targeted
+        group_id = "Stage2"
+        assert not await feature_manager.is_enabled("Target")

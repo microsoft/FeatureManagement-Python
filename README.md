@@ -13,6 +13,7 @@ Feature management provides a way to develop and expose application functionalit
 ## Examples
 
 * [Python Application](https://github.com/microsoft/FeatureManagement-Python/blob/main/samples/feature_flag_sample.py)
+* [Python Application with Feature Variants](https://github.com/microsoft/FeatureManagement-Python/blob/main/samples/feature_variant_sample.py)
 * [Python Application with Azure App Configuration](https://github.com/microsoft/FeatureManagement-Python/blob/main/samples/feature_flag_with_azure_app_configuration_sample.py)
 * [Django Application](https://github.com/Azure/AppConfiguration/tree/main/examples/Python/python-django-webapp-sample)
 * [Flask Application](https://github.com/Azure/AppConfiguration/tree/main/examples/Python/python-flask-webapp-sample)

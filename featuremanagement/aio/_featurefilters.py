@@ -3,7 +3,10 @@
 # Licensed under the MIT License. See License.txt in the project root for
 # license information.
 # -------------------------------------------------------------------------
+"""Base class for async feature filters."""
+
 from abc import ABC, abstractmethod
+from typing import Mapping, Callable, Any, Optional
 
 
 class FeatureFilter(ABC):
@@ -11,8 +14,10 @@ class FeatureFilter(ABC):
     Parent class for all async feature filters.
     """
 
+    _alias: Optional[str] = None
+
     @abstractmethod
-    async def evaluate(self, context, **kwargs):
+    async def evaluate(self, context: Mapping[Any, Any], **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
@@ -20,28 +25,28 @@ class FeatureFilter(ABC):
         """
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         Get the name of the filter.
 
         :return: Name of the filter, or alias if it exists.
         :rtype: str
         """
-        if hasattr(self, "_alias"):
+        if hasattr(self, "_alias") and self._alias:
             return self._alias
         return self.__class__.__name__
 
     @staticmethod
-    def alias(alias):
+    def alias(alias: str) -> Callable[..., Any]:
         """
         Decorator to set the alias for the filter.
 
         :param str alias: Alias for the filter.
         :return: Decorator
-        :rtype: callable
+        :rtype: Callable
         """
 
-        def wrapper(cls):
+        def wrapper(cls: "FeatureFilter") -> Any:
             cls._alias = alias  # pylint: disable=protected-access
             return cls
 
