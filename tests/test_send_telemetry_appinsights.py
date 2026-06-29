@@ -66,7 +66,7 @@ class TestSendTelemetryAppinsights:
             patch("featuremanagement.azuremonitor._send_telemetry._event_logger.info") as mock_event_logger_info,
             patch("featuremanagement.azuremonitor._send_telemetry.HAS_OPENTELEMETRY_LOGGING", True),
         ):
-            featuremanagement.azuremonitor._send_telemetry.track_event(
+            featuremanagement.azuremonitor._send_telemetry.track_event(  # pylint: disable=protected-access
                 "FeatureEvaluation",
                 "test_user",
                 {
