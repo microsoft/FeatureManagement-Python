@@ -57,17 +57,14 @@ class TestSendTelemetryAppinsights:
             assert event_properties["Enabled"] == "True"
             assert event_properties["Variant"] == "TestVariant"
             assert event_properties["ETag"] == "cmwBRcIAq1jUyKL3Kj8bvf9jtxBrFg-R-ayExStMC90"
-            assert (
-                event_properties["FeatureFlagReference"]
-                == "fake-store-uri/kv/.appconfig.featureflag/TestFeature"
-            )
+            assert event_properties["FeatureFlagReference"] == "fake-store-uri/kv/.appconfig.featureflag/TestFeature"
             assert event_properties["FeatureFlagId"] == "fake-feature-flag-id"
 
     def test_track_event_preserves_reserved_custom_event_name(self):
-        with patch("featuremanagement.azuremonitor._send_telemetry._initialize_event_logger"), patch(
-            "featuremanagement.azuremonitor._send_telemetry._event_logger.info"
-        ) as mock_event_logger_info, patch(
-            "featuremanagement.azuremonitor._send_telemetry.HAS_OPENTELEMETRY_LOGGING", True
+        with (
+            patch("featuremanagement.azuremonitor._send_telemetry._initialize_event_logger"),
+            patch("featuremanagement.azuremonitor._send_telemetry._event_logger.info") as mock_event_logger_info,
+            patch("featuremanagement.azuremonitor._send_telemetry.HAS_OPENTELEMETRY_LOGGING", True),
         ):
             featuremanagement.azuremonitor._send_telemetry.track_event(
                 "FeatureEvaluation",
@@ -80,7 +77,9 @@ class TestSendTelemetryAppinsights:
 
             mock_event_logger_info.assert_called_once()
             assert mock_event_logger_info.call_args[0][0] == "FeatureEvaluation"
-            assert mock_event_logger_info.call_args.kwargs["extra"]["microsoft.custom_event.name"] == "FeatureEvaluation"
+            assert (
+                mock_event_logger_info.call_args.kwargs["extra"]["microsoft.custom_event.name"] == "FeatureEvaluation"
+            )
             assert mock_event_logger_info.call_args.kwargs["extra"]["CustomProperty"] == "custom_value"
             assert mock_event_logger_info.call_args.kwargs["extra"]["TargetingId"] == "test_user"
 

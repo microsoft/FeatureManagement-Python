@@ -28,11 +28,10 @@ except ImportError:
     SpanProcessor = object  # type: ignore
 
 
-_events_logger_initialized = False
+_EVENTS_LOGGER_INITIALIZED: list[bool] = []
 
 def _initialize_event_logger() -> None:
-    global _events_logger_initialized
-    if _events_logger_initialized:
+    if _EVENTS_LOGGER_INITIALIZED:
         return
 
     if not HAS_OPENTELEMETRY_LOGGING:
@@ -43,7 +42,8 @@ def _initialize_event_logger() -> None:
 
     _event_logger.addHandler(LoggingHandler())
     _event_logger.setLevel(INFO)
-    _events_logger_initialized = True
+    _EVENTS_LOGGER_INITIALIZED.append(True)
+
 
 FEATURE_NAME = "FeatureName"
 ENABLED = "Enabled"
@@ -80,11 +80,16 @@ def track_event(event_name: str, user: str, event_properties: Optional[Dict[str,
         event_properties[TARGETING_ID] = user
 
     # Azure Monitor exporter maps this attribute to customEvent telemetry name.
-    custom_event_attributes = {
-        **event_properties,
-        "microsoft.custom_event.name": event_name,
-    }
-    _event_logger.info(event_name, extra=custom_event_attributes)
+    custom_event_attributes = {**event_properties, "microsoft.custom_event.name": event_name}
+
+    # logging raises KeyError if an `extra` key overwrites a built-in LogRecord attribute (e.g. "name", "message").
+    reserved = logging.makeLogRecord({}).__dict__
+    safe_attributes: Dict[str, Optional[str]] = {}
+    for key, value in custom_event_attributes.items():
+        safe_key = key if key not in reserved else f"telemetry.{key}"
+        safe_attributes[safe_key] = value
+
+    _event_logger.info(event_name, extra=safe_attributes)
 
 
 def publish_telemetry(evaluation_event: EvaluationEvent) -> None:

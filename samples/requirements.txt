@@ -1,6 +1,5 @@
 featuremanagement
 azure-appconfiguration-provider
 azure-monitor-opentelemetry
-azure-monitor-events-extension
 quart
 azure-identity

@@ -58,9 +58,10 @@ Homepage = "https://github.com/microsoft/FeatureManagement-Python"
 Issues = "https://github.com/microsoft/FeatureManagement-Python/issues"
 
 [project.optional-dependencies]
-AzureMonitor = ["azure-monitor-opentelemetry < 2.0.0"]
+AzureMonitor = ["azure-monitor-opentelemetry < 2.0.0", "opentelemetry-instrumentation-logging >= 0.40b0, < 1.0.0"]
 test = [
     "azure-monitor-opentelemetry < 2.0.0",
+    "opentelemetry-instrumentation-logging >= 0.40b0, < 1.0.0",
 ]
 dev = [
     "pytest >= 7.0.0, < 10.0.0",
