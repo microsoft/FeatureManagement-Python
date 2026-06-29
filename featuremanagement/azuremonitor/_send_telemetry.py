@@ -30,6 +30,7 @@ except ImportError:
 
 _EVENTS_LOGGER_INITIALIZED: list[bool] = []
 
+
 def _initialize_event_logger() -> None:
     if _EVENTS_LOGGER_INITIALIZED:
         return
