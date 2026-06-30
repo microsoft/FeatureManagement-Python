@@ -36,9 +36,7 @@ def _initialize_event_logger() -> None:
         return
 
     if not HAS_OPENTELEMETRY_LOGGING:
-        logger.warning(
-            "OpenTelemetry logging handler is not installed. Telemetry will not be sent."
-        )
+        logger.warning("OpenTelemetry logging handler is not installed. Telemetry will not be sent.")
         return
 
     _event_logger.addHandler(LoggingHandler())
