@@ -7,6 +7,7 @@
 
 import logging
 import inspect
+from logging import INFO
 from typing import Any, Callable, Dict, Optional
 from .._models import VariantAssignmentReason, EvaluationEvent, TargetingContext
 
@@ -17,7 +18,6 @@ _event_logger = logging.getLogger(__name__ + ".events")
 _event_logger.propagate = False
 
 try:
-    from logging import INFO
     from opentelemetry.sdk._logs import LoggingHandler
     from opentelemetry.sdk.trace import SpanProcessor
 
@@ -28,20 +28,17 @@ except ImportError:
     SpanProcessor = object  # type: ignore
 
 
-_EVENTS_LOGGER_INITIALIZED: list[bool] = []
+_EVENTS_LOGGER_INITIALIZED: bool = False
 
 
 def _initialize_event_logger() -> None:
+    global _EVENTS_LOGGER_INITIALIZED  # pylint: disable=global-statement
     if _EVENTS_LOGGER_INITIALIZED:
-        return
-
-    if not HAS_OPENTELEMETRY_LOGGING:
-        logger.warning("OpenTelemetry logging handler is not installed. Telemetry will not be sent.")
         return
 
     _event_logger.addHandler(LoggingHandler())
     _event_logger.setLevel(INFO)
-    _EVENTS_LOGGER_INITIALIZED.append(True)
+    _EVENTS_LOGGER_INITIALIZED = True
 
 
 FEATURE_NAME = "FeatureName"
@@ -54,6 +51,7 @@ DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
 VERSION = "Version"
 VARIANT_ASSIGNMENT_PERCENTAGE = "VariantAssignmentPercentage"
 MICROSOFT_TARGETING_ID = "Microsoft.TargetingId"
+CUSTOM_EVENT_NAME = "microsoft.custom_event.name"
 
 EVENT_NAME = "FeatureEvaluation"
 
@@ -79,16 +77,11 @@ def track_event(event_name: str, user: str, event_properties: Optional[Dict[str,
         event_properties[TARGETING_ID] = user
 
     # Azure Monitor exporter maps this attribute to customEvent telemetry name.
-    custom_event_attributes = {**event_properties, "microsoft.custom_event.name": event_name}
-
-    # logging raises KeyError if an `extra` key overwrites a built-in LogRecord attribute (e.g. "name", "message").
-    reserved = logging.makeLogRecord({}).__dict__
-    safe_attributes: Dict[str, Optional[str]] = {}
-    for key, value in custom_event_attributes.items():
-        safe_key = key if key not in reserved else f"telemetry.{key}"
-        safe_attributes[safe_key] = value
-
-    _event_logger.info(event_name, extra=safe_attributes)
+    custom_event_attributes = {
+        **event_properties,
+        CUSTOM_EVENT_NAME: event_name,
+    }
+    _event_logger.info(event_name, extra=custom_event_attributes)
 
 
 def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
@@ -166,7 +159,7 @@ class TargetingSpanProcessor(SpanProcessor):
         :param parent_context: The parent context of the span.
         """
         if not HAS_OPENTELEMETRY_LOGGING:
-            logger.warning("OpenTelemetry logging handler is not installed.")
+            logger.info("OpenTelemetry logging handler is not installed.")
             return
         if self._targeting_context_accessor and callable(self._targeting_context_accessor):
             if inspect.iscoroutinefunction(self._targeting_context_accessor):
