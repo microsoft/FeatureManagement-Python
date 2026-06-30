@@ -18,7 +18,7 @@ _event_logger.propagate = False
 
 try:
     from logging import INFO
-    from opentelemetry.instrumentation.logging.handler import LoggingHandler
+    from opentelemetry.sdk._logs import LoggingHandler
     from opentelemetry.sdk.trace import SpanProcessor
 
     HAS_OPENTELEMETRY_LOGGING = True
