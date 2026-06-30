@@ -19,13 +19,16 @@ _event_logger.propagate = False
 
 try:
     from opentelemetry.sdk._logs import LoggingHandler
-    from opentelemetry.sdk.trace import SpanProcessor
+    from opentelemetry.context.context import Context
+    from opentelemetry.sdk.trace import Span, SpanProcessor
 
     HAS_OPENTELEMETRY_LOGGING = True
 except ImportError:
     HAS_OPENTELEMETRY_LOGGING = False
     LoggingHandler = object  # type: ignore
     SpanProcessor = object  # type: ignore
+    Span = object  # type: ignore
+    Context = object  # type: ignore
 
 
 _EVENTS_LOGGER_INITIALIZED: bool = False
@@ -151,7 +154,7 @@ class TargetingSpanProcessor(SpanProcessor):
             "targeting_context_accessor", None
         )
 
-    def on_start(self, span: Any, parent_context: Optional[Any] = None) -> None:  # pylint: disable=unused-argument
+    def on_start(self, span: Span, parent_context: Optional[Context] = None) -> None:  # pylint: disable=unused-argument
         """
         Attaches the targeting ID to the span and baggage when a new span is started.
 
