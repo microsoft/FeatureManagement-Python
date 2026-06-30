@@ -13,8 +13,8 @@ import featuremanagement.azuremonitor._send_telemetry
 from featuremanagement.azuremonitor import TargetingSpanProcessor
 
 
-def _event_properties(mock_track_event):
-    return mock_track_event.call_args.kwargs["event_properties"]
+def _event_properties(mock_logger_info):
+    return mock_logger_info.call_args.kwargs["extra"]
 
 
 @pytest.mark.usefixtures("caplog")
@@ -44,15 +44,18 @@ class TestSendTelemetryAppinsights:
         evaluation_event.variant = variant
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.track_event") as mock_track_event:
-            # This is called like this so we can override the track_event function
+        with (
+            patch("featuremanagement.azuremonitor._send_telemetry._initialize_event_logger"),
+            patch("featuremanagement.azuremonitor._send_telemetry._event_logger.info") as mock_logger_info,
+        ):
+            # This is called like this so we can override the _event_logger.info function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
-            mock_track_event.assert_called_once()
-            assert mock_track_event.call_args[0][0] == "FeatureEvaluation"
-            assert mock_track_event.call_args[0][1] == "test_user"
-            event_properties = _event_properties(mock_track_event)
+            mock_logger_info.assert_called_once()
+            assert mock_logger_info.call_args[0][0] == "FeatureEvaluation"
+            event_properties = _event_properties(mock_logger_info)
+            assert event_properties["TargetingId"] == "test_user"
             assert event_properties["FeatureName"] == "TestFeature"
             assert event_properties["Enabled"] == "True"
             assert event_properties["Variant"] == "TestVariant"
@@ -91,15 +94,17 @@ class TestSendTelemetryAppinsights:
         evaluation_event.variant = variant
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_DISABLED
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.track_event") as mock_track_event:
-            # This is called like this so we can override the track_event function
+        with (
+            patch("featuremanagement.azuremonitor._send_telemetry._initialize_event_logger"),
+            patch("featuremanagement.azuremonitor._send_telemetry._event_logger.info") as mock_logger_info,
+        ):
+            # This is called like this so we can override the _event_logger.info function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
-            mock_track_event.assert_called_once()
-            assert mock_track_event.call_args[0][0] == "FeatureEvaluation"
-            assert mock_track_event.call_args[0][1] == ""
-            event_properties = _event_properties(mock_track_event)
+            mock_logger_info.assert_called_once()
+            assert mock_logger_info.call_args[0][0] == "FeatureEvaluation"
+            event_properties = _event_properties(mock_logger_info)
             assert event_properties["FeatureName"] == "TestFeature"
             assert event_properties["Enabled"] == "False"
             assert "TargetingId" not in event_properties
@@ -113,15 +118,17 @@ class TestSendTelemetryAppinsights:
         evaluation_event.enabled = True
         evaluation_event.user = "test_user"
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.track_event") as mock_track_event:
-            # This is called like this so we can override the track_event function
+        with (
+            patch("featuremanagement.azuremonitor._send_telemetry._initialize_event_logger"),
+            patch("featuremanagement.azuremonitor._send_telemetry._event_logger.info") as mock_logger_info,
+        ):
+            # This is called like this so we can override the _event_logger.info function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
-            mock_track_event.assert_called_once()
-            assert mock_track_event.call_args[0][0] == "FeatureEvaluation"
-            assert mock_track_event.call_args[0][1] == "test_user"
-            event_properties = _event_properties(mock_track_event)
+            mock_logger_info.assert_called_once()
+            assert mock_logger_info.call_args[0][0] == "FeatureEvaluation"
+            event_properties = _event_properties(mock_logger_info)
             assert event_properties["FeatureName"] == "TestFeature"
             assert event_properties["Enabled"] == "True"
             assert "Variant" not in event_properties
@@ -132,12 +139,15 @@ class TestSendTelemetryAppinsights:
         evaluation_event.enabled = True
         evaluation_event.user = "test_user"
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.track_event") as mock_track_event:
-            # This is called like this so we can override the track_event function
+        with (
+            patch("featuremanagement.azuremonitor._send_telemetry._initialize_event_logger"),
+            patch("featuremanagement.azuremonitor._send_telemetry._event_logger.info") as mock_logger_info,
+        ):
+            # This is called like this so we can override the _event_logger.info function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
-            mock_track_event.assert_not_called()
+            mock_logger_info.assert_not_called()
 
     def test_send_telemetry_appinsights_default_when_enabled(self):
         feature_flag = FeatureFlag.convert_from_json(
@@ -157,15 +167,17 @@ class TestSendTelemetryAppinsights:
         evaluation_event.variant = variant
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_ENABLED
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.track_event") as mock_track_event:
-            # This is called like this so we can override the track_event function
+        with (
+            patch("featuremanagement.azuremonitor._send_telemetry._initialize_event_logger"),
+            patch("featuremanagement.azuremonitor._send_telemetry._event_logger.info") as mock_logger_info,
+        ):
+            # This is called like this so we can override the _event_logger.info function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
-            mock_track_event.assert_called_once()
-            assert mock_track_event.call_args[0][0] == "FeatureEvaluation"
-            assert mock_track_event.call_args[0][1] == "test_user"
-            event_properties = _event_properties(mock_track_event)
+            mock_logger_info.assert_called_once()
+            assert mock_logger_info.call_args[0][0] == "FeatureEvaluation"
+            event_properties = _event_properties(mock_logger_info)
             assert event_properties["FeatureName"] == "TestFeature"
             assert event_properties["Enabled"] == "True"
             assert event_properties["Variant"] == "big"
@@ -188,15 +200,17 @@ class TestSendTelemetryAppinsights:
         evaluation_event.variant = variant
         evaluation_event.reason = VariantAssignmentReason.DEFAULT_WHEN_ENABLED
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.track_event") as mock_track_event:
-            # This is called like this so we can override the track_event function
+        with (
+            patch("featuremanagement.azuremonitor._send_telemetry._initialize_event_logger"),
+            patch("featuremanagement.azuremonitor._send_telemetry._event_logger.info") as mock_logger_info,
+        ):
+            # This is called like this so we can override the _event_logger.info function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
-            mock_track_event.assert_called_once()
-            assert mock_track_event.call_args[0][0] == "FeatureEvaluation"
-            assert mock_track_event.call_args[0][1] == "test_user"
-            event_properties = _event_properties(mock_track_event)
+            mock_logger_info.assert_called_once()
+            assert mock_logger_info.call_args[0][0] == "FeatureEvaluation"
+            event_properties = _event_properties(mock_logger_info)
             assert event_properties["FeatureName"] == "TestFeature"
             assert event_properties["Enabled"] == "True"
             assert event_properties["Variant"] == "big"
@@ -219,15 +233,17 @@ class TestSendTelemetryAppinsights:
         evaluation_event.variant = variant
         evaluation_event.reason = VariantAssignmentReason.PERCENTILE
 
-        with patch("featuremanagement.azuremonitor._send_telemetry.track_event") as mock_track_event:
-            # This is called like this so we can override the track_event function
+        with (
+            patch("featuremanagement.azuremonitor._send_telemetry._initialize_event_logger"),
+            patch("featuremanagement.azuremonitor._send_telemetry._event_logger.info") as mock_logger_info,
+        ):
+            # This is called like this so we can override the _event_logger.info function
             featuremanagement.azuremonitor._send_telemetry.publish_telemetry(  # pylint: disable=protected-access
                 evaluation_event
             )
-            mock_track_event.assert_called_once()
-            assert mock_track_event.call_args[0][0] == "FeatureEvaluation"
-            assert mock_track_event.call_args[0][1] == "test_user"
-            event_properties = _event_properties(mock_track_event)
+            mock_logger_info.assert_called_once()
+            assert mock_logger_info.call_args[0][0] == "FeatureEvaluation"
+            event_properties = _event_properties(mock_logger_info)
             assert event_properties["FeatureName"] == "TestFeature"
             assert event_properties["Enabled"] == "True"
             assert event_properties["Variant"] == "big"

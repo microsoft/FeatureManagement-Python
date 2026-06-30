@@ -30,6 +30,21 @@ except ImportError:
     Span = object  # type: ignore
     Context = object  # type: ignore
 
+FEATURE_NAME = "FeatureName"
+ENABLED = "Enabled"
+TARGETING_ID = "TargetingId"
+VARIANT = "Variant"
+REASON = "VariantAssignmentReason"
+
+DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
+VERSION = "Version"
+VARIANT_ASSIGNMENT_PERCENTAGE = "VariantAssignmentPercentage"
+MICROSOFT_TARGETING_ID = "Microsoft.TargetingId"
+AZURE_MONITOR_EVENT_NAME = "microsoft.custom_event.name"
+
+EVENT_NAME = "FeatureEvaluation"
+
+EVALUATION_EVENT_VERSION = "1.0.0"
 
 _EVENTS_LOGGER_INITIALIZED: bool = False
 
@@ -42,23 +57,6 @@ def _initialize_event_logger() -> None:
     _event_logger.addHandler(LoggingHandler())
     _event_logger.setLevel(INFO)
     _EVENTS_LOGGER_INITIALIZED = True
-
-
-FEATURE_NAME = "FeatureName"
-ENABLED = "Enabled"
-TARGETING_ID = "TargetingId"
-VARIANT = "Variant"
-REASON = "VariantAssignmentReason"
-
-DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
-VERSION = "Version"
-VARIANT_ASSIGNMENT_PERCENTAGE = "VariantAssignmentPercentage"
-MICROSOFT_TARGETING_ID = "Microsoft.TargetingId"
-CUSTOM_EVENT_NAME = "microsoft.custom_event.name"
-
-EVENT_NAME = "FeatureEvaluation"
-
-EVALUATION_EVENT_VERSION = "1.0.0"
 
 
 def track_event(event_name: str, user: str, event_properties: Optional[Dict[str, Optional[str]]] = None) -> None:
@@ -82,7 +80,7 @@ def track_event(event_name: str, user: str, event_properties: Optional[Dict[str,
     # Azure Monitor exporter maps this attribute to customEvent telemetry name.
     custom_event_attributes = {
         **event_properties,
-        CUSTOM_EVENT_NAME: event_name,
+        AZURE_MONITOR_EVENT_NAME: event_name,
     }
     _event_logger.info(event_name, extra=custom_event_attributes)
 
