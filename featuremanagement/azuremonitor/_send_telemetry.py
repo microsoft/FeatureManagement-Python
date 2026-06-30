@@ -7,22 +7,25 @@
 
 import logging
 import inspect
+from logging import INFO
 from typing import Any, Callable, Dict, Optional
 from .._models import VariantAssignmentReason, EvaluationEvent, TargetingContext
 
 logger = logging.getLogger(__name__)
 
+# Set up a separate logger for feature-evaluation telemetry events to avoid propagating to the root logger
+_event_logger = logging.getLogger(__name__ + ".events")
+_event_logger.propagate = False
+
 try:
-    from azure.monitor.events.extension import track_event as azure_monitor_track_event  # type: ignore
+    from opentelemetry.sdk._logs import LoggingHandler
     from opentelemetry.context.context import Context
     from opentelemetry.sdk.trace import Span, SpanProcessor
 
-    HAS_AZURE_MONITOR_EVENTS_EXTENSION = True
+    HAS_OPENTELEMETRY_LOGGING = True
 except ImportError:
-    HAS_AZURE_MONITOR_EVENTS_EXTENSION = False
-    logger.warning(
-        "azure-monitor-events-extension is not installed. Telemetry will not be sent to Application Insights."
-    )
+    HAS_OPENTELEMETRY_LOGGING = False
+    LoggingHandler = object  # type: ignore
     SpanProcessor = object  # type: ignore
     Span = object  # type: ignore
     Context = object  # type: ignore
@@ -37,10 +40,23 @@ DEFAULT_WHEN_ENABLED = "DefaultWhenEnabled"
 VERSION = "Version"
 VARIANT_ASSIGNMENT_PERCENTAGE = "VariantAssignmentPercentage"
 MICROSOFT_TARGETING_ID = "Microsoft.TargetingId"
+AZURE_MONITOR_EVENT_NAME = "microsoft.custom_event.name"
 
 EVENT_NAME = "FeatureEvaluation"
 
 EVALUATION_EVENT_VERSION = "1.0.0"
+
+_EVENTS_LOGGER_INITIALIZED: bool = False
+
+
+def _initialize_event_logger() -> None:
+    global _EVENTS_LOGGER_INITIALIZED  # pylint: disable=global-statement
+    if _EVENTS_LOGGER_INITIALIZED:
+        return
+
+    _event_logger.addHandler(LoggingHandler())
+    _event_logger.setLevel(INFO)
+    _EVENTS_LOGGER_INITIALIZED = True
 
 
 def track_event(event_name: str, user: str, event_properties: Optional[Dict[str, Optional[str]]] = None) -> None:
@@ -51,15 +67,22 @@ def track_event(event_name: str, user: str, event_properties: Optional[Dict[str,
     :param str user: The user ID to associate with the event.
     :param dict[str, str] event_properties: A dictionary of named string properties.
     """
-    if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
+    if not HAS_OPENTELEMETRY_LOGGING:
         return
+
+    _initialize_event_logger()
 
     event_properties = event_properties or {}
 
     if user:
         event_properties[TARGETING_ID] = user
 
-    azure_monitor_track_event(event_name, event_properties)
+    # Azure Monitor exporter maps this attribute to customEvent telemetry name.
+    custom_event_attributes = {
+        **event_properties,
+        AZURE_MONITOR_EVENT_NAME: event_name,
+    }
+    _event_logger.info(event_name, extra=custom_event_attributes)
 
 
 def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
@@ -68,7 +91,7 @@ def publish_telemetry(evaluation_event: EvaluationEvent) -> None:
 
     :param EvaluationEvent evaluation_event: The evaluation event to publish telemetry for.
     """
-    if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
+    if not HAS_OPENTELEMETRY_LOGGING:
         return
 
     feature = evaluation_event.feature
@@ -136,8 +159,8 @@ class TargetingSpanProcessor(SpanProcessor):
         :param Span span: The span that was started.
         :param parent_context: The parent context of the span.
         """
-        if not HAS_AZURE_MONITOR_EVENTS_EXTENSION:
-            logger.warning("Azure Monitor Events Extension is not installed.")
+        if not HAS_OPENTELEMETRY_LOGGING:
+            logger.info("OpenTelemetry logging handler is not installed.")
             return
         if self._targeting_context_accessor and callable(self._targeting_context_accessor):
             if inspect.iscoroutinefunction(self._targeting_context_accessor):
