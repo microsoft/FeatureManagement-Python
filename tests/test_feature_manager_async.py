@@ -125,12 +125,12 @@ class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
         # feature_management is present but has no valid feature_flags list.
         feature_manager = FeatureManager({"feature_management": {"feature_flags": None}})
         assert feature_manager is not None
-        assert feature_manager.list_feature_flag_names() == []
+        assert not feature_manager.list_feature_flag_names()
         assert not await feature_manager.is_enabled("Alpha")
 
         # feature_flags is present but is not a list.
         feature_manager = FeatureManager({"feature_management": {"feature_flags": "not-a-list"}})
-        assert feature_manager.list_feature_flag_names() == []
+        assert not feature_manager.list_feature_flag_names()
         assert not await feature_manager.is_enabled("Alpha")
 
     # method: is_enabled
