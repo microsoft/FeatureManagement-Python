@@ -119,6 +119,20 @@ class TestFeatureManager(unittest.IsolatedAsyncioTestCase):
         assert not await feature_manager.is_enabled("Beta")
         assert len(feature_manager.list_feature_flag_names()) == 2
 
+    # method: list_feature_flags
+    @pytest.mark.asyncio
+    async def test_list_feature_flags_no_feature_flags(self):
+        # feature_management is present but has no valid feature_flags list.
+        feature_manager = FeatureManager({"feature_management": {"feature_flags": None}})
+        assert feature_manager is not None
+        assert feature_manager.list_feature_flag_names() == []
+        assert not await feature_manager.is_enabled("Alpha")
+
+        # feature_flags is present but is not a list.
+        feature_manager = FeatureManager({"feature_management": {"feature_flags": "not-a-list"}})
+        assert feature_manager.list_feature_flag_names() == []
+        assert not await feature_manager.is_enabled("Alpha")
+
     # method: is_enabled
     @pytest.mark.asyncio
     async def test_duplicate_feature_flag_last_wins(self):

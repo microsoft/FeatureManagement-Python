@@ -25,54 +25,6 @@ FEATURE_FILTER_PARAMETERS = "parameters"
 logger = logging.getLogger(__name__)
 
 
-def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) -> Optional[FeatureFlag]:
-    """
-    Gets the FeatureFlag json from the configuration, if it exists it gets converted to a FeatureFlag object.
-
-    :param Mapping configuration: Configuration object.
-    :param str feature_flag_name: Name of the feature flag.
-    :return: FeatureFlag
-    :rtype: FeatureFlag
-    """
-    feature_management = configuration.get(FEATURE_MANAGEMENT_KEY)
-    if not feature_management or not isinstance(feature_management, Mapping):
-        return None
-    feature_flags = feature_management.get(FEATURE_FLAG_KEY)
-    if not feature_flags or not isinstance(feature_flags, list):
-        return None
-
-    for feature_flag in reversed(feature_flags):
-        # If multiple feature flags share the same id, the last one defined wins.
-        if feature_flag.get("id") == feature_flag_name:
-            return FeatureFlag.convert_from_json(feature_flag)
-
-    return None
-
-
-def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
-    """
-    List of all feature flag names.
-
-    :param Mapping configuration: Configuration object.
-    :return: List of feature flag names.
-    """
-    feature_flag_names: List[str] = []
-    feature_management = configuration.get(FEATURE_MANAGEMENT_KEY)
-    if not feature_management or not isinstance(feature_management, Mapping):
-        return []
-    feature_flags = feature_management.get(FEATURE_FLAG_KEY)
-    if not feature_flags or not isinstance(feature_flags, list):
-        return []
-
-    for feature_flag in feature_flags:
-        feature_flag_name = feature_flag.get("id")
-        # Feature flags with the same id are treated as one, so only list each name once.
-        if feature_flag_name not in feature_flag_names:
-            feature_flag_names.append(feature_flag_name)
-
-    return feature_flag_names
-
-
 class FeatureManagerBase(ABC):
     """
     Base class for Feature Manager. This class is responsible for all shared logic between the sync and async.
@@ -277,7 +229,7 @@ class FeatureManagerBase(ABC):
             self._copy = self._configuration.get(FEATURE_MANAGEMENT_KEY)
 
         if not self._cache.get(feature_flag_id):
-            feature_flag = _get_feature_flag(self._configuration, feature_flag_id)
+            feature_flag = self._get_feature_flag(feature_flag_id)
             self._cache[feature_flag_id] = feature_flag
         else:
             feature_flag = self._cache.get(feature_flag_id)
@@ -304,4 +256,41 @@ class FeatureManagerBase(ABC):
         """
         List of all feature flag names.
         """
-        return _list_feature_flag_names(self._configuration)
+        feature_flag_names: Dict[str, None] = {}
+        for feature_flag in self._get_feature_flags():
+            feature_flag_name = feature_flag.get("id")
+            # Only include entries with a valid string id; duplicates are listed once.
+            if isinstance(feature_flag_name, str):
+                feature_flag_names[feature_flag_name] = None
+
+        return list(feature_flag_names)
+
+    def _get_feature_flag(self, feature_flag_name: str) -> Optional[FeatureFlag]:
+        """
+        Gets the FeatureFlag json from the configuration, if it exists it gets converted to a FeatureFlag object.
+
+        :param str feature_flag_name: Name of the feature flag.
+        :return: FeatureFlag
+        :rtype: FeatureFlag
+        """
+        for feature_flag in reversed(self._get_feature_flags()):
+            # If multiple feature flags share the same id, the last one defined wins.
+            if feature_flag.get("id") == feature_flag_name:
+                return FeatureFlag.convert_from_json(feature_flag)
+
+        return None
+
+    def _get_feature_flags(self) -> List[Any]:
+        """
+        Gets the list of raw feature flag definitions from the configuration.
+
+        :return: List of feature flag definitions, or an empty list if none are configured.
+        :rtype: list
+        """
+        feature_management = self._configuration.get(FEATURE_MANAGEMENT_KEY)
+        if not feature_management or not isinstance(feature_management, Mapping):
+            return []
+        feature_flags = feature_management.get(FEATURE_FLAG_KEY)
+        if not feature_flags or not isinstance(feature_flags, list):
+            return []
+        return feature_flags
