@@ -8,7 +8,7 @@
 import hashlib
 import logging
 from abc import ABC
-from typing import List, Optional, Dict, Tuple, Any, Mapping, Callable
+from typing import List, Optional, Dict, Tuple, Any, Mapping, Callable, cast
 from ._models import FeatureFlag, Variant, VariantAssignmentReason, TargetingContext, EvaluationEvent, VariantReference
 
 FEATURE_MANAGEMENT_KEY = "feature_management"
@@ -293,4 +293,4 @@ class FeatureManagerBase(ABC):
         feature_flags = feature_management.get(FEATURE_FLAG_KEY)
         if not feature_flags or not isinstance(feature_flags, list):
             return []
-        return feature_flags
+        return cast(List[Any], feature_flags)
