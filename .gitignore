@@ -413,3 +413,4 @@ docs/doctrees
 docs/html
 package-lock.json
 package.json
+.env

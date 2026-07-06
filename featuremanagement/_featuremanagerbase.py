@@ -41,11 +41,15 @@ def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) 
     if not feature_flags or not isinstance(feature_flags, list):
         return None
 
+    matching_feature_flag = None
     for feature_flag in feature_flags:
         if feature_flag.get("id") == feature_flag_name:
-            return FeatureFlag.convert_from_json(feature_flag)
+            # If multiple feature flags share the same id, the last one defined wins.
+            matching_feature_flag = feature_flag
 
-    return None
+    if matching_feature_flag is None:
+        return None
+    return FeatureFlag.convert_from_json(matching_feature_flag)
 
 
 def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
@@ -55,7 +59,7 @@ def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
     :param Mapping configuration: Configuration object.
     :return: List of feature flag names.
     """
-    feature_flag_names = []
+    feature_flag_names: List[str] = []
     feature_management = configuration.get(FEATURE_MANAGEMENT_KEY)
     if not feature_management or not isinstance(feature_management, Mapping):
         return []
@@ -64,7 +68,10 @@ def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
         return []
 
     for feature_flag in feature_flags:
-        feature_flag_names.append(feature_flag.get("id"))
+        feature_flag_name = feature_flag.get("id")
+        # Feature flags with the same id are treated as one, so only list each name once.
+        if feature_flag_name not in feature_flag_names:
+            feature_flag_names.append(feature_flag_name)
 
     return feature_flag_names
 
