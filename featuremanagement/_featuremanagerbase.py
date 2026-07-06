@@ -41,15 +41,12 @@ def _get_feature_flag(configuration: Mapping[str, Any], feature_flag_name: str) 
     if not feature_flags or not isinstance(feature_flags, list):
         return None
 
-    matching_feature_flag = None
-    for feature_flag in feature_flags:
+    for feature_flag in reversed(feature_flags):
+        # If multiple feature flags share the same id, the last one defined wins.
         if feature_flag.get("id") == feature_flag_name:
-            # If multiple feature flags share the same id, the last one defined wins.
-            matching_feature_flag = feature_flag
+            return FeatureFlag.convert_from_json(feature_flag)
 
-    if matching_feature_flag is None:
-        return None
-    return FeatureFlag.convert_from_json(matching_feature_flag)
+    return None
 
 
 def _list_feature_flag_names(configuration: Mapping[str, Any]) -> List[str]:
