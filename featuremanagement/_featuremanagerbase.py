@@ -293,4 +293,4 @@ class FeatureManagerBase(ABC):
         feature_flags = feature_management.get(FEATURE_FLAG_KEY)
         if not feature_flags or not isinstance(feature_flags, list):
             return []
-        return cast(List[Any], feature_flags)
+        return feature_flags
