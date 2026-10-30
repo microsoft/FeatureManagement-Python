@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------------
 """Targeting context model for user and group targeting."""
 
-from typing import NamedTuple, List
+from typing import NamedTuple, Sequence
 
 
 class TargetingContext(NamedTuple):
@@ -20,9 +20,9 @@ class TargetingContext(NamedTuple):
     :type: str
     """
 
-    groups: List[str] = []
+    groups: Sequence[str] = ()
     """
     The users groups.
     
-    :type: List[str]
+    :type: Sequence[str]
     """
