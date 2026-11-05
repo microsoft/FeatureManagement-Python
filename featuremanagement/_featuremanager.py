@@ -6,7 +6,7 @@
 """Synchronous feature manager implementation."""
 
 import logging
-from typing import cast, overload, Any, Optional, Dict, Mapping, List, Tuple
+from typing import cast, overload, Any, Optional, Dict, Mapping, List, Tuple, Union
 from ._defaultfilters import TimeWindowFilter, TargetingFilter
 from ._featurefilters import FeatureFilter
 from ._models import EvaluationEvent, Variant, TargetingContext
@@ -44,13 +44,17 @@ class FeatureManager(FeatureManagerBase):
                 raise ValueError("Custom filter must be a subclass of FeatureFilter")
             self._filters[feature_filter.name] = feature_filter
 
-    @overload  # type: ignore
-    def is_enabled(self, feature_flag_id: str, user_id: str, **kwargs: Any) -> bool:
+    @overload
+    def is_enabled(self, feature_flag_id: str, **kwargs: Any) -> bool: ...
+
+    @overload
+    def is_enabled(self, feature_flag_id: str, user_id: Union[str, TargetingContext], **kwargs: Any) -> bool:
         """
         Determine if the feature flag is enabled for the given context.
 
         :param str feature_flag_id: Name of the feature flag.
-        :param str user_id: User identifier.
+        :param user_id: User identifier or targeting context, passed positionally.
+        :type user_id: str or TargetingContext
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
@@ -60,6 +64,7 @@ class FeatureManager(FeatureManagerBase):
         Determine if the feature flag is enabled for the given context.
 
         :param str feature_flag_id: Name of the feature flag.
+        :param args: Optional positional user identifier or TargetingContext.
         :return: True if the feature flag is enabled for the given context.
         :rtype: bool
         """
@@ -76,13 +81,19 @@ class FeatureManager(FeatureManagerBase):
             self._on_feature_evaluated(result)
         return result.enabled
 
-    @overload  # type: ignore
-    def get_variant(self, feature_flag_id: str, user_id: str, **kwargs: Any) -> Optional[Variant]:
+    @overload
+    def get_variant(self, feature_flag_id: str, **kwargs: Any) -> Optional[Variant]: ...
+
+    @overload
+    def get_variant(
+        self, feature_flag_id: str, user_id: Union[str, TargetingContext], **kwargs: Any
+    ) -> Optional[Variant]:
         """
         Determine the variant for the given context.
 
         :param str feature_flag_id: Name of the feature flag.
-        :param str user_id: User identifier.
+        :param user_id: User identifier or targeting context, passed positionally.
+        :type user_id: str or TargetingContext
         :return: return: Variant instance.
         :rtype: Variant
         """
@@ -92,7 +103,7 @@ class FeatureManager(FeatureManagerBase):
         Determine the variant for the given context.
 
         :param str feature_flag_id: Name of the feature flag
-        :keyword TargetingContext targeting_context: Targeting context.
+        :param args: Optional positional user identifier or TargetingContext.
         :return: Variant instance.
         :rtype: Variant
         """
