@@ -1,21 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Subpackages &mdash; FeatureManagement 1.0.0b1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+  <title>featuremanagement package &mdash; FeatureManagement 2.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/documentation_options.js?v=09d090fc"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=b21de401"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -43,29 +43,61 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Subpackages</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="featuremanagement.aio.html">featuremanagement.aio package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">featuremanagement package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="featuremanagement.aio.html">featuremanagement.aio package</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#module-featuremanagement">Module contents</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#featuremanagement.FeatureFilter"><code class="docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.FeatureFilter.alias"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.alias()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.FeatureFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.evaluate()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.FeatureFilter.name"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.name</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-featuremanagement">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.EvaluationEvent"><code class="docutils literal notranslate"><span class="pre">EvaluationEvent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.FeatureFilter"><code class="docutils literal notranslate"><span class="pre">FeatureFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFilter.alias"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.alias()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.evaluate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFilter.name"><code class="docutils literal notranslate"><span class="pre">FeatureFilter.name</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#featuremanagement.FeatureManager"><code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.FeatureManager.is_enabled"><code class="docutils literal notranslate"><span class="pre">FeatureManager.is_enabled()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.FeatureManager.list_feature_flag_names"><code class="docutils literal notranslate"><span class="pre">FeatureManager.list_feature_flag_names()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.FeatureFlag"><code class="docutils literal notranslate"><span class="pre">FeatureFlag</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFlag.allocation"><code class="docutils literal notranslate"><span class="pre">FeatureFlag.allocation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFlag.conditions"><code class="docutils literal notranslate"><span class="pre">FeatureFlag.conditions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFlag.convert_from_json"><code class="docutils literal notranslate"><span class="pre">FeatureFlag.convert_from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFlag.enabled"><code class="docutils literal notranslate"><span class="pre">FeatureFlag.enabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFlag.name"><code class="docutils literal notranslate"><span class="pre">FeatureFlag.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFlag.telemetry"><code class="docutils literal notranslate"><span class="pre">FeatureFlag.telemetry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureFlag.variants"><code class="docutils literal notranslate"><span class="pre">FeatureFlag.variants</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#featuremanagement.TargetingContext"><code class="docutils literal notranslate"><span class="pre">TargetingContext</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#featuremanagement.TargetingFilter"><code class="docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.TargetingFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TargetingFilter.evaluate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.FeatureManager"><code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureManager.get_variant"><code class="docutils literal notranslate"><span class="pre">FeatureManager.get_variant()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.FeatureManager.is_enabled"><code class="docutils literal notranslate"><span class="pre">FeatureManager.is_enabled()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#featuremanagement.TimeWindowFilter"><code class="docutils literal notranslate"><span class="pre">TimeWindowFilter</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.TimeWindowFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TimeWindowFilter.evaluate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.TargetingContext"><code class="docutils literal notranslate"><span class="pre">TargetingContext</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.TargetingContext.groups"><code class="docutils literal notranslate"><span class="pre">TargetingContext.groups</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.TargetingContext.user_id"><code class="docutils literal notranslate"><span class="pre">TargetingContext.user_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.TargetingFilter"><code class="docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.TargetingFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TargetingFilter.evaluate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.TimeWindowFilter"><code class="docutils literal notranslate"><span class="pre">TimeWindowFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.TimeWindowFilter.evaluate"><code class="docutils literal notranslate"><span class="pre">TimeWindowFilter.evaluate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.Variant"><code class="docutils literal notranslate"><span class="pre">Variant</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.Variant.configuration"><code class="docutils literal notranslate"><span class="pre">Variant.configuration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.Variant.name"><code class="docutils literal notranslate"><span class="pre">Variant.name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#featuremanagement.VariantAssignmentReason"><code class="docutils literal notranslate"><span class="pre">VariantAssignmentReason</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.VariantAssignmentReason.DEFAULT_WHEN_DISABLED"><code class="docutils literal notranslate"><span class="pre">VariantAssignmentReason.DEFAULT_WHEN_DISABLED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.VariantAssignmentReason.DEFAULT_WHEN_ENABLED"><code class="docutils literal notranslate"><span class="pre">VariantAssignmentReason.DEFAULT_WHEN_ENABLED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.VariantAssignmentReason.GROUP"><code class="docutils literal notranslate"><span class="pre">VariantAssignmentReason.GROUP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.VariantAssignmentReason.NONE"><code class="docutils literal notranslate"><span class="pre">VariantAssignmentReason.NONE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.VariantAssignmentReason.PERCENTILE"><code class="docutils literal notranslate"><span class="pre">VariantAssignmentReason.PERCENTILE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#featuremanagement.VariantAssignmentReason.USER"><code class="docutils literal notranslate"><span class="pre">VariantAssignmentReason.USER</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -86,7 +118,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Subpackages</li>
+      <li class="breadcrumb-item active">featuremanagement package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/featuremanagement.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -96,8 +128,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="subpackages">
-<h1>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h1>
+  <section id="featuremanagement-package">
+<h1>featuremanagement package<a class="headerlink" href="#featuremanagement-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="featuremanagement.aio.html">featuremanagement.aio package</a><ul>
@@ -109,8 +143,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureManager"><code class="docutils literal notranslate"><span class="pre">FeatureManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureManager.get_variant"><code class="docutils literal notranslate"><span class="pre">FeatureManager.get_variant()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureManager.is_enabled"><code class="docutils literal notranslate"><span class="pre">FeatureManager.is_enabled()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.FeatureManager.list_feature_flag_names"><code class="docutils literal notranslate"><span class="pre">FeatureManager.list_feature_flag_names()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="featuremanagement.aio.html#featuremanagement.aio.TargetingFilter"><code class="docutils literal notranslate"><span class="pre">TargetingFilter</span></code></a><ul>
@@ -129,14 +163,21 @@
 </div>
 </section>
 <section id="module-featuremanagement">
-<span id="module-contents"></span><h1>Module contents<a class="headerlink" href="#module-featuremanagement" title="Link to this heading">¶</a></h1>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-featuremanagement" title="Link to this heading"></a></h2>
+<p>Feature management library for Python.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="featuremanagement.EvaluationEvent">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">EvaluationEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#featuremanagement.FeatureFlag" title="featuremanagement._models._feature_flag.FeatureFlag"><span class="pre">FeatureFlag</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.EvaluationEvent" title="Link to this definition"></a></dt>
+<dd><p>Represents a feature flag evaluation event.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="featuremanagement.FeatureFilter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">FeatureFilter</span></span><a class="headerlink" href="#featuremanagement.FeatureFilter" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">FeatureFilter</span></span><a class="headerlink" href="#featuremanagement.FeatureFilter" title="Link to this definition"></a></dt>
 <dd><p>Parent class for all feature filters.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="featuremanagement.FeatureFilter.alias">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureFilter.alias" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#featuremanagement.FeatureFilter.alias" title="Link to this definition"></a></dt>
 <dd><p>Decorator to set the alias for the filter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -146,14 +187,14 @@
 <dd class="field-even"><p>Decorator.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>callable</p>
+<dd class="field-odd"><p>Callable</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="featuremanagement.FeatureFilter.evaluate">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureFilter.evaluate" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#featuremanagement.FeatureFilter.evaluate" title="Link to this definition"></a></dt>
 <dd><p>Determine if the feature flag is enabled for the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -164,7 +205,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="featuremanagement.FeatureFilter.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#featuremanagement.FeatureFilter.name" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#featuremanagement.FeatureFilter.name" title="Link to this definition"></a></dt>
 <dd><p>Get the name of the filter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -179,24 +220,164 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="featuremanagement.FeatureFlag">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">FeatureFlag</span></span><a class="headerlink" href="#featuremanagement.FeatureFlag" title="Link to this definition"></a></dt>
+<dd><p>Represents a feature flag.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="featuremanagement.FeatureFlag.allocation">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">allocation</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Allocation</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#featuremanagement.FeatureFlag.allocation" title="Link to this definition"></a></dt>
+<dd><p>Get the allocation for the feature flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Allocation for the feature flag.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Allocation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featuremanagement.FeatureFlag.conditions">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">conditions</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FeatureConditions</span></span><a class="headerlink" href="#featuremanagement.FeatureFlag.conditions" title="Link to this definition"></a></dt>
+<dd><p>Get the conditions for the feature flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Conditions for the feature flag.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>FeatureConditions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="featuremanagement.FeatureFlag.convert_from_json">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">convert_from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#featuremanagement.FeatureFlag" title="featuremanagement._models._feature_flag.FeatureFlag"><span class="pre">FeatureFlag</span></a></span></span><a class="headerlink" href="#featuremanagement.FeatureFlag.convert_from_json" title="Link to this definition"></a></dt>
+<dd><p>Convert a JSON object to FeatureFlag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>json_value</strong> (<em>dict</em>) – JSON object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>FeatureFlag.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#featuremanagement.FeatureFlag" title="featuremanagement.FeatureFlag">FeatureFlag</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featuremanagement.FeatureFlag.enabled">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">enabled</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#featuremanagement.FeatureFlag.enabled" title="Link to this definition"></a></dt>
+<dd><p>Get the status of the feature flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Status of the feature flag.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featuremanagement.FeatureFlag.name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#featuremanagement.FeatureFlag.name" title="Link to this definition"></a></dt>
+<dd><p>Get the name of the feature flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Name of the feature flag.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featuremanagement.FeatureFlag.telemetry">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">telemetry</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Telemetry</span></span><a class="headerlink" href="#featuremanagement.FeatureFlag.telemetry" title="Link to this definition"></a></dt>
+<dd><p>Get the telemetry configuration for the feature flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Telemetry for the feature flag.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Telemetry</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featuremanagement.FeatureFlag.variants">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variants</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">VariantReference</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#featuremanagement.FeatureFlag.variants" title="Link to this definition"></a></dt>
+<dd><p>Get the variants for the feature flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Variants for the feature flag.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[VariantReference]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="featuremanagement.FeatureManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">FeatureManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureManager" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">FeatureManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureManager" title="Link to this definition"></a></dt>
 <dd><p>Feature Manager that determines if a feature flag is enabled for the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>configuration</strong> (<em>Mapping</em>) – Configuration object.</p>
 </dd>
 <dt class="field-even">Keyword Arguments<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>feature_filters</strong> (<em>list</em><em>[</em><a class="reference internal" href="#featuremanagement.FeatureFilter" title="featuremanagement.FeatureFilter"><em>FeatureFilter</em></a><em>]</em>) – Custom filters to be used for evaluating feature flags.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>feature_filters</strong> (<em>list</em><em>[</em><a class="reference internal" href="#featuremanagement.FeatureFilter" title="featuremanagement.FeatureFilter"><em>FeatureFilter</em></a><em>]</em>) – Custom filters to be used for evaluating feature flags.</p></li>
+<li><p><strong>on_feature_evaluated</strong> (<em>Callable</em><em>[</em><a class="reference internal" href="#featuremanagement.EvaluationEvent" title="featuremanagement.EvaluationEvent"><em>EvaluationEvent</em></a><em>]</em>) – Callback function to be called when a feature flag is
+evaluated.</p></li>
+<li><p><strong>targeting_context_accessor</strong> (<em>Callable</em><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference internal" href="#featuremanagement.TargetingContext" title="featuremanagement.TargetingContext"><em>TargetingContext</em></a><em>]</em>) – Callback function to get the current targeting
+context if one isn’t provided.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="featuremanagement.FeatureManager.get_variant">
+<span class="sig-name descname"><span class="pre">get_variant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_flag_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#featuremanagement.Variant" title="featuremanagement._models._variant.Variant"><span class="pre">Variant</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#featuremanagement.FeatureManager.get_variant" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_variant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_flag_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#featuremanagement.TargetingContext" title="featuremanagement._models._targeting_context.TargetingContext"><span class="pre">TargetingContext</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#featuremanagement.Variant" title="featuremanagement._models._variant.Variant"><span class="pre">Variant</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span></dt>
+<dd><p>Determine the variant for the given context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_flag_id</strong> (<em>str</em>) – Name of the feature flag</p></li>
+<li><p><strong>args</strong> – Optional positional user identifier or TargetingContext.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Variant instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#featuremanagement.Variant" title="featuremanagement.Variant">Variant</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="featuremanagement.FeatureManager.is_enabled">
-<span class="sig-name descname"><span class="pre">is_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_flag_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureManager.is_enabled" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">is_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_flag_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#featuremanagement.FeatureManager.is_enabled" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">is_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_flag_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#featuremanagement.TargetingContext" title="featuremanagement._models._targeting_context.TargetingContext"><span class="pre">TargetingContext</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span></dt>
 <dd><p>Determine if the feature flag is enabled for the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>feature_flag_id</strong> (<em>str</em>) – Name of the feature flag.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_flag_id</strong> (<em>str</em>) – Name of the feature flag.</p></li>
+<li><p><strong>args</strong> – Optional positional user identifier or TargetingContext.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the feature flag is enabled for the given context.</p>
@@ -207,35 +388,43 @@
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="featuremanagement.FeatureManager.list_feature_flag_names">
-<span class="sig-name descname"><span class="pre">list_feature_flag_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.FeatureManager.list_feature_flag_names" title="Link to this definition">¶</a></dt>
-<dd><p>List of all feature flag names.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class namedtuple">
+<dl class="py class">
 <dt class="sig sig-object py" id="featuremanagement.TargetingContext">
-<em class="property"><span class="pre">namedtuple</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TargetingContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.TargetingContext" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TargetingContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.TargetingContext" title="Link to this definition"></a></dt>
 <dd><p>Represents the context for targeting a feature flag.</p>
-<dl class="field-list">
-<dt class="field-odd">Fields<span class="colon">:</span></dt>
-<dd class="field-odd"><span id="featuremanagement.TargetingContext.user_id"></span><ol class="arabic simple" id="featuremanagement.TargetingContext.groups" start="0">
-<li><p> <strong>user_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The user ID.  :type: str</p></li>
-<li><p> <strong>groups</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The users groups.  :type: List[str]</p></li>
-</ol>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="featuremanagement.TargetingContext.groups">
+<span class="sig-name descname"><span class="pre">groups</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#featuremanagement.TargetingContext.groups" title="Link to this definition"></a></dt>
+<dd><p>The users groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sequence[str]</p>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="featuremanagement.TargetingContext.user_id">
+<span class="sig-name descname"><span class="pre">user_id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#featuremanagement.TargetingContext.user_id" title="Link to this definition"></a></dt>
+<dd><p>The user ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="featuremanagement.TargetingFilter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TargetingFilter</span></span><a class="headerlink" href="#featuremanagement.TargetingFilter" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TargetingFilter</span></span><a class="headerlink" href="#featuremanagement.TargetingFilter" title="Link to this definition"></a></dt>
 <dd><p>Feature Filter that determines if the user is targeted for the feature flag.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="featuremanagement.TargetingFilter.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.TargetingFilter.evaluate" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#featuremanagement.TargetingFilter.evaluate" title="Link to this definition"></a></dt>
 <dd><p>Determine if the feature flag is enabled for the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
@@ -254,11 +443,11 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="featuremanagement.TimeWindowFilter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TimeWindowFilter</span></span><a class="headerlink" href="#featuremanagement.TimeWindowFilter" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">TimeWindowFilter</span></span><a class="headerlink" href="#featuremanagement.TimeWindowFilter" title="Link to this definition"></a></dt>
 <dd><p>Feature Filter that determines if the current time is within the time window.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="featuremanagement.TimeWindowFilter.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.TimeWindowFilter.evaluate" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#featuremanagement.TimeWindowFilter.evaluate" title="Link to this definition"></a></dt>
 <dd><p>Determine if the feature flag is enabled for the given context.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments<span class="colon">:</span></dt>
@@ -275,6 +464,71 @@
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="featuremanagement.Variant">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">Variant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.Variant" title="Link to this definition"></a></dt>
+<dd><p>A class representing a variant configuration assigned by a feature flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the variant</p></li>
+<li><p><strong>configuration</strong> (<em>dict</em>) – The configuration of the variant.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="featuremanagement.Variant.configuration">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">configuration</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></span><a class="headerlink" href="#featuremanagement.Variant.configuration" title="Link to this definition"></a></dt>
+<dd><p>The configuration of the variant.
+:rtype: Any</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="featuremanagement.Variant.name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#featuremanagement.Variant.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the variant.
+:rtype: str</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="featuremanagement.VariantAssignmentReason">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">featuremanagement.</span></span><span class="sig-name descname"><span class="pre">VariantAssignmentReason</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#featuremanagement.VariantAssignmentReason" title="Link to this definition"></a></dt>
+<dd><p>Represents an assignment reason.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="featuremanagement.VariantAssignmentReason.DEFAULT_WHEN_DISABLED">
+<span class="sig-name descname"><span class="pre">DEFAULT_WHEN_DISABLED</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DefaultWhenDisabled'</span></span><a class="headerlink" href="#featuremanagement.VariantAssignmentReason.DEFAULT_WHEN_DISABLED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="featuremanagement.VariantAssignmentReason.DEFAULT_WHEN_ENABLED">
+<span class="sig-name descname"><span class="pre">DEFAULT_WHEN_ENABLED</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DefaultWhenEnabled'</span></span><a class="headerlink" href="#featuremanagement.VariantAssignmentReason.DEFAULT_WHEN_ENABLED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="featuremanagement.VariantAssignmentReason.GROUP">
+<span class="sig-name descname"><span class="pre">GROUP</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Group'</span></span><a class="headerlink" href="#featuremanagement.VariantAssignmentReason.GROUP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="featuremanagement.VariantAssignmentReason.NONE">
+<span class="sig-name descname"><span class="pre">NONE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'None'</span></span><a class="headerlink" href="#featuremanagement.VariantAssignmentReason.NONE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="featuremanagement.VariantAssignmentReason.PERCENTILE">
+<span class="sig-name descname"><span class="pre">PERCENTILE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Percentile'</span></span><a class="headerlink" href="#featuremanagement.VariantAssignmentReason.PERCENTILE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="featuremanagement.VariantAssignmentReason.USER">
+<span class="sig-name descname"><span class="pre">USER</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'User'</span></span><a class="headerlink" href="#featuremanagement.VariantAssignmentReason.USER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 
