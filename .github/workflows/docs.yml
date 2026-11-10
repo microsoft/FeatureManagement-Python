@@ -1,0 +1,74 @@
+name: Release documentation
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/docs.yml"
+      - "docs/**"
+      - "scripts/build_release_docs.py"
+      - "tests/test_release_docs.py"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/docs.yml"
+      - "docs/**"
+      - "scripts/build_release_docs.py"
+      - "tests/test_release_docs.py"
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy the validated release site after Pages settings are ready"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_TAG: v2.2.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out documentation tooling
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check out the released source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          path: .docs-release
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: Install documentation dependencies and the released package
+        run: python -m pip install -r docs/requirements.txt ./.docs-release
+      - name: Build and validate the versioned site
+        run: python scripts/build_release_docs.py --source .docs-release --tag "$RELEASE_TAG"
+      - name: Upload the preview and deployment artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: docs/_build/site
+          retention-days: 7
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: release-documentation-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy the versioned site
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
