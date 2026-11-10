@@ -15,7 +15,7 @@ from featuremanagement import FeatureManager, TargetingContext
 
 class TestDefaultFeatureFlags(unittest.TestCase):
     def test_targeting_context_field_defaults_match_construction(self) -> None:
-        defaults = TargetingContext._field_defaults
+        defaults = TargetingContext._field_defaults  # pylint: disable=protected-access
         parameters = inspect.signature(TargetingContext).parameters
         assert defaults == {name: parameter.default for name, parameter in parameters.items()}
 
@@ -39,7 +39,7 @@ class TestDefaultFeatureFlags(unittest.TestCase):
         for protocol in (0, pickle.HIGHEST_PROTOCOL):
             with self.subTest(protocol=protocol):
                 restored = pickle.loads(pickle.dumps(context, protocol=protocol))
-                assert type(restored) is TargetingContext
+                self.assertIs(type(restored), TargetingContext)
                 assert restored == context
                 restored.groups.append("Users")
                 assert context.groups == ["Admins"]
@@ -47,12 +47,12 @@ class TestDefaultFeatureFlags(unittest.TestCase):
     def test_targeting_context_helpers_preserve_subclass(self) -> None:
         groups = ["Admins"]
         context = TargetingContext._make(("Alice", groups))
-        assert type(context) is TargetingContext
+        self.assertIs(type(context), TargetingContext)
         assert context == TargetingContext("Alice", groups)
         assert context.groups is groups
 
         renamed = context._replace(user_id="Bob")
-        assert type(renamed) is TargetingContext
+        self.assertIs(type(renamed), TargetingContext)
         assert renamed == TargetingContext("Bob", ["Admins"])
         assert renamed.groups is groups
         assert context == TargetingContext("Alice", ["Admins"])
