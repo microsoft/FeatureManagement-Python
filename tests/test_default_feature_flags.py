@@ -5,12 +5,80 @@
 # --------------------------------------------------------------------------
 """Tests for built-in feature filters."""
 
+import inspect
+import json
+import pickle
 import unittest
 import pytest
 from featuremanagement import FeatureManager, TargetingContext
 
 
 class TestDefaultFeatureFlags(unittest.TestCase):
+    def test_targeting_context_field_defaults_match_construction(self) -> None:
+        defaults = TargetingContext._field_defaults
+        parameters = inspect.signature(TargetingContext).parameters
+        assert defaults == {name: parameter.default for name, parameter in parameters.items()}
+
+        first = TargetingContext(**defaults)
+        second = TargetingContext(**defaults)
+        assert first == TargetingContext()
+        first.groups.append("Admins")
+        assert second.groups == []
+        assert TargetingContext().groups == []
+
+    def test_targeting_context_fields_are_read_only(self) -> None:
+        context = TargetingContext("Alice", ["Admins"])
+        for field, value in (("user_id", "Bob"), ("groups", ["Users"]), ("extra", True)):
+            with self.subTest(field=field), pytest.raises(AttributeError):
+                setattr(context, field, value)
+        assert context == TargetingContext("Alice", ["Admins"])
+
+    def test_targeting_context_serialization(self) -> None:
+        context = TargetingContext("Alice", ["Admins"])
+        assert json.dumps(context) == '["Alice", ["Admins"]]'
+        for protocol in (0, pickle.HIGHEST_PROTOCOL):
+            with self.subTest(protocol=protocol):
+                restored = pickle.loads(pickle.dumps(context, protocol=protocol))
+                assert type(restored) is TargetingContext
+                assert restored == context
+                restored.groups.append("Users")
+                assert context.groups == ["Admins"]
+
+    def test_targeting_context_helpers_preserve_subclass(self) -> None:
+        groups = ["Admins"]
+        context = TargetingContext._make(("Alice", groups))
+        assert type(context) is TargetingContext
+        assert context == TargetingContext("Alice", groups)
+        assert context.groups is groups
+
+        renamed = context._replace(user_id="Bob")
+        assert type(renamed) is TargetingContext
+        assert renamed == TargetingContext("Bob", ["Admins"])
+        assert renamed.groups is groups
+        assert context == TargetingContext("Alice", ["Admins"])
+
+    def test_targeting_context_default_groups_are_independent(self) -> None:
+        first = TargetingContext(user_id="Alice")
+        second = TargetingContext(user_id="Bob")
+        explicit_none = TargetingContext(groups=None)
+
+        first.groups.append("Admins")
+
+        assert first.groups == ["Admins"]
+        assert second.groups == []
+        assert explicit_none.groups == []
+        assert TargetingContext().groups == []
+
+    def test_targeting_context_preserves_supplied_groups(self) -> None:
+        groups: list[str] = []
+        context = TargetingContext("Alice", groups)
+
+        context.groups.append("Admins")
+
+        assert context.user_id == "Alice"
+        assert context.groups is groups
+        assert groups == ["Admins"]
+
     def test_invalid_feature_flags(self):
         with self.assertRaises(AttributeError):
             FeatureManager("")
@@ -52,6 +120,11 @@ class TestDefaultFeatureFlags(unittest.TestCase):
         assert feature_manager.is_enabled("Target", TargetingContext(user_id="Belle", groups=["Stage1"]))
         # Brian is not enabled because he is not in Stage 2, group isn't looked at when user is targeted
         assert not feature_manager.is_enabled("Target", TargetingContext(user_id="Belle", groups=["Stage2"]))
+
+        first = TargetingContext("Belle")
+        first.groups.append("Stage1")
+        assert feature_manager.is_enabled("Target", first)
+        assert not feature_manager.is_enabled("Target", TargetingContext("Belle"))
 
     # method: feature_manager_creation
     def test_feature_manager_creation_with_time_window(self):
