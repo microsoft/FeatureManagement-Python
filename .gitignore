@@ -406,6 +406,7 @@ build/
 dist/*
 
 # Sphinx
+.docs-release/
 docs/_build/
 docs/_static
 docs/_templates
